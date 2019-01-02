@@ -28,6 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileNew = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,9 +68,37 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
+            this.tcInputs = new System.Windows.Forms.TabControl();
+            this.tpMaterials = new System.Windows.Forms.TabPage();
+            this.tpStock = new System.Windows.Forms.TabPage();
+            this.tpParts = new System.Windows.Forms.TabPage();
+            this.MaterialsGridView = new System.Windows.Forms.DataGridView();
+            this.StockGridView = new System.Windows.Forms.DataGridView();
+            this.PartsDataGridView = new System.Windows.Forms.DataGridView();
+            this.MaterialNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MaterialLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MaterialWidth = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MaterialThicknessColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MaterialCostColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartWidthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.stocknamecolumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StockLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StockWidthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StockMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
+            this.ctrSplitContainer.Panel1.SuspendLayout();
             this.ctrSplitContainer.SuspendLayout();
+            this.tcInputs.SuspendLayout();
+            this.tpMaterials.SuspendLayout();
+            this.tpStock.SuspendLayout();
+            this.tpParts.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MaterialsGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StockGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PartsDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // mnuMain
@@ -279,9 +315,14 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ctrSplitContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ctrSplitContainer.ForeColor = System.Drawing.SystemColors.ControlText;
             this.ctrSplitContainer.Location = new System.Drawing.Point(21, 24);
             this.ctrSplitContainer.Margin = new System.Windows.Forms.Padding(0);
             this.ctrSplitContainer.Name = "ctrSplitContainer";
+            // 
+            // ctrSplitContainer.Panel1
+            // 
+            this.ctrSplitContainer.Panel1.Controls.Add(this.tcInputs);
             this.ctrSplitContainer.Size = new System.Drawing.Size(1267, 686);
             this.ctrSplitContainer.SplitterDistance = 405;
             this.ctrSplitContainer.TabIndex = 5;
@@ -345,13 +386,252 @@
             this.btnCollapseExpandTab.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnCollapseExpandTab.FlatAppearance.BorderSize = 0;
             this.btnCollapseExpandTab.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCollapseExpandTab.Location = new System.Drawing.Point(0, 36);
+            this.btnCollapseExpandTab.Location = new System.Drawing.Point(0, 33);
             this.btnCollapseExpandTab.Margin = new System.Windows.Forms.Padding(0);
             this.btnCollapseExpandTab.Name = "btnCollapseExpandTab";
             this.btnCollapseExpandTab.Size = new System.Drawing.Size(22, 35);
             this.btnCollapseExpandTab.TabIndex = 4;
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
+            // 
+            // tcInputs
+            // 
+            this.tcInputs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcInputs.Controls.Add(this.tpMaterials);
+            this.tcInputs.Controls.Add(this.tpStock);
+            this.tcInputs.Controls.Add(this.tpParts);
+            this.tcInputs.ItemSize = new System.Drawing.Size(60, 18);
+            this.tcInputs.Location = new System.Drawing.Point(-4, 0);
+            this.tcInputs.Margin = new System.Windows.Forms.Padding(0);
+            this.tcInputs.Name = "tcInputs";
+            this.tcInputs.Padding = new System.Drawing.Point(0, 0);
+            this.tcInputs.SelectedIndex = 0;
+            this.tcInputs.Size = new System.Drawing.Size(419, 784);
+            this.tcInputs.TabIndex = 0;
+            // 
+            // tpMaterials
+            // 
+            this.tpMaterials.BackColor = System.Drawing.SystemColors.Control;
+            this.tpMaterials.Controls.Add(this.MaterialsGridView);
+            this.tpMaterials.Location = new System.Drawing.Point(4, 22);
+            this.tpMaterials.Margin = new System.Windows.Forms.Padding(0);
+            this.tpMaterials.Name = "tpMaterials";
+            this.tpMaterials.Size = new System.Drawing.Size(411, 758);
+            this.tpMaterials.TabIndex = 0;
+            this.tpMaterials.Text = "Materials";
+            // 
+            // tpStock
+            // 
+            this.tpStock.BackColor = System.Drawing.SystemColors.Control;
+            this.tpStock.Controls.Add(this.StockGridView);
+            this.tpStock.Location = new System.Drawing.Point(4, 22);
+            this.tpStock.Name = "tpStock";
+            this.tpStock.Padding = new System.Windows.Forms.Padding(3);
+            this.tpStock.Size = new System.Drawing.Size(411, 758);
+            this.tpStock.TabIndex = 1;
+            this.tpStock.Text = "Stock";
+            // 
+            // tpParts
+            // 
+            this.tpParts.BackColor = System.Drawing.SystemColors.Control;
+            this.tpParts.Controls.Add(this.PartsDataGridView);
+            this.tpParts.Location = new System.Drawing.Point(4, 22);
+            this.tpParts.Name = "tpParts";
+            this.tpParts.Size = new System.Drawing.Size(411, 758);
+            this.tpParts.TabIndex = 2;
+            this.tpParts.Text = "Parts";
+            // 
+            // MaterialsGridView
+            // 
+            this.MaterialsGridView.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.MaterialsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.MaterialsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.MaterialsGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.MaterialsGridView.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.MaterialsGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            this.MaterialsGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.MaterialsGridView.ColumnHeadersHeight = 25;
+            this.MaterialsGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.MaterialNameColumn,
+            this.MaterialLengthColumn,
+            this.MaterialWidth,
+            this.MaterialThicknessColumn,
+            this.MaterialCostColumn});
+            this.MaterialsGridView.Location = new System.Drawing.Point(-1, -1);
+            this.MaterialsGridView.Name = "MaterialsGridView";
+            this.MaterialsGridView.RowHeadersWidth = 25;
+            this.MaterialsGridView.Size = new System.Drawing.Size(405, 664);
+            this.MaterialsGridView.TabIndex = 2;
+            // 
+            // StockGridView
+            // 
+            this.StockGridView.AllowUserToResizeRows = false;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.StockGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle7;
+            this.StockGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.StockGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.StockGridView.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.StockGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            this.StockGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.StockGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.StockGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.stocknamecolumn,
+            this.StockLengthColumn,
+            this.StockWidthColumn,
+            this.StockMaterialColumn});
+            this.StockGridView.Location = new System.Drawing.Point(-1, -1);
+            this.StockGridView.Margin = new System.Windows.Forms.Padding(0);
+            this.StockGridView.Name = "StockGridView";
+            this.StockGridView.RowHeadersWidth = 25;
+            this.StockGridView.Size = new System.Drawing.Size(405, 664);
+            this.StockGridView.TabIndex = 1;
+            // 
+            // PartsDataGridView
+            // 
+            this.PartsDataGridView.AllowUserToResizeRows = false;
+            dataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.PartsDataGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle8;
+            this.PartsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PartsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.PartsDataGridView.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.PartsDataGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            this.PartsDataGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.PartsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.PartsDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.PartNameColumn,
+            this.PartLengthColumn,
+            this.PartWidthColumn,
+            this.PartMaterialColumn});
+            this.PartsDataGridView.Location = new System.Drawing.Point(-1, -1);
+            this.PartsDataGridView.Name = "PartsDataGridView";
+            this.PartsDataGridView.RowHeadersWidth = 25;
+            this.PartsDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.PartsDataGridView.Size = new System.Drawing.Size(405, 664);
+            this.PartsDataGridView.TabIndex = 2;
+            // 
+            // MaterialNameColumn
+            // 
+            this.MaterialNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.MaterialNameColumn.DataPropertyName = "Name";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.MaterialNameColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            this.MaterialNameColumn.HeaderText = "Name";
+            this.MaterialNameColumn.Name = "MaterialNameColumn";
+            // 
+            // MaterialLengthColumn
+            // 
+            this.MaterialLengthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.MaterialLengthColumn.DataPropertyName = "Length";
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle3.Format = "N1";
+            this.MaterialLengthColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            this.MaterialLengthColumn.FillWeight = 40F;
+            this.MaterialLengthColumn.HeaderText = "Length";
+            this.MaterialLengthColumn.Name = "MaterialLengthColumn";
+            // 
+            // MaterialWidth
+            // 
+            this.MaterialWidth.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.MaterialWidth.DataPropertyName = "Width";
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle4.Format = "N1";
+            this.MaterialWidth.DefaultCellStyle = dataGridViewCellStyle4;
+            this.MaterialWidth.FillWeight = 40F;
+            this.MaterialWidth.HeaderText = "Width";
+            this.MaterialWidth.Name = "MaterialWidth";
+            // 
+            // MaterialThicknessColumn
+            // 
+            this.MaterialThicknessColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.MaterialThicknessColumn.DataPropertyName = "Thickness";
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle5.Format = "N1";
+            this.MaterialThicknessColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            this.MaterialThicknessColumn.FillWeight = 40F;
+            this.MaterialThicknessColumn.HeaderText = "Thickness";
+            this.MaterialThicknessColumn.Name = "MaterialThicknessColumn";
+            // 
+            // MaterialCostColumn
+            // 
+            this.MaterialCostColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.MaterialCostColumn.DataPropertyName = "Cost";
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle6.Format = "C2";
+            this.MaterialCostColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            this.MaterialCostColumn.FillWeight = 50F;
+            this.MaterialCostColumn.HeaderText = "R/m3";
+            this.MaterialCostColumn.Name = "MaterialCostColumn";
+            // 
+            // PartNameColumn
+            // 
+            this.PartNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartNameColumn.DataPropertyName = "Name";
+            this.PartNameColumn.HeaderText = "Name";
+            this.PartNameColumn.Name = "PartNameColumn";
+            // 
+            // PartLengthColumn
+            // 
+            this.PartLengthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartLengthColumn.DataPropertyName = "Length";
+            this.PartLengthColumn.FillWeight = 40F;
+            this.PartLengthColumn.HeaderText = "Length";
+            this.PartLengthColumn.Name = "PartLengthColumn";
+            // 
+            // PartWidthColumn
+            // 
+            this.PartWidthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartWidthColumn.DataPropertyName = "Width";
+            this.PartWidthColumn.FillWeight = 40F;
+            this.PartWidthColumn.HeaderText = "Width";
+            this.PartWidthColumn.Name = "PartWidthColumn";
+            // 
+            // PartMaterialColumn
+            // 
+            this.PartMaterialColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartMaterialColumn.DataPropertyName = "Material";
+            this.PartMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.PartMaterialColumn.HeaderText = "Material";
+            this.PartMaterialColumn.Name = "PartMaterialColumn";
+            this.PartMaterialColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.PartMaterialColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // stocknamecolumn
+            // 
+            this.stocknamecolumn.DataPropertyName = "Name";
+            this.stocknamecolumn.HeaderText = "Name";
+            this.stocknamecolumn.Name = "stocknamecolumn";
+            // 
+            // StockLengthColumn
+            // 
+            this.StockLengthColumn.DataPropertyName = "Length";
+            this.StockLengthColumn.FillWeight = 40F;
+            this.StockLengthColumn.HeaderText = "Length";
+            this.StockLengthColumn.Name = "StockLengthColumn";
+            // 
+            // StockWidthColumn
+            // 
+            this.StockWidthColumn.DataPropertyName = "Width";
+            this.StockWidthColumn.FillWeight = 40F;
+            this.StockWidthColumn.HeaderText = "Width";
+            this.StockWidthColumn.Name = "StockWidthColumn";
+            // 
+            // StockMaterialColumn
+            // 
+            this.StockMaterialColumn.DataPropertyName = "Material";
+            this.StockMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.StockMaterialColumn.HeaderText = "Material";
+            this.StockMaterialColumn.Name = "StockMaterialColumn";
+            this.StockMaterialColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.StockMaterialColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // frmMain
             // 
@@ -371,8 +651,16 @@
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.mnuMain.ResumeLayout(false);
             this.mnuMain.PerformLayout();
+            this.ctrSplitContainer.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).EndInit();
             this.ctrSplitContainer.ResumeLayout(false);
+            this.tcInputs.ResumeLayout(false);
+            this.tpMaterials.ResumeLayout(false);
+            this.tpStock.ResumeLayout(false);
+            this.tpParts.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.MaterialsGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StockGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PartsDataGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -412,6 +700,26 @@
         private System.Windows.Forms.Button btnPartsTab;
         private System.Windows.Forms.Button btnCollapseExpandTab;
         private System.Windows.Forms.SplitContainer ctrSplitContainer;
+        private System.Windows.Forms.TabControl tcInputs;
+        private System.Windows.Forms.TabPage tpMaterials;
+        private System.Windows.Forms.TabPage tpStock;
+        private System.Windows.Forms.TabPage tpParts;
+        private System.Windows.Forms.DataGridView MaterialsGridView;
+        private System.Windows.Forms.DataGridView StockGridView;
+        private System.Windows.Forms.DataGridView PartsDataGridView;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaterialNameColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaterialLengthColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaterialWidth;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaterialThicknessColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaterialCostColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PartNameColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PartLengthColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PartWidthColumn;
+        private System.Windows.Forms.DataGridViewComboBoxColumn PartMaterialColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn stocknamecolumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn StockLengthColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn StockWidthColumn;
+        private System.Windows.Forms.DataGridViewComboBoxColumn StockMaterialColumn;
     }
 }
 

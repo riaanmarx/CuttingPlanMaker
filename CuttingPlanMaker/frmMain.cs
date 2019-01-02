@@ -68,6 +68,7 @@ namespace CuttingPlanMaker
         public frmMain()
         {
             InitializeComponent();
+            tcInputs.Top -= 22;
         }
         #endregion
 
@@ -115,6 +116,25 @@ namespace CuttingPlanMaker
 
             // Load the file into data structures
             Settings = CSVFile.Read<Settings>($"{FilePath}.Settings.CSV");
+            Materials = CSVFile.Read<Material>($"{FilePath}.Materials.CSV");
+            Stock = CSVFile.Read<StockItem>($"{FilePath}.Stock.CSV");
+            Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
+
+            // bind the materials grid
+            MaterialsGridView.DataSource = Materials;
+
+            // bind the stock grid
+            
+            StockMaterialColumn.DataSource = Materials;
+            StockMaterialColumn.DisplayMember = "Name";
+            StockMaterialColumn.ValueMember = "Name";
+            StockGridView.DataSource = Stock;
+
+            // bind the Part
+            PartMaterialColumn.DataSource = Materials;
+            PartMaterialColumn.DisplayMember = "Name";
+            PartMaterialColumn.ValueMember = "Name";
+            PartsDataGridView.DataSource = Parts;
 
         }
 
@@ -240,35 +260,50 @@ namespace CuttingPlanMaker
 
         private void btnMaterialsTab_Click(object sender, EventArgs e)
         {
+            // change button images to create appearance of tabs
             btnStockTab.BackgroundImage = Properties.Resources.Stock_Materials;
             btnPartsTab.BackgroundImage = Properties.Resources.Parts_Materials;
             btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Materials;
 
+            // ensure info pane is visible
             ctrSplitContainer.Panel1Collapsed = false;
             btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
             ctrSplitContainer.SendToBack();
+
+            // select the materials tab
+            tcInputs.SelectedTab = tpMaterials;
         }
 
         private void btnStockTab_Click(object sender, EventArgs e)
         {
+            // change button images to create appearance of tabs
             btnStockTab.BackgroundImage = Properties.Resources.Stock_Stock;
             btnPartsTab.BackgroundImage = Properties.Resources.Parts_Stock;
             btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Stock;
 
+            // ensure info pane is visible
             ctrSplitContainer.Panel1Collapsed = false;
             btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
             ctrSplitContainer.SendToBack();
+
+            // select the materials tab
+            tcInputs.SelectedTab = tpStock;
         }
 
         private void btnPartsTab_Click(object sender, EventArgs e)
         {
+            // change button images to create appearance of tabs
             btnStockTab.BackgroundImage = Properties.Resources.Stock_Parts;
             btnPartsTab.BackgroundImage = Properties.Resources.Parts_Parts;
             btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Parts;
 
+            // ensure info pane is visible
             ctrSplitContainer.Panel1Collapsed = false;
             btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
             ctrSplitContainer.SendToBack();
+
+            // select the materials tab
+            tcInputs.SelectedTab = tpParts;
         }
 
         private void btnCollapseExpandTab_Click(object sender, EventArgs e)
