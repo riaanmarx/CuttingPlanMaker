@@ -55,10 +55,14 @@
             this.mniHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.ctrSplitContainer = new System.Windows.Forms.SplitContainer();
             this.btnPartsTab = new System.Windows.Forms.Button();
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
+            this.btnCollapseExpandTab = new System.Windows.Forms.Button();
             this.mnuMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
+            this.ctrSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // mnuMain
@@ -269,6 +273,19 @@
             this.openFileDialog.DefaultExt = "Settings.csv";
             this.openFileDialog.Filter = "Cutting Plan Maker files|*.Settings.csv";
             // 
+            // ctrSplitContainer
+            // 
+            this.ctrSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ctrSplitContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ctrSplitContainer.Location = new System.Drawing.Point(21, 24);
+            this.ctrSplitContainer.Margin = new System.Windows.Forms.Padding(0);
+            this.ctrSplitContainer.Name = "ctrSplitContainer";
+            this.ctrSplitContainer.Size = new System.Drawing.Size(1267, 686);
+            this.ctrSplitContainer.SplitterDistance = 405;
+            this.ctrSplitContainer.TabIndex = 5;
+            // 
             // btnPartsTab
             // 
             this.btnPartsTab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -320,6 +337,22 @@
             this.btnMaterialsTab.UseVisualStyleBackColor = false;
             this.btnMaterialsTab.Click += new System.EventHandler(this.btnMaterialsTab_Click);
             // 
+            // btnCollapseExpandTab
+            // 
+            this.btnCollapseExpandTab.AutoSize = true;
+            this.btnCollapseExpandTab.BackColor = System.Drawing.Color.Transparent;
+            this.btnCollapseExpandTab.BackgroundImage = global::CuttingPlanMaker.Properties.Resources.collapse;
+            this.btnCollapseExpandTab.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnCollapseExpandTab.FlatAppearance.BorderSize = 0;
+            this.btnCollapseExpandTab.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCollapseExpandTab.Location = new System.Drawing.Point(0, 36);
+            this.btnCollapseExpandTab.Margin = new System.Windows.Forms.Padding(0);
+            this.btnCollapseExpandTab.Name = "btnCollapseExpandTab";
+            this.btnCollapseExpandTab.Size = new System.Drawing.Size(22, 35);
+            this.btnCollapseExpandTab.TabIndex = 4;
+            this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
+            this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -328,6 +361,8 @@
             this.Controls.Add(this.btnPartsTab);
             this.Controls.Add(this.btnStockTab);
             this.Controls.Add(this.btnMaterialsTab);
+            this.Controls.Add(this.ctrSplitContainer);
+            this.Controls.Add(this.btnCollapseExpandTab);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = this.mnuMain;
             this.Name = "frmMain";
@@ -336,6 +371,8 @@
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.mnuMain.ResumeLayout(false);
             this.mnuMain.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).EndInit();
+            this.ctrSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -373,6 +410,8 @@
         private System.Windows.Forms.Button btnMaterialsTab;
         private System.Windows.Forms.Button btnStockTab;
         private System.Windows.Forms.Button btnPartsTab;
+        private System.Windows.Forms.Button btnCollapseExpandTab;
+        private System.Windows.Forms.SplitContainer ctrSplitContainer;
     }
 }
 

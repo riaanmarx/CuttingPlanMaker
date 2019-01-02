@@ -243,6 +243,10 @@ namespace CuttingPlanMaker
             btnStockTab.BackgroundImage = Properties.Resources.Stock_Materials;
             btnPartsTab.BackgroundImage = Properties.Resources.Parts_Materials;
             btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Materials;
+
+            ctrSplitContainer.Panel1Collapsed = false;
+            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
+            ctrSplitContainer.SendToBack();
         }
 
         private void btnStockTab_Click(object sender, EventArgs e)
@@ -250,6 +254,10 @@ namespace CuttingPlanMaker
             btnStockTab.BackgroundImage = Properties.Resources.Stock_Stock;
             btnPartsTab.BackgroundImage = Properties.Resources.Parts_Stock;
             btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Stock;
+
+            ctrSplitContainer.Panel1Collapsed = false;
+            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
+            ctrSplitContainer.SendToBack();
         }
 
         private void btnPartsTab_Click(object sender, EventArgs e)
@@ -257,6 +265,26 @@ namespace CuttingPlanMaker
             btnStockTab.BackgroundImage = Properties.Resources.Stock_Parts;
             btnPartsTab.BackgroundImage = Properties.Resources.Parts_Parts;
             btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Parts;
+
+            ctrSplitContainer.Panel1Collapsed = false;
+            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
+            ctrSplitContainer.SendToBack();
+        }
+
+        private void btnCollapseExpandTab_Click(object sender, EventArgs e)
+        {
+            if (ctrSplitContainer.Panel1Collapsed)
+            {
+                btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
+                ctrSplitContainer.Panel1Collapsed = false;
+                ctrSplitContainer.SendToBack();
+            }
+            else
+            {
+                btnCollapseExpandTab.BackgroundImage = Properties.Resources.expand;
+                ctrSplitContainer.Panel1Collapsed = true;
+                ctrSplitContainer.BringToFront();
+            }
         }
     }
 }
