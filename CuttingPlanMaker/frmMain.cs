@@ -71,7 +71,7 @@ namespace CuttingPlanMaker
         }
         #endregion
 
-        #region // internal helper functions ...
+        #region // Internal helper functions ...
 
         /// <summary>
         /// Save the current data to the file set with the specified name
@@ -83,6 +83,11 @@ namespace CuttingPlanMaker
 
             // update the saved flag
             IsFileSaved = true;
+        }
+
+        private void SaveConfig()
+        {
+            CSVFile.Write(Settings, $"{FilePath}.Settings.CSV");
         }
 
         private void SaveFileAs()
@@ -225,5 +230,14 @@ namespace CuttingPlanMaker
             SaveFileAs();
         }
         #endregion
+
+        private void mniToolsOptions_Click(object sender, EventArgs e)
+        {
+            // show settings dialog, if close with save, save the config
+            if (new frmSettingsDialog(Settings.First()).ShowDialog() == DialogResult.OK)
+                SaveConfig();
+        }
+
+        
     }
 }

@@ -130,6 +130,7 @@
             // 
             this.mniFileImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniFileImportSketchupCSV});
+            this.mniFileImport.Enabled = false;
             this.mniFileImport.Name = "mniFileImport";
             this.mniFileImport.Size = new System.Drawing.Size(180, 22);
             this.mniFileImport.Text = "&Import";
@@ -137,11 +138,12 @@
             // mniFileImportSketchupCSV
             // 
             this.mniFileImportSketchupCSV.Name = "mniFileImportSketchupCSV";
-            this.mniFileImportSketchupCSV.Size = new System.Drawing.Size(147, 22);
+            this.mniFileImportSketchupCSV.Size = new System.Drawing.Size(180, 22);
             this.mniFileImportSketchupCSV.Text = "Sketchup CSV";
             // 
             // exportToolStripMenuItem
             // 
+            this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportToolStripMenuItem.Text = "&Export";
@@ -173,26 +175,26 @@
             // mniEditDuplicate
             // 
             this.mniEditDuplicate.Name = "mniEditDuplicate";
-            this.mniEditDuplicate.Size = new System.Drawing.Size(124, 22);
+            this.mniEditDuplicate.Size = new System.Drawing.Size(180, 22);
             this.mniEditDuplicate.Text = "&Duplicate";
             this.mniEditDuplicate.Click += new System.EventHandler(this.mniEditDuplicate_Click);
             // 
             // mniEditDelete
             // 
             this.mniEditDelete.Name = "mniEditDelete";
-            this.mniEditDelete.Size = new System.Drawing.Size(124, 22);
+            this.mniEditDelete.Size = new System.Drawing.Size(180, 22);
             this.mniEditDelete.Text = "D&elete";
             // 
             // mniEditCopy
             // 
             this.mniEditCopy.Name = "mniEditCopy";
-            this.mniEditCopy.Size = new System.Drawing.Size(124, 22);
+            this.mniEditCopy.Size = new System.Drawing.Size(180, 22);
             this.mniEditCopy.Text = "&Copy";
             // 
             // mniEditPaste
             // 
             this.mniEditPaste.Name = "mniEditPaste";
-            this.mniEditPaste.Size = new System.Drawing.Size(124, 22);
+            this.mniEditPaste.Size = new System.Drawing.Size(180, 22);
             this.mniEditPaste.Text = "&Paste";
             // 
             // mniTools
@@ -206,8 +208,9 @@
             // mniToolsOptions
             // 
             this.mniToolsOptions.Name = "mniToolsOptions";
-            this.mniToolsOptions.Size = new System.Drawing.Size(116, 22);
+            this.mniToolsOptions.Size = new System.Drawing.Size(180, 22);
             this.mniToolsOptions.Text = "&Options";
+            this.mniToolsOptions.Click += new System.EventHandler(this.mniToolsOptions_Click);
             // 
             // mniReport
             // 
@@ -222,19 +225,19 @@
             // mniReportPartsList
             // 
             this.mniReportPartsList.Name = "mniReportPartsList";
-            this.mniReportPartsList.Size = new System.Drawing.Size(121, 22);
+            this.mniReportPartsList.Size = new System.Drawing.Size(180, 22);
             this.mniReportPartsList.Text = "Parts list";
             // 
             // mniReportStockList
             // 
             this.mniReportStockList.Name = "mniReportStockList";
-            this.mniReportStockList.Size = new System.Drawing.Size(121, 22);
+            this.mniReportStockList.Size = new System.Drawing.Size(180, 22);
             this.mniReportStockList.Text = "Stock list";
             // 
             // mniReportLayout
             // 
             this.mniReportLayout.Name = "mniReportLayout";
-            this.mniReportLayout.Size = new System.Drawing.Size(121, 22);
+            this.mniReportLayout.Size = new System.Drawing.Size(180, 22);
             this.mniReportLayout.Text = "Layout";
             // 
             // mniHelp

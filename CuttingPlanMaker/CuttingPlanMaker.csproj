@@ -56,6 +56,12 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmSettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSettingsDialog.Designer.cs">
+      <DependentUpon>frmSettingsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Material.cs" />
     <Compile Include="Part.cs" />
     <Compile Include="Program.cs" />
@@ -64,6 +70,9 @@
     <Compile Include="StockItem.cs" />
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSettingsDialog.resx">
+      <DependentUpon>frmSettingsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
