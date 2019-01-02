@@ -238,6 +238,25 @@ namespace CuttingPlanMaker
                 SaveConfig();
         }
 
-        
+        private void btnMaterialsTab_Click(object sender, EventArgs e)
+        {
+            btnStockTab.BackgroundImage = Properties.Resources.Stock_Materials;
+            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Materials;
+            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Materials;
+        }
+
+        private void btnStockTab_Click(object sender, EventArgs e)
+        {
+            btnStockTab.BackgroundImage = Properties.Resources.Stock_Stock;
+            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Stock;
+            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Stock;
+        }
+
+        private void btnPartsTab_Click(object sender, EventArgs e)
+        {
+            btnStockTab.BackgroundImage = Properties.Resources.Stock_Parts;
+            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Parts;
+            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Parts;
+        }
     }
 }

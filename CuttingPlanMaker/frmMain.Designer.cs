@@ -55,6 +55,9 @@
             this.mniHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.btnPartsTab = new System.Windows.Forms.Button();
+            this.btnStockTab = new System.Windows.Forms.Button();
+            this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.mnuMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -94,7 +97,7 @@
             // 
             this.mniFileNew.Name = "mniFileNew";
             this.mniFileNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.mniFileNew.Size = new System.Drawing.Size(180, 22);
+            this.mniFileNew.Size = new System.Drawing.Size(146, 22);
             this.mniFileNew.Text = "&New";
             this.mniFileNew.Click += new System.EventHandler(this.mniFileNew_Click);
             // 
@@ -102,7 +105,7 @@
             // 
             this.mniFileOpen.Name = "mniFileOpen";
             this.mniFileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.mniFileOpen.Size = new System.Drawing.Size(180, 22);
+            this.mniFileOpen.Size = new System.Drawing.Size(146, 22);
             this.mniFileOpen.Text = "&Open";
             this.mniFileOpen.Click += new System.EventHandler(this.mniFileOpen_Click);
             // 
@@ -110,21 +113,21 @@
             // 
             this.mniFileSave.Name = "mniFileSave";
             this.mniFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.mniFileSave.Size = new System.Drawing.Size(180, 22);
+            this.mniFileSave.Size = new System.Drawing.Size(146, 22);
             this.mniFileSave.Text = "&Save";
             this.mniFileSave.Click += new System.EventHandler(this.mniFileSave_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
             // 
             // mniFileImport
             // 
@@ -132,32 +135,32 @@
             this.mniFileImportSketchupCSV});
             this.mniFileImport.Enabled = false;
             this.mniFileImport.Name = "mniFileImport";
-            this.mniFileImport.Size = new System.Drawing.Size(180, 22);
+            this.mniFileImport.Size = new System.Drawing.Size(146, 22);
             this.mniFileImport.Text = "&Import";
             // 
             // mniFileImportSketchupCSV
             // 
             this.mniFileImportSketchupCSV.Name = "mniFileImportSketchupCSV";
-            this.mniFileImportSketchupCSV.Size = new System.Drawing.Size(180, 22);
+            this.mniFileImportSketchupCSV.Size = new System.Drawing.Size(147, 22);
             this.mniFileImportSketchupCSV.Text = "Sketchup CSV";
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(143, 6);
             // 
             // mniFileExit
             // 
             this.mniFileExit.Name = "mniFileExit";
             this.mniFileExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.mniFileExit.Size = new System.Drawing.Size(180, 22);
+            this.mniFileExit.Size = new System.Drawing.Size(146, 22);
             this.mniFileExit.Text = "E&xit";
             this.mniFileExit.Click += new System.EventHandler(this.mniFileExit_Click);
             // 
@@ -175,26 +178,26 @@
             // mniEditDuplicate
             // 
             this.mniEditDuplicate.Name = "mniEditDuplicate";
-            this.mniEditDuplicate.Size = new System.Drawing.Size(180, 22);
+            this.mniEditDuplicate.Size = new System.Drawing.Size(124, 22);
             this.mniEditDuplicate.Text = "&Duplicate";
             this.mniEditDuplicate.Click += new System.EventHandler(this.mniEditDuplicate_Click);
             // 
             // mniEditDelete
             // 
             this.mniEditDelete.Name = "mniEditDelete";
-            this.mniEditDelete.Size = new System.Drawing.Size(180, 22);
+            this.mniEditDelete.Size = new System.Drawing.Size(124, 22);
             this.mniEditDelete.Text = "D&elete";
             // 
             // mniEditCopy
             // 
             this.mniEditCopy.Name = "mniEditCopy";
-            this.mniEditCopy.Size = new System.Drawing.Size(180, 22);
+            this.mniEditCopy.Size = new System.Drawing.Size(124, 22);
             this.mniEditCopy.Text = "&Copy";
             // 
             // mniEditPaste
             // 
             this.mniEditPaste.Name = "mniEditPaste";
-            this.mniEditPaste.Size = new System.Drawing.Size(180, 22);
+            this.mniEditPaste.Size = new System.Drawing.Size(124, 22);
             this.mniEditPaste.Text = "&Paste";
             // 
             // mniTools
@@ -208,7 +211,7 @@
             // mniToolsOptions
             // 
             this.mniToolsOptions.Name = "mniToolsOptions";
-            this.mniToolsOptions.Size = new System.Drawing.Size(180, 22);
+            this.mniToolsOptions.Size = new System.Drawing.Size(116, 22);
             this.mniToolsOptions.Text = "&Options";
             this.mniToolsOptions.Click += new System.EventHandler(this.mniToolsOptions_Click);
             // 
@@ -225,19 +228,19 @@
             // mniReportPartsList
             // 
             this.mniReportPartsList.Name = "mniReportPartsList";
-            this.mniReportPartsList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportPartsList.Size = new System.Drawing.Size(121, 22);
             this.mniReportPartsList.Text = "Parts list";
             // 
             // mniReportStockList
             // 
             this.mniReportStockList.Name = "mniReportStockList";
-            this.mniReportStockList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportStockList.Size = new System.Drawing.Size(121, 22);
             this.mniReportStockList.Text = "Stock list";
             // 
             // mniReportLayout
             // 
             this.mniReportLayout.Name = "mniReportLayout";
-            this.mniReportLayout.Size = new System.Drawing.Size(180, 22);
+            this.mniReportLayout.Size = new System.Drawing.Size(121, 22);
             this.mniReportLayout.Text = "Layout";
             // 
             // mniHelp
@@ -266,11 +269,65 @@
             this.openFileDialog.DefaultExt = "Settings.csv";
             this.openFileDialog.Filter = "Cutting Plan Maker files|*.Settings.csv";
             // 
+            // btnPartsTab
+            // 
+            this.btnPartsTab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnPartsTab.AutoSize = true;
+            this.btnPartsTab.BackColor = System.Drawing.Color.Transparent;
+            this.btnPartsTab.BackgroundImage = global::CuttingPlanMaker.Properties.Resources.Parts_Materials;
+            this.btnPartsTab.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnPartsTab.FlatAppearance.BorderSize = 0;
+            this.btnPartsTab.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPartsTab.Location = new System.Drawing.Point(0, 448);
+            this.btnPartsTab.Margin = new System.Windows.Forms.Padding(0);
+            this.btnPartsTab.Name = "btnPartsTab";
+            this.btnPartsTab.Size = new System.Drawing.Size(22, 80);
+            this.btnPartsTab.TabIndex = 3;
+            this.btnPartsTab.UseVisualStyleBackColor = false;
+            this.btnPartsTab.Click += new System.EventHandler(this.btnPartsTab_Click);
+            // 
+            // btnStockTab
+            // 
+            this.btnStockTab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnStockTab.AutoSize = true;
+            this.btnStockTab.BackColor = System.Drawing.Color.Transparent;
+            this.btnStockTab.BackgroundImage = global::CuttingPlanMaker.Properties.Resources.Stock_Materials;
+            this.btnStockTab.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnStockTab.FlatAppearance.BorderSize = 0;
+            this.btnStockTab.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnStockTab.Location = new System.Drawing.Point(0, 528);
+            this.btnStockTab.Margin = new System.Windows.Forms.Padding(0);
+            this.btnStockTab.Name = "btnStockTab";
+            this.btnStockTab.Size = new System.Drawing.Size(22, 75);
+            this.btnStockTab.TabIndex = 2;
+            this.btnStockTab.UseVisualStyleBackColor = false;
+            this.btnStockTab.Click += new System.EventHandler(this.btnStockTab_Click);
+            // 
+            // btnMaterialsTab
+            // 
+            this.btnMaterialsTab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnMaterialsTab.AutoSize = true;
+            this.btnMaterialsTab.BackColor = System.Drawing.Color.Transparent;
+            this.btnMaterialsTab.BackgroundImage = global::CuttingPlanMaker.Properties.Resources.Materials_Materials;
+            this.btnMaterialsTab.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnMaterialsTab.FlatAppearance.BorderSize = 0;
+            this.btnMaterialsTab.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMaterialsTab.Location = new System.Drawing.Point(0, 603);
+            this.btnMaterialsTab.Margin = new System.Windows.Forms.Padding(0);
+            this.btnMaterialsTab.Name = "btnMaterialsTab";
+            this.btnMaterialsTab.Size = new System.Drawing.Size(22, 81);
+            this.btnMaterialsTab.TabIndex = 1;
+            this.btnMaterialsTab.UseVisualStyleBackColor = false;
+            this.btnMaterialsTab.Click += new System.EventHandler(this.btnMaterialsTab_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1289, 710);
+            this.Controls.Add(this.btnPartsTab);
+            this.Controls.Add(this.btnStockTab);
+            this.Controls.Add(this.btnMaterialsTab);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = this.mnuMain;
             this.Name = "frmMain";
@@ -313,6 +370,9 @@
         private System.Windows.Forms.ToolStripMenuItem mniReportStockList;
         private System.Windows.Forms.ToolStripMenuItem mniReportLayout;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.Button btnMaterialsTab;
+        private System.Windows.Forms.Button btnStockTab;
+        private System.Windows.Forms.Button btnPartsTab;
     }
 }
 

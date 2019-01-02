@@ -36,6 +36,12 @@
     <Reference Include="LINQtoCSV, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LINQtoCSV.1.5.0.0\lib\net35\LINQtoCSV.dll</HintPath>
     </Reference>
+    <Reference Include="PdfSharp, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -82,6 +88,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Default.Materials.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -108,6 +115,33 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Stock_Parts.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Parts_Stock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Parts_Materials.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Parts_Parts.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Stock_Stock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Materials_Parts.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Materials_Stock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Materials_Materials.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Stock_Materials.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
