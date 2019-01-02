@@ -34,23 +34,27 @@
             this.mniFileOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFileImport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileImportSketchupCSV = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniFileExit = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniFileExit = new System.Windows.Forms.ToolStripMenuItem();
             this.mniEdit = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniTools = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniReport = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.mniEditDuplicate = new System.Windows.Forms.ToolStripMenuItem();
             this.mniEditDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.mniEditCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.mniEditPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniTools = new System.Windows.Forms.ToolStripMenuItem();
             this.mniToolsOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportPartsList = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportStockList = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportLayout = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.mnuMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,6 +104,7 @@
             this.mniFileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.mniFileOpen.Size = new System.Drawing.Size(180, 22);
             this.mniFileOpen.Text = "&Open";
+            this.mniFileOpen.Click += new System.EventHandler(this.mniFileOpen_Click);
             // 
             // mniFileSave
             // 
@@ -107,12 +112,19 @@
             this.mniFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.mniFileSave.Size = new System.Drawing.Size(180, 22);
             this.mniFileSave.Text = "&Save";
+            this.mniFileSave.Click += new System.EventHandler(this.mniFileSave_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // mniFileImport
             // 
@@ -125,7 +137,7 @@
             // mniFileImportSketchupCSV
             // 
             this.mniFileImportSketchupCSV.Name = "mniFileImportSketchupCSV";
-            this.mniFileImportSketchupCSV.Size = new System.Drawing.Size(180, 22);
+            this.mniFileImportSketchupCSV.Size = new System.Drawing.Size(147, 22);
             this.mniFileImportSketchupCSV.Text = "Sketchup CSV";
             // 
             // exportToolStripMenuItem
@@ -134,10 +146,10 @@
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
-            // toolStripSeparator1
+            // toolStripSeparator2
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // mniFileExit
             // 
@@ -146,11 +158,6 @@
             this.mniFileExit.Size = new System.Drawing.Size(180, 22);
             this.mniFileExit.Text = "E&xit";
             this.mniFileExit.Click += new System.EventHandler(this.mniFileExit_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // mniEdit
             // 
@@ -163,6 +170,31 @@
             this.mniEdit.Size = new System.Drawing.Size(39, 20);
             this.mniEdit.Text = "&Edit";
             // 
+            // mniEditDuplicate
+            // 
+            this.mniEditDuplicate.Name = "mniEditDuplicate";
+            this.mniEditDuplicate.Size = new System.Drawing.Size(124, 22);
+            this.mniEditDuplicate.Text = "&Duplicate";
+            this.mniEditDuplicate.Click += new System.EventHandler(this.mniEditDuplicate_Click);
+            // 
+            // mniEditDelete
+            // 
+            this.mniEditDelete.Name = "mniEditDelete";
+            this.mniEditDelete.Size = new System.Drawing.Size(124, 22);
+            this.mniEditDelete.Text = "D&elete";
+            // 
+            // mniEditCopy
+            // 
+            this.mniEditCopy.Name = "mniEditCopy";
+            this.mniEditCopy.Size = new System.Drawing.Size(124, 22);
+            this.mniEditCopy.Text = "&Copy";
+            // 
+            // mniEditPaste
+            // 
+            this.mniEditPaste.Name = "mniEditPaste";
+            this.mniEditPaste.Size = new System.Drawing.Size(124, 22);
+            this.mniEditPaste.Text = "&Paste";
+            // 
             // mniTools
             // 
             this.mniTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -171,11 +203,39 @@
             this.mniTools.Size = new System.Drawing.Size(47, 20);
             this.mniTools.Text = "&Tools";
             // 
+            // mniToolsOptions
+            // 
+            this.mniToolsOptions.Name = "mniToolsOptions";
+            this.mniToolsOptions.Size = new System.Drawing.Size(116, 22);
+            this.mniToolsOptions.Text = "&Options";
+            // 
             // mniReport
             // 
+            this.mniReport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mniReportPartsList,
+            this.mniReportStockList,
+            this.mniReportLayout});
             this.mniReport.Name = "mniReport";
             this.mniReport.Size = new System.Drawing.Size(54, 20);
             this.mniReport.Text = "&Report";
+            // 
+            // mniReportPartsList
+            // 
+            this.mniReportPartsList.Name = "mniReportPartsList";
+            this.mniReportPartsList.Size = new System.Drawing.Size(121, 22);
+            this.mniReportPartsList.Text = "Parts list";
+            // 
+            // mniReportStockList
+            // 
+            this.mniReportStockList.Name = "mniReportStockList";
+            this.mniReportStockList.Size = new System.Drawing.Size(121, 22);
+            this.mniReportStockList.Text = "Stock list";
+            // 
+            // mniReportLayout
+            // 
+            this.mniReportLayout.Name = "mniReportLayout";
+            this.mniReportLayout.Size = new System.Drawing.Size(121, 22);
+            this.mniReportLayout.Text = "Layout";
             // 
             // mniHelp
             // 
@@ -188,39 +248,8 @@
             // mniHelpAbout
             // 
             this.mniHelpAbout.Name = "mniHelpAbout";
-            this.mniHelpAbout.Size = new System.Drawing.Size(180, 22);
+            this.mniHelpAbout.Size = new System.Drawing.Size(107, 22);
             this.mniHelpAbout.Text = "&About";
-            // 
-            // mniEditDuplicate
-            // 
-            this.mniEditDuplicate.Name = "mniEditDuplicate";
-            this.mniEditDuplicate.Size = new System.Drawing.Size(180, 22);
-            this.mniEditDuplicate.Text = "&Duplicate";
-            this.mniEditDuplicate.Click += new System.EventHandler(this.mniEditDuplicate_Click);
-            // 
-            // mniEditDelete
-            // 
-            this.mniEditDelete.Name = "mniEditDelete";
-            this.mniEditDelete.Size = new System.Drawing.Size(180, 22);
-            this.mniEditDelete.Text = "D&elete";
-            // 
-            // mniEditCopy
-            // 
-            this.mniEditCopy.Name = "mniEditCopy";
-            this.mniEditCopy.Size = new System.Drawing.Size(180, 22);
-            this.mniEditCopy.Text = "&Copy";
-            // 
-            // mniEditPaste
-            // 
-            this.mniEditPaste.Name = "mniEditPaste";
-            this.mniEditPaste.Size = new System.Drawing.Size(180, 22);
-            this.mniEditPaste.Text = "&Paste";
-            // 
-            // mniToolsOptions
-            // 
-            this.mniToolsOptions.Name = "mniToolsOptions";
-            this.mniToolsOptions.Size = new System.Drawing.Size(180, 22);
-            this.mniToolsOptions.Text = "&Options";
             // 
             // saveFileDialog
             // 
@@ -228,6 +257,11 @@
             this.saveFileDialog.DefaultExt = "Settings.csv";
             this.saveFileDialog.Filter = "Cutting Plan Maker files|*.Settings.csv";
             this.saveFileDialog.Title = "Save File";
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.DefaultExt = "Settings.csv";
+            this.openFileDialog.Filter = "Cutting Plan Maker files|*.Settings.csv";
             // 
             // frmMain
             // 
@@ -238,6 +272,7 @@
             this.MainMenuStrip = this.mnuMain;
             this.Name = "frmMain";
             this.Text = "Cutting Plan Maker";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.mnuMain.ResumeLayout(false);
             this.mnuMain.PerformLayout();
@@ -271,6 +306,10 @@
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAbout;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.ToolStripMenuItem mniReportPartsList;
+        private System.Windows.Forms.ToolStripMenuItem mniReportStockList;
+        private System.Windows.Forms.ToolStripMenuItem mniReportLayout;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
     }
 }
 

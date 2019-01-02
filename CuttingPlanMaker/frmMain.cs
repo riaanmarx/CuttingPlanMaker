@@ -16,9 +16,50 @@ namespace CuttingPlanMaker
     /// </summary>
     public partial class frmMain : Form
     {
-        #region // Fields ...
-        bool isFileSaved = true;            // flag to keep track if the current file is saved
-        string fileName = "";               // the name of the current file
+        #region // Fields & Properties ...
+
+        // flag to keep track if the current file is saved
+        bool IsFileSaved
+        {
+            get { return _isFileSaved; }
+            set
+            {
+                _isFileSaved = value;
+                this.Text = $"Cutting Plan Maker {(_isFileSaved ? "" : "*")}{(FileName == "" ? "" : $"({FileName})")}";
+            }
+        }
+        bool _isFileSaved = true;
+
+        // the name of the current file
+        string FileName
+        {
+            get { return Path.GetFileNameWithoutExtension(FilePath); }
+        }
+
+        // the full path to the current file
+        string FilePath
+        {
+            get
+            {
+                return _filePath;
+            }
+            set
+            {
+                if (value == "")
+                    _filePath = "";
+                else
+                    _filePath = Path.Combine(Path.GetDirectoryName(value),Path.GetFileName(value).Split('.').First());
+
+                this.Text = $"Cutting Plan Maker {(_isFileSaved ? "" : "*")}{(FileName==""?"":$"({FileName})")}";
+            }
+        }
+        private string _filePath = "";
+
+        // Data for the loaded file
+        BindingList<Settings> Settings { get; set; }
+        BindingList<Material> Materials { get; set; }
+        BindingList<StockItem> Stock { get; set; }
+        BindingList<Part> Parts { get; set; }
 
         #endregion
 
@@ -31,13 +72,30 @@ namespace CuttingPlanMaker
         #endregion
 
         #region // internal helper functions ...
+
         /// <summary>
         /// Save the current data to the file set with the specified name
         /// </summary>
         /// <param name="path"></param>
-        private void SaveFile(string path)
+        private void SaveFile()
         {
+            // write the file data to the csv files
 
+            // update the saved flag
+            IsFileSaved = true;
+        }
+
+        private void SaveFileAs()
+        {
+            // ask the user where to save the file. If he picked a location and name
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // store the file details
+                FilePath = saveFileDialog.FileName;
+
+                // save the file data
+                SaveFile();
+            }
         }
 
         /// <summary>
@@ -46,6 +104,12 @@ namespace CuttingPlanMaker
         /// <param name="path"></param>
         private void LoadFile(string path)
         {
+            // update the properties to keep track of the file
+            FilePath = path;
+            IsFileSaved = true;
+
+            // Load the file into data structures
+            Settings = CSVFile.Read<Settings>($"{FilePath}.Settings.CSV");
 
         }
 
@@ -53,60 +117,57 @@ namespace CuttingPlanMaker
         {
             // start from scratch
             LoadFile("Default");
-            fileName = "";
-            isFileSaved = false;
+            FilePath = "";
         }
 
         private bool CloseFile()
         {
             // if the current file is not saved
-            if (!isFileSaved)
+            if (!IsFileSaved)
             {
                 // prompt the user to save/discard/cancel
-                DialogResult response = MessageBox.Show($"File {fileName} is not saved. Save?", "Confirm", MessageBoxButtons.YesNoCancel);
+                DialogResult response = MessageBox.Show($"File {FileName} is not saved. Save?", "Confirm", MessageBoxButtons.YesNoCancel);
 
-                // if user chose cancel, exit function
+                // if user chose cancel, return cancel/failure
                 if (response == DialogResult.Cancel) return false;
 
                 // if user chose to save
                 if (response == DialogResult.Yes)
                 {
                     // if the file has never been saved
-                    if (fileName == "")
+                    if (FileName == "")
                     {
                         // display the fileSave dialog. if the user clicks save,
                         if (saveFileDialog.ShowDialog() == DialogResult.OK)
                         {
                             // use the new selected name
-                            fileName = saveFileDialog.FileName;
-                            fileName = fileName.Replace(".Settings.csv", "");
+                            FilePath = saveFileDialog.FileName;
 
                             // save the file
-                            SaveFile(fileName);
+                            SaveFile();
 
-                            // exit the application
+                            // return success
                             return true;
                         }
+                        // return cancel/failure
                         else return false;
                     }
                     else
-                        SaveFile(fileName);
-                    // exit the application
+                        SaveFile();
+                    // return success
                     return true;
                 }
                 else
-                    // exit the application
+                    // return success
                     return true;
             }
             else
-                // exit the application
+                // return success
                 return true;
         }
 
-
-
         #endregion
-        
+
         #region // Event handlers ...
 
         private void mniFileExit_Click(object sender, EventArgs e)
@@ -116,11 +177,10 @@ namespace CuttingPlanMaker
                 // exit the application
                 Application.Exit();
         }
-        
 
         private void mniEditDuplicate_Click(object sender, EventArgs e)
         {
-            isFileSaved = false;
+            IsFileSaved = false;
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -135,7 +195,34 @@ namespace CuttingPlanMaker
             if (CloseFile())
                 // load the default file as a new file
                 LoadDefault();
+        }
 
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // if the user just closes the applciation, check if the file is saved
+            e.Cancel = !CloseFile();
+        }
+
+        private void mniFileOpen_Click(object sender, EventArgs e)
+        {
+            if (CloseFile())
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    LoadFile(openFileDialog.FileName);
+        }
+
+        private void mniFileSave_Click(object sender, EventArgs e)
+        {
+            if (FilePath == "")
+                SaveFileAs();
+            else
+                SaveFile();
+        }
+
+        
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileAs();
         }
         #endregion
     }
