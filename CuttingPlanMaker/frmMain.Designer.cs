@@ -138,7 +138,7 @@
             // 
             this.mniFileNew.Name = "mniFileNew";
             this.mniFileNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.mniFileNew.Size = new System.Drawing.Size(148, 22);
+            this.mniFileNew.Size = new System.Drawing.Size(180, 22);
             this.mniFileNew.Text = "&New";
             this.mniFileNew.Click += new System.EventHandler(this.mniFileNew_Click);
             // 
@@ -146,7 +146,7 @@
             // 
             this.mniFileOpen.Name = "mniFileOpen";
             this.mniFileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.mniFileOpen.Size = new System.Drawing.Size(148, 22);
+            this.mniFileOpen.Size = new System.Drawing.Size(180, 22);
             this.mniFileOpen.Text = "&Open";
             this.mniFileOpen.Click += new System.EventHandler(this.mniFileOpen_Click);
             // 
@@ -154,7 +154,7 @@
             // 
             this.mniFileRevert.Name = "mniFileRevert";
             this.mniFileRevert.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.mniFileRevert.Size = new System.Drawing.Size(148, 22);
+            this.mniFileRevert.Size = new System.Drawing.Size(180, 22);
             this.mniFileRevert.Text = "&Revert";
             this.mniFileRevert.Click += new System.EventHandler(this.mniFileRevert_Click);
             // 
@@ -162,21 +162,21 @@
             // 
             this.mniFileSave.Name = "mniFileSave";
             this.mniFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.mniFileSave.Size = new System.Drawing.Size(148, 22);
+            this.mniFileSave.Size = new System.Drawing.Size(180, 22);
             this.mniFileSave.Text = "&Save";
             this.mniFileSave.Click += new System.EventHandler(this.mniFileSave_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // mniFileImport
             // 
@@ -184,7 +184,7 @@
             this.mniFileImportSketchupCSV});
             this.mniFileImport.Enabled = false;
             this.mniFileImport.Name = "mniFileImport";
-            this.mniFileImport.Size = new System.Drawing.Size(148, 22);
+            this.mniFileImport.Size = new System.Drawing.Size(180, 22);
             this.mniFileImport.Text = "&Import";
             // 
             // mniFileImportSketchupCSV
@@ -197,13 +197,13 @@
             // 
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(145, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // mniFileExit
             // 
@@ -240,19 +240,21 @@
             // mniReportPartsList
             // 
             this.mniReportPartsList.Name = "mniReportPartsList";
-            this.mniReportPartsList.Size = new System.Drawing.Size(121, 22);
+            this.mniReportPartsList.Size = new System.Drawing.Size(180, 22);
             this.mniReportPartsList.Text = "Parts list";
+            this.mniReportPartsList.Click += new System.EventHandler(this.mniReportPartsList_Click);
             // 
             // mniReportStockList
             // 
             this.mniReportStockList.Name = "mniReportStockList";
-            this.mniReportStockList.Size = new System.Drawing.Size(121, 22);
+            this.mniReportStockList.Size = new System.Drawing.Size(180, 22);
             this.mniReportStockList.Text = "Stock list";
+            this.mniReportStockList.Click += new System.EventHandler(this.mniReportStockList_Click);
             // 
             // mniReportLayout
             // 
             this.mniReportLayout.Name = "mniReportLayout";
-            this.mniReportLayout.Size = new System.Drawing.Size(121, 22);
+            this.mniReportLayout.Size = new System.Drawing.Size(180, 22);
             this.mniReportLayout.Text = "Layout";
             // 
             // mniHelp

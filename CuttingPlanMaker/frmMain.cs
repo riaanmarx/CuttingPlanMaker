@@ -1,7 +1,10 @@
-﻿using System;
+﻿using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -352,6 +355,11 @@ namespace CuttingPlanMaker
         {
             // load the default file as the default
             LoadDefault();
+
+            // testing the report ...
+            StockReport report = new StockReport();
+            report.Generate(Stock);
+            Application.Exit();
         }
 
         private void mniFileNew_Click(object sender, EventArgs e)
@@ -602,7 +610,15 @@ namespace CuttingPlanMaker
             if (e.Exception.Message == "Input string was not in a correct format.")
                 MessageBox.Show(e.Exception.Message);
         }
-        
+
         #endregion
+
+        private void mniReportPartsList_Click(object sender, EventArgs e)
+        {}
+
+        private void mniReportStockList_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
