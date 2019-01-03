@@ -234,7 +234,7 @@ namespace CuttingPlanMaker
         {
             MaterialsGridView.DataSource = Materials;
         }
-        
+
         /// <summary>
         /// Load a file into the application
         /// </summary>
@@ -535,6 +535,7 @@ namespace CuttingPlanMaker
                     Cost = oldItem.Cost
                 };
                 Materials.Add(newItem);
+                IsFileSaved = false;
             }
         }
 
@@ -575,6 +576,33 @@ namespace CuttingPlanMaker
             SortParts(PartGridSort);
         }
 
+        private void mniRemoveRows_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
+            {
+                Materials.Remove((Material)item.DataBoundItem);
+                IsFileSaved = false;
+            }
+        }
+
+        private void MaterialsGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (e.Exception.Message == "Input string was not in a correct format.")
+                MessageBox.Show(e.Exception.Message);
+        }
+
+        private void StockGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (e.Exception.Message == "Input string was not in a correct format.")
+                MessageBox.Show(e.Exception.Message);
+        }
+
+        private void PartsGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (e.Exception.Message == "Input string was not in a correct format.")
+                MessageBox.Show(e.Exception.Message);
+        }
+        
         #endregion
     }
 }

@@ -117,7 +117,7 @@
             // 
             this.tbPartPaddingWidth.Location = new System.Drawing.Point(123, 65);
             this.tbPartPaddingWidth.Name = "tbPartPaddingWidth";
-            this.tbPartPaddingWidth.Size = new System.Drawing.Size(60, 20);
+            this.tbPartPaddingWidth.Size = new System.Drawing.Size(39, 20);
             this.tbPartPaddingWidth.TabIndex = 9;
             this.tbPartPaddingWidth.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -143,7 +143,7 @@
             // 
             this.tbPartPaddingLength.Location = new System.Drawing.Point(123, 37);
             this.tbPartPaddingLength.Name = "tbPartPaddingLength";
-            this.tbPartPaddingLength.Size = new System.Drawing.Size(60, 20);
+            this.tbPartPaddingLength.Size = new System.Drawing.Size(39, 20);
             this.tbPartPaddingLength.TabIndex = 8;
             this.tbPartPaddingLength.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
