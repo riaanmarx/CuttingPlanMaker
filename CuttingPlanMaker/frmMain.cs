@@ -48,9 +48,9 @@ namespace CuttingPlanMaker
                 if (value == "")
                     _filePath = "";
                 else
-                    _filePath = Path.Combine(Path.GetDirectoryName(value),Path.GetFileName(value).Split('.').First());
+                    _filePath = Path.Combine(Path.GetDirectoryName(value), Path.GetFileName(value).Split('.').First());
 
-                this.Text = $"Cutting Plan Maker {(_isFileSaved ? "" : "*")}{(FileName==""?"":$"({FileName})")}";
+                this.Text = $"Cutting Plan Maker {(_isFileSaved ? "" : "*")}{(FileName == "" ? "" : $"({FileName})")}";
             }
         }
         private string _filePath = "";
@@ -81,6 +81,10 @@ namespace CuttingPlanMaker
         private void SaveFile()
         {
             // write the file data to the csv files
+            CSVFile.Write(Materials, $"{FilePath}.Materials.csv");
+            CSVFile.Write(Stock, $"{FilePath}.Stock.csv");
+            CSVFile.Write(Parts, $"{FilePath}.Parts.csv");
+            CSVFile.Write(Settings, $"{FilePath}.Settings.csv");
 
             // update the saved flag
             IsFileSaved = true;
@@ -104,6 +108,9 @@ namespace CuttingPlanMaker
             }
         }
 
+
+        private object oldCellValue;
+
         /// <summary>
         /// Load a file into the application
         /// </summary>
@@ -112,7 +119,6 @@ namespace CuttingPlanMaker
         {
             // update the properties to keep track of the file
             FilePath = path;
-            IsFileSaved = true;
 
             // Load the file into data structures
             Settings = CSVFile.Read<Settings>($"{FilePath}.Settings.CSV");
@@ -124,7 +130,7 @@ namespace CuttingPlanMaker
             MaterialsGridView.DataSource = Materials;
 
             // bind the stock grid
-            
+
             StockMaterialColumn.DataSource = Materials;
             StockMaterialColumn.DisplayMember = "Name";
             StockMaterialColumn.ValueMember = "Name";
@@ -136,6 +142,7 @@ namespace CuttingPlanMaker
             PartMaterialColumn.ValueMember = "Name";
             PartsDataGridView.DataSource = Parts;
 
+            IsFileSaved = true;
         }
 
         private void LoadDefault()
@@ -243,13 +250,10 @@ namespace CuttingPlanMaker
                 SaveFile();
         }
 
-        
-
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileAs();
         }
-        #endregion
 
         private void mniToolsOptions_Click(object sender, EventArgs e)
         {
@@ -320,6 +324,68 @@ namespace CuttingPlanMaker
                 ctrSplitContainer.Panel1Collapsed = true;
                 ctrSplitContainer.BringToFront();
             }
+        }
+
+        #endregion
+
+        private bool HasUserRemovedRow()
+        {
+            return !(System.Environment.StackTrace.Contains(".OnBindingContextChanged(") || System.Environment.StackTrace.Contains(".set_DataSource("));
+        }
+
+        private bool HasUserChangedCell()
+        {
+            return System.Environment.StackTrace.Contains(".CommitEdit(");
+        }
+
+        private void MaterialsGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            // If the user removed the row - set the file saved flag
+            if (HasUserRemovedRow())
+                IsFileSaved = false;
+        }
+
+        private void StockGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            // the user changed the file data - set the file saved flag
+            if (HasUserRemovedRow())
+                IsFileSaved = false;
+        }
+
+        private void PartsDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            // the user changed the file data - set the file saved flag
+            if (HasUserRemovedRow())
+                IsFileSaved = false;
+        }
+
+        private void MaterialsGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (HasUserChangedCell())
+                IsFileSaved = false;
+        }
+
+        private void mniFileRevert_Click(object sender, EventArgs e)
+        {
+            if(MessageBox.Show("Are you sure you want to discard all changes?","Confirm",MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                if (FilePath == "")
+                    LoadDefault();
+                else
+                    LoadFile(FilePath);
+            }
+        }
+
+        private void StockGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (HasUserChangedCell())
+                IsFileSaved = false;
+        }
+
+        private void PartsDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (HasUserChangedCell())
+                IsFileSaved = false;
         }
     }
 }
