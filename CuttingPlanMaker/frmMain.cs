@@ -326,15 +326,15 @@ namespace CuttingPlanMaker
             }
         }
 
-        #endregion
-
         private bool HasUserRemovedRow()
         {
+            // check if the grid's row removed event was fired due to internal processes or the user removing a row
             return !(System.Environment.StackTrace.Contains(".OnBindingContextChanged(") || System.Environment.StackTrace.Contains(".set_DataSource("));
         }
 
         private bool HasUserChangedCell()
         {
+            // check if the cell was changed due to application processes or the user actually changed the cell value
             return System.Environment.StackTrace.Contains(".CommitEdit(");
         }
 
@@ -387,5 +387,6 @@ namespace CuttingPlanMaker
             if (HasUserChangedCell())
                 IsFileSaved = false;
         }
+        #endregion
     }
 }
