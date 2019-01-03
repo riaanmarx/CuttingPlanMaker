@@ -73,6 +73,122 @@ namespace CuttingPlanMaker
         #endregion
 
         #region // Internal helper functions ...
+        private void SortParts(string partGridSort)
+        {
+            switch (partGridSort)
+            {
+                case "Name ASC":
+                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.Name).ToList());
+                    break;
+                case "Name DESC":
+                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Name).ToList());
+                    break;
+                case "Length ASC":
+                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.Length).ToList());
+                    break;
+                case "Length DESC":
+                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Length).ToList());
+                    break;
+                case "Width ASC":
+                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.Width).ToList());
+                    break;
+                case "Width DESC":
+                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Width).ToList());
+                    break;
+                case "Material ASC":
+                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.Material).ToList());
+                    break;
+                case "Thickness DESC":
+                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Material).ToList());
+                    break;
+
+                default:
+                    break;
+            }
+
+            // bind to the new sorted source
+            BindPartsGrid();
+        }
+
+        private void SortStock(string sortOption)
+        {
+            switch (StockGridSort)
+            {
+                case "Name ASC":
+                    Stock = new BindingList<StockItem>(Stock.OrderBy(t => t.Name).ToList());
+                    break;
+                case "Name DESC":
+                    Stock = new BindingList<StockItem>(Stock.OrderByDescending(t => t.Name).ToList());
+                    break;
+                case "Length ASC":
+                    Stock = new BindingList<StockItem>(Stock.OrderBy(t => t.Length).ToList());
+                    break;
+                case "Length DESC":
+                    Stock = new BindingList<StockItem>(Stock.OrderByDescending(t => t.Length).ToList());
+                    break;
+                case "Width ASC":
+                    Stock = new BindingList<StockItem>(Stock.OrderBy(t => t.Width).ToList());
+                    break;
+                case "Width DESC":
+                    Stock = new BindingList<StockItem>(Stock.OrderByDescending(t => t.Width).ToList());
+                    break;
+                case "Material ASC":
+                    Stock = new BindingList<StockItem>(Stock.OrderBy(t => t.Material).ToList());
+                    break;
+                case "Thickness DESC":
+                    Stock = new BindingList<StockItem>(Stock.OrderByDescending(t => t.Material).ToList());
+                    break;
+
+                default:
+                    break;
+            }
+
+            // bind to the new sorted source
+            BindStockGrid();
+        }
+
+        private void SortMaterials(string sortoption)
+        {
+            // sort the grid according to choice
+            switch (MaterialGridSort)
+            {
+                case "Name ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Name).ToList());
+                    break;
+                case "Name DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Name).ToList());
+                    break;
+                case "Length ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Length).ToList());
+                    break;
+                case "Length DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Length).ToList());
+                    break;
+                case "Width ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Width).ToList());
+                    break;
+                case "Width DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Width).ToList());
+                    break;
+                case "Thickness ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Thickness).ToList());
+                    break;
+                case "Thickness DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Thickness).ToList());
+                    break;
+                case "Cost ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Cost).ToList());
+                    break;
+                case "Cost DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Cost).ToList());
+                    break;
+                default:
+                    break;
+            }
+
+            // bind to the new sorted source
+            BindMaterialsGrid();
+        }
 
         /// <summary>
         /// Save the current data to the file set with the specified name
@@ -112,9 +228,7 @@ namespace CuttingPlanMaker
         {
             MaterialsGridView.DataSource = Materials;
         }
-
-        private object oldCellValue;
-
+        
         /// <summary>
         /// Load a file into the application
         /// </summary>
@@ -147,7 +261,7 @@ namespace CuttingPlanMaker
             PartMaterialColumn.DataSource = Materials;
             PartMaterialColumn.DisplayMember = "Name";
             PartMaterialColumn.ValueMember = "Name";
-            PartsDataGridView.DataSource = Parts;
+            PartsGridView.DataSource = Parts;
         }
 
         private void BindStockGrid()
@@ -400,7 +514,6 @@ namespace CuttingPlanMaker
             if (HasUserChangedCell())
                 IsFileSaved = false;
         }
-        #endregion
 
         private void mniDuplicateRows_Click(object sender, EventArgs e)
         {
@@ -420,7 +533,6 @@ namespace CuttingPlanMaker
         }
 
         string MaterialGridSort = "";
-
         private void MaterialsGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // decide how/with what to sort the grid
@@ -430,43 +542,38 @@ namespace CuttingPlanMaker
             else
                 MaterialGridSort = $"{columnname} ASC";
 
-            // sort the grid according to choice
-            switch (MaterialGridSort)
-            {
-                case "Name ASC":
-                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Name).ToList());
-                    break;
-                case "Name DESC":
-                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Name).ToList());
-                    break;
-                case "Length ASC":
-                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Length).ToList());
-                    break;
-                case "Length DESC":
-                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Length).ToList());
-                    break;
-                case "Width ASC":
-                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Width).ToList());
-                    break;
-                case "Width DESC":
-                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Width).ToList());
-                    break;
-                case "Thickness ASC":
-                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Thickness).ToList());
-                    break;
-                case "Thickness DESC":
-                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Thickness).ToList());
-                    break;
-                case "Cost ASC":
-                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Cost).ToList());
-                    break;
-                case "Cost DESC":
-                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Cost).ToList());
-                    break;
-                default:
-                    break;
-            }
-            BindMaterialsGrid();
+            SortMaterials(MaterialGridSort);
         }
+
+        string StockGridSort = "";
+        private void StockGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // decide how/with what to sort the grid
+            string columnname = StockGridView.Columns[e.ColumnIndex].DataPropertyName;
+            if (StockGridSort.StartsWith(columnname) && StockGridSort.EndsWith("ASC"))
+                StockGridSort = $"{columnname} DESC";
+            else
+                StockGridSort = $"{columnname} ASC";
+
+            // sort the grid according to choice
+            SortStock(StockGridSort);
+        }
+
+        #endregion
+
+        string PartGridSort = "";
+        private void PartsDataGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string columnname = PartsGridView.Columns[e.ColumnIndex].DataPropertyName;
+            if (PartGridSort.StartsWith(columnname) && PartGridSort.EndsWith("ASC"))
+                PartGridSort = $"{columnname} DESC";
+            else
+                PartGridSort = $"{columnname} ASC";
+
+            // sort the grid according to choice
+            SortParts(PartGridSort);
+        }
+
+        
     }
 }
