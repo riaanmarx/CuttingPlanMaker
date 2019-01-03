@@ -61,6 +61,12 @@ namespace CuttingPlanMaker
         BindingList<StockItem> Stock { get; set; }
         BindingList<Part> Parts { get; set; }
 
+        // grid sort options
+        string PartGridSort = "";
+        string StockGridSort = "";
+        string MaterialGridSort = "";
+
+
         #endregion
 
         #region // Constructor ...
@@ -532,7 +538,6 @@ namespace CuttingPlanMaker
             }
         }
 
-        string MaterialGridSort = "";
         private void MaterialsGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // decide how/with what to sort the grid
@@ -545,7 +550,6 @@ namespace CuttingPlanMaker
             SortMaterials(MaterialGridSort);
         }
 
-        string StockGridSort = "";
         private void StockGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // decide how/with what to sort the grid
@@ -559,9 +563,6 @@ namespace CuttingPlanMaker
             SortStock(StockGridSort);
         }
 
-        #endregion
-
-        string PartGridSort = "";
         private void PartsDataGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             string columnname = PartsGridView.Columns[e.ColumnIndex].DataPropertyName;
@@ -574,6 +575,6 @@ namespace CuttingPlanMaker
             SortParts(PartGridSort);
         }
 
-        
+        #endregion
     }
 }
