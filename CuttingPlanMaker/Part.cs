@@ -16,9 +16,9 @@ namespace CuttingPlanMaker
         public string Material { get; set; }
 
         [CsvColumn(Name = "Length", FieldIndex = 3)]
-        public string Length { get; set; }
+        public float Length { get; set; }
 
         [CsvColumn(Name = "Width", FieldIndex = 4)]
-        public string Width { get; set; }
+        public float Width { get; set; }
     }
 }

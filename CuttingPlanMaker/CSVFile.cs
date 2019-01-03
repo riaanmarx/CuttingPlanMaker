@@ -47,10 +47,11 @@ namespace CuttingPlanMaker
                 SeparatorChar = ',',
                 FirstLineHasColumnNames = true,
                 EnforceCsvColumnAttribute = true,
-                UseFieldIndexForReadingData = true
+                UseFieldIndexForReadingData = true,
+                
             };
             CsvContext cc = new CsvContext();
-
+            
             cc.Write<T>(list, path, outputFileDescription);
         }
     }

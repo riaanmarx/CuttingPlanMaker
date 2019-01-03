@@ -108,6 +108,10 @@ namespace CuttingPlanMaker
             }
         }
 
+        private void BindMaterialsGrid()
+        {
+            MaterialsGridView.DataSource = Materials;
+        }
 
         private object oldCellValue;
 
@@ -127,22 +131,31 @@ namespace CuttingPlanMaker
             Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
 
             // bind the materials grid
-            MaterialsGridView.DataSource = Materials;
+            BindMaterialsGrid();
 
             // bind the stock grid
-
-            StockMaterialColumn.DataSource = Materials;
-            StockMaterialColumn.DisplayMember = "Name";
-            StockMaterialColumn.ValueMember = "Name";
-            StockGridView.DataSource = Stock;
+            BindStockGrid();
 
             // bind the Part
+            BindPartsGrid();
+
+            IsFileSaved = true;
+        }
+
+        private void BindPartsGrid()
+        {
             PartMaterialColumn.DataSource = Materials;
             PartMaterialColumn.DisplayMember = "Name";
             PartMaterialColumn.ValueMember = "Name";
             PartsDataGridView.DataSource = Parts;
+        }
 
-            IsFileSaved = true;
+        private void BindStockGrid()
+        {
+            StockMaterialColumn.DataSource = Materials;
+            StockMaterialColumn.DisplayMember = "Name";
+            StockMaterialColumn.ValueMember = "Name";
+            StockGridView.DataSource = Stock;
         }
 
         private void LoadDefault()
@@ -367,7 +380,7 @@ namespace CuttingPlanMaker
 
         private void mniFileRevert_Click(object sender, EventArgs e)
         {
-            if(MessageBox.Show("Are you sure you want to discard all changes?","Confirm",MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Are you sure you want to discard all changes?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 if (FilePath == "")
                     LoadDefault();
@@ -388,5 +401,72 @@ namespace CuttingPlanMaker
                 IsFileSaved = false;
         }
         #endregion
+
+        private void mniDuplicateRows_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
+            {
+                Material oldItem = (Material)item.DataBoundItem;
+                Material newItem = new Material()
+                {
+                    Name = oldItem.Name,
+                    Length = oldItem.Length,
+                    Width = oldItem.Width,
+                    Thickness = oldItem.Thickness,
+                    Cost = oldItem.Cost
+                };
+                Materials.Add(newItem);
+            }
+        }
+
+        string MaterialGridSort = "";
+
+        private void MaterialsGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // decide how/with what to sort the grid
+            string columnname = MaterialsGridView.Columns[e.ColumnIndex].DataPropertyName;
+            if (MaterialGridSort.StartsWith(columnname) && MaterialGridSort.EndsWith("ASC"))
+                MaterialGridSort = $"{columnname} DESC";
+            else
+                MaterialGridSort = $"{columnname} ASC";
+
+            // sort the grid according to choice
+            switch (MaterialGridSort)
+            {
+                case "Name ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Name).ToList());
+                    break;
+                case "Name DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Name).ToList());
+                    break;
+                case "Length ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Length).ToList());
+                    break;
+                case "Length DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Length).ToList());
+                    break;
+                case "Width ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Width).ToList());
+                    break;
+                case "Width DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Width).ToList());
+                    break;
+                case "Thickness ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Thickness).ToList());
+                    break;
+                case "Thickness DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Thickness).ToList());
+                    break;
+                case "Cost ASC":
+                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Cost).ToList());
+                    break;
+                case "Cost DESC":
+                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Cost).ToList());
+                    break;
+                default:
+                    break;
+            }
+            BindMaterialsGrid();
+        }
     }
 }
