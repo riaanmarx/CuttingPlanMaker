@@ -63,6 +63,7 @@ namespace CuttingPlanMaker
                 var iMaterial = Materials.First(t => t.Name == Stock[i].Material);
 
                 iRow = table.AddRow();
+                if (i % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
                 iRow[0].AddParagraph(iStock.Name);
                 iRow[1].AddParagraph(iStock.Material);
                 iRow[2].AddParagraph(iStock.Length.ToString("0.0"));
@@ -84,28 +85,6 @@ namespace CuttingPlanMaker
             iRow[7].Borders.Top.Width = 2;
             iRow[7].AddParagraph().AddFormattedText(totCost.ToString("0.00"),TextFormat.Bold);
 
-
-
-            //// Define two columns 
-            //Column column = table.AddColumn();
-            //column = table.AddColumn();
-
-            //// Create two rows with content 
-            //Row row = table.AddRow();
-            //row.Borders.Color = Colors.Black;
-            //row.Cells[0].AddParagraph("Text row 0, column 0");
-
-            //// Nifty trick to get nested table 
-            //Table innerTableLeft = row.Cells[0].Elements.AddTable();
-            //innerTableLeft.AddColumn();
-            //Row innerRow = innerTableLeft.AddRow();
-            //innerRow.Cells[0].AddParagraph("some text in the inner table here");
-
-            //row.Cells[1].AddParagraph("Text in row 0, column 1");
-
-            //row = table.AddRow();
-            //row.Cells[0].AddParagraph("Text in row 1, column 0");
-            //row.Cells[1].AddParagraph("Text in row 1, column 1");
 
             #endregion
             return RenderPdf();

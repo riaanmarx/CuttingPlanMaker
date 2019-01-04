@@ -18,17 +18,17 @@ namespace CuttingPlanMaker
         internal Table headerTable;
 
         // constant sizes
-        internal Unit TitleBlockHeight = Unit.FromCentimeter(3.2);
+        internal Unit TitleBlockHeight = Unit.FromCentimeter(2.8);
         internal Unit FooterHeight = Unit.FromCentimeter(0.4);
         internal Unit LeftMargin = Unit.FromCentimeter(1.0);
         internal Unit RightMargin = Unit.FromCentimeter(1.0);
         internal Unit TopMargin = Unit.FromCentimeter(1.0);
         internal Unit BottomMargin = Unit.FromCentimeter(0.7);
-        internal Unit TitleRowHeight = Unit.FromCentimeter(0.8);
+        internal Unit TitleRowHeight = Unit.FromCentimeter(1);
         internal Unit TitleFontSize = Unit.FromCentimeter(0.6);
         internal Unit FooterFontSize = Unit.FromCentimeter(0.3);
-        internal Unit TitleBlockFontSize = Unit.FromCentimeter(0.4);
-        internal Unit ColWidthLabels = Unit.FromCentimeter(2.5);
+        internal Unit TitleBlockFontSize = Unit.FromCentimeter(0.3);
+        internal Unit ColWidthLabels = Unit.FromCentimeter(2.0);
 
         public ReportBase()
         {

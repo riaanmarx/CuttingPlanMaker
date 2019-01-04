@@ -621,6 +621,15 @@ namespace CuttingPlanMaker
                 .Save("StockReport.pdf");
             Process.Start("StockReport.pdf");
         }
+        
+
+        private void mniReportLayout_Click(object sender, EventArgs e)
+        {
+            new LayoutReport()
+                .Generate(Stock, Materials)
+                .Save("LayoutReport.pdf");
+            Process.Start("LayoutReport.pdf");
+        }
         #endregion
     }
 }

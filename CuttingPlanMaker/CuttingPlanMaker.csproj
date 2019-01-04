@@ -77,6 +77,7 @@
     <Compile Include="frmSettingsDialog.Designer.cs">
       <DependentUpon>frmSettingsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="LayoutReport.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="Part.cs" />
     <Compile Include="PartListReport.cs" />

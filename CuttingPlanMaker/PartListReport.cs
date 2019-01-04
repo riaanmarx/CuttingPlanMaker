@@ -63,6 +63,7 @@ namespace CuttingPlanMaker
                 var iMaterial = Materials.First(t => t.Name == Parts[i].Material);
 
                 iRow = table.AddRow();
+                if (i % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
                 iRow[0].AddParagraph(iPart.Name);
                 iRow[1].AddParagraph(iPart.Material);
                 iRow[2].AddParagraph(iPart.Length.ToString("0.0"));
