@@ -630,7 +630,7 @@ namespace CuttingPlanMaker
                 .Save("StockReport.pdf");
             Process.Start("StockReport.pdf");
         }
-        
+
 
         private void mniReportLayout_Click(object sender, EventArgs e)
         {
@@ -638,6 +638,251 @@ namespace CuttingPlanMaker
                 .Generate(Settings.First(), Materials, Stock, Parts)
                 .Save("LayoutReport.pdf");
             Process.Start("LayoutReport.pdf");
+        }
+
+        private void mniToolsPack_Click(object sender, EventArgs e)
+        {
+            Parts.ToList().ForEach(t => t.isPacked = true);
+
+            var BoardA = Stock.First(t => t.Name == "A");
+            BoardA.PackedParts = new Part[]
+            {
+                Parts.First(t => t.Name == "023"),
+                Parts.First(t => t.Name == "008"),
+                Parts.First(t => t.Name == "007"),
+                Parts.First(t => t.Name == "005"),
+                Parts.First(t => t.Name == "046"),
+                Parts.First(t => t.Name == "037"),
+                Parts.First(t => t.Name == "036"),
+                Parts.First(t => t.Name == "027"),
+                Parts.First(t => t.Name == "026"),
+                Parts.First(t => t.Name == "014"),
+            };
+            BoardA.PackedPartsCount = 10;
+            BoardA.isComplete = true;
+            BoardA.PackedPartsTotalArea = .87 * BoardA.Area;
+            BoardA.isInUse = true;
+            BoardA.PackedPartdLengths = new double[]
+            {
+                    0.0,
+                 958.2,
+                 0.0,
+                 958.2,
+                   0.0,
+                 313.2,
+                 626.4,
+                 939.6,
+                1252.8,
+                1566.0,
+            };
+            BoardA.PackedPartdWidths = new double[]
+            {
+                 0.0,
+                 0.0,
+                83.2,
+                83.2,
+                156.0,
+                156.0,
+                156.0,
+                156.0,
+                156.0,
+                156.0
+            };
+            var BoardB = Stock.First(t => t.Name == "B");
+            BoardB.PackedParts = new Part[]
+            {
+                Parts.First(t => t.Name == "002"),
+            };
+            BoardB.PackedPartsCount = 1;
+            BoardB.isComplete = true;
+            BoardB.PackedPartsTotalArea = .09 * BoardB.Area;
+            BoardB.isInUse = true;
+            BoardB.PackedPartdLengths = new double[]
+            {
+                    0.0,
+            };
+            BoardB.PackedPartdWidths = new double[]
+            {
+                 0.0,
+            };
+            var BoardC = Stock.First(t => t.Name == "C");
+            BoardC.PackedParts = new Part[]
+                 {
+                Parts.First(t => t.Name == "043"),
+                Parts.First(t => t.Name == "033"),
+                Parts.First(t => t.Name == "038"),
+                Parts.First(t => t.Name == "029"),
+                Parts.First(t => t.Name == "028"),
+                Parts.First(t => t.Name == "016"),
+                Parts.First(t => t.Name == "015"),
+                Parts.First(t => t.Name == "047"),
+                Parts.First(t => t.Name == "022"),
+                Parts.First(t => t.Name == "021"),
+                Parts.First(t => t.Name == "050"),
+                Parts.First(t => t.Name == "040"),
+                Parts.First(t => t.Name == "030"),
+                Parts.First(t => t.Name == "020"),
+                 };
+            BoardC.PackedPartsCount = 14;
+            BoardC.isComplete = true;
+            BoardC.PackedPartsTotalArea = .882 * BoardC.Area;
+            BoardC.isInUse = true;
+            BoardC.PackedPartdLengths = new double[]
+            {
+  0.0,
+    958.2, 
+            0.0, 
+            357.7,
+            715.4,
+           1073.1, 
+          1430.8, 
+          1788.5, 
+           0.0, 
+            330.7,
+          661.4, 
+         963.6, 
+          1265.8, 
+            1568.0,
+            };
+            BoardC.PackedPartdWidths = new double[]
+            {
+            0.0,
+            0.0,
+             83.2,
+             83.2,
+             83.2,
+             83.2,
+             83.2,
+             83.2,
+             122.4,
+             122.4,
+             122.4,
+             122.4,
+             122.4,
+             122.4,
+            };
+            var BoardD = Stock.First(t => t.Name == "D");
+            BoardD.PackedParts = new Part[]
+                 {
+                Parts.First(t => t.Name == "010"),
+                Parts.First(t => t.Name == "009"),
+                Parts.First(t => t.Name == "006"),
+                Parts.First(t => t.Name == "045"),
+                Parts.First(t => t.Name == "044"),
+                Parts.First(t => t.Name == "035"),
+                Parts.First(t => t.Name == "013"),
+                Parts.First(t => t.Name == "019"),
+                Parts.First(t => t.Name == "018"),
+                Parts.First(t => t.Name == "017"),
+                 };
+            BoardD.PackedPartsCount = 10;
+            BoardD.isComplete = true;
+            BoardD.PackedPartsTotalArea = .824 * BoardD.Area;
+            BoardD.isInUse = true;
+            BoardD.PackedPartdLengths = new double[]
+            {
+       0.0,
+       958.2,
+       0.0,
+       958.2,
+       1271.4,
+       1584.6,
+       0.0,
+       313.2,
+       313.2,
+       615.4,
+            };
+            BoardD.PackedPartdWidths = new double[]
+            {
+                   0.0,
+        0.0,
+        63.2,
+        63.2,
+        63.2,
+        63.2,
+        126.4,
+        126.4,
+        149.6,
+        126.4,
+            };
+            var BoardE = Stock.First(t => t.Name == "E");
+           
+            var BoardF = Stock.First(t => t.Name == "F");
+            BoardF.PackedParts = new Part[]
+    {
+                Parts.First(t => t.Name == "003"),
+                Parts.First(t => t.Name == "001"),
+                Parts.First(t => t.Name == "049"),
+                Parts.First(t => t.Name == "048"),
+                Parts.First(t => t.Name == "039"),
+                Parts.First(t => t.Name == "042"),
+                Parts.First(t => t.Name == "041"),
+                Parts.First(t => t.Name == "032"),
+                Parts.First(t => t.Name == "032"),
+    };
+            BoardF.PackedPartsCount = 9;
+            BoardF.isComplete = true;
+            BoardF.PackedPartsTotalArea = .927 * BoardF.Area;
+            BoardF.isInUse = true;
+            BoardF.PackedPartdLengths = new double[]
+            {
+       0.0,
+       0.0,
+       1724.9,
+       1724.9,
+       1724.9,
+       1724.9,
+       1724.9,
+       1724.9,
+       1724.9,
+            };
+            BoardF.PackedPartdWidths = new double[]
+            {
+                   0.0,
+        103.2,
+        0.0,
+        39.2,
+        78.4,
+        117.6,
+        140.8,
+        164.0,
+        187.2,
+            };
+            var BoardG = Stock.First(t => t.Name == "G");
+            
+            BoardG.PackedParts = new Part[]
+{
+                Parts.First(t => t.Name == "034"),
+                Parts.First(t => t.Name == "025"),
+                Parts.First(t => t.Name == "024"),
+                Parts.First(t => t.Name == "012"),
+                Parts.First(t => t.Name == "011"),
+                Parts.First(t => t.Name == "004"),
+};
+            BoardG.PackedPartsCount = 6;
+            BoardG.isComplete = true;
+            BoardG.PackedPartsTotalArea = .647 * BoardG.Area;
+            BoardG.isInUse = true;
+            BoardG.PackedPartdLengths = new double[]
+            {
+            0.0,
+            313.2,
+            626.4,
+            939.6,
+            1252.8,
+            1566.0,
+            };
+            BoardG.PackedPartdWidths = new double[]
+            {
+                   0.0,
+             0.0,
+             0.0,
+             0.0,
+             0.0,
+             0.0,
+            };
+            var BoardH = Stock.First(t => t.Name == "H");
+
         }
         #endregion
     }

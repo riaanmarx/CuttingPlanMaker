@@ -88,6 +88,7 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
+            this.mniToolsPack = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -215,7 +216,8 @@
             // mniTools
             // 
             this.mniTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniToolsOptions});
+            this.mniToolsOptions,
+            this.mniToolsPack});
             this.mniTools.Name = "mniTools";
             this.mniTools.Size = new System.Drawing.Size(47, 20);
             this.mniTools.Text = "&Tools";
@@ -223,7 +225,7 @@
             // mniToolsOptions
             // 
             this.mniToolsOptions.Name = "mniToolsOptions";
-            this.mniToolsOptions.Size = new System.Drawing.Size(116, 22);
+            this.mniToolsOptions.Size = new System.Drawing.Size(180, 22);
             this.mniToolsOptions.Text = "&Options";
             this.mniToolsOptions.Click += new System.EventHandler(this.mniToolsOptions_Click);
             // 
@@ -642,6 +644,13 @@
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
             // 
+            // mniToolsPack
+            // 
+            this.mniToolsPack.Name = "mniToolsPack";
+            this.mniToolsPack.Size = new System.Drawing.Size(180, 22);
+            this.mniToolsPack.Text = "Pack parts";
+            this.mniToolsPack.Click += new System.EventHandler(this.mniToolsPack_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -729,6 +738,7 @@
         private System.Windows.Forms.ContextMenuStrip mnuGridContextMenu;
         private System.Windows.Forms.ToolStripMenuItem mniDuplicateRows;
         private System.Windows.Forms.ToolStripMenuItem mniRemoveRows;
+        private System.Windows.Forms.ToolStripMenuItem mniToolsPack;
     }
 }
 
