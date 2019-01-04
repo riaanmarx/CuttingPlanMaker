@@ -54,8 +54,8 @@ namespace CuttingPlanMaker
             iRow.Format.Font.Bold = true;
             iRow.Shading.Color = Colors.LightGray;
             iRow[0].AddParagraph("Name"); iRow[1].AddParagraph("Material"); iRow[2].AddParagraph("Length"); iRow[3].AddParagraph("Width"); iRow[4].AddParagraph("Thick"); iRow[6].AddParagraph("Vol"); iRow[5].AddParagraph("Cost/m3"); iRow[7].AddParagraph("Cost");
-            float totVol = 0;
-            float totCost = 0;
+            double totVol = 0;
+            double totCost = 0;
 
             for (int i = 0; i < Stock.Count; i++)
             {
@@ -69,12 +69,12 @@ namespace CuttingPlanMaker
                 iRow[2].AddParagraph(iStock.Length.ToString("0.0"));
                 iRow[3].AddParagraph(iStock.Width.ToString("0.0"));
                 iRow[4].AddParagraph(iMaterial.Thickness.ToString("0.0"));
-                float vol = iStock.Length * iStock.Width * iMaterial.Thickness / 1e9f;
+                double vol = iStock.Length * iStock.Width * iMaterial.Thickness / 1e9f;
                 totVol += vol;
                 iRow[6].AddParagraph(vol.ToString("0.000"));
                 iRow[5].AddParagraph(iMaterial.Cost.ToString("0.00"));
 
-                float cost = vol * iMaterial.Cost;
+                double cost = vol * iMaterial.Cost;
                 totCost += cost;
                 iRow[7].AddParagraph(cost.ToString("0.00"));
             }

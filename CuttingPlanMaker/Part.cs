@@ -16,9 +16,34 @@ namespace CuttingPlanMaker
         public string Material { get; set; }
 
         [CsvColumn(Name = "Length", FieldIndex = 3)]
-        public float Length { get; set; }
+        public double Length { get; set; }
 
         [CsvColumn(Name = "Width", FieldIndex = 4)]
-        public float Width { get; set; }
+        public double Width { get; set; }
+
+        public double Area => Length * Width;
+
+        public bool isPacked { get; set; }
+
+        public Part()
+        {}
+
+        public Part(string name, double length, double width, double dlength = 0, double dwidth = 0)
+        {
+            Name = name;
+            Length = length;
+            Width = width;
+        }
+
+        public override string ToString()
+        {
+            return $"{Name} [{Length,7:0.0} x {Width,5:0.0}]";
+        }
+
+        public void Inflate(double deltaWidth, double deltaLength)
+        {
+            Width += 2 * deltaWidth;
+            Length += 2 * deltaLength;
+        }
     }
 }

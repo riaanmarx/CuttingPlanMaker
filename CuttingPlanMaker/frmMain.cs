@@ -235,6 +235,7 @@ namespace CuttingPlanMaker
 
         private void BindMaterialsGrid()
         {
+            MaterialsGridView.AutoGenerateColumns = false;
             MaterialsGridView.DataSource = Materials;
         }
 
@@ -267,6 +268,7 @@ namespace CuttingPlanMaker
 
         private void BindPartsGrid()
         {
+            PartsGridView.AutoGenerateColumns = false;
             PartMaterialColumn.DataSource = Materials;
             PartMaterialColumn.DisplayMember = "Name";
             PartMaterialColumn.ValueMember = "Name";
@@ -275,6 +277,7 @@ namespace CuttingPlanMaker
 
         private void BindStockGrid()
         {
+            StockGridView.AutoGenerateColumns = false;
             StockMaterialColumn.DataSource = Materials;
             StockMaterialColumn.DisplayMember = "Name";
             StockMaterialColumn.ValueMember = "Name";
@@ -332,6 +335,12 @@ namespace CuttingPlanMaker
             else
                 // return success
                 return true;
+        }
+
+
+        private void PackSolution()
+        {
+
         }
 
         #endregion
