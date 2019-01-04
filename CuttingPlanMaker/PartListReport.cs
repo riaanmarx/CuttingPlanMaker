@@ -11,7 +11,7 @@ namespace CuttingPlanMaker
 {
     class PartListReport : ReportBase
     {
-        public PdfSharp.Pdf.PdfDocument Generate(BindingList<Part> Parts, BindingList<Material> Materials)
+        public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts)
         {
             #region // populate header text ...
             document.Info.Title = "Parts List Report";

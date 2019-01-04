@@ -11,7 +11,7 @@ namespace CuttingPlanMaker
 {
     class LayoutReport:ReportBase
     {
-        public PdfSharp.Pdf.PdfDocument Generate(BindingList<StockItem> Stock, BindingList<Material> Materials)
+        public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts)
         {
             #region // populate header text ...
             document.Info.Title = "Layout Report";
@@ -22,13 +22,14 @@ namespace CuttingPlanMaker
 
             headerTable[3, 0].AddParagraph("Tel nr.:");
             headerTable[3, 1].AddParagraph("0828088900");
-            headerTable[3, 2].AddParagraph();
-            headerTable[3, 3].AddParagraph();
+            headerTable[3, 2].AddParagraph("Kerf:");
+            headerTable[3, 3].AddParagraph(Settings.BladeKerf);
 
             headerTable[4, 0].AddParagraph("Address:");
             headerTable[4, 1].AddParagraph("129 Kestrel str., The Reeds");
-            headerTable[4, 2].AddParagraph("Date:");
-            headerTable[4, 3].AddParagraph(DateTime.Now.ToString("dd MMM yyyy"));
+            headerTable[4, 2].AddParagraph("Part-padding:");
+            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth}");
+            headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
             #endregion
 
             #region // write content into document ...
@@ -39,7 +40,7 @@ namespace CuttingPlanMaker
             table.AddColumn("4cm").Format.Alignment = ParagraphAlignment.Right;
             table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
             table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
-            table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Center;
+            table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
             table.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Right;
             table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
             
@@ -49,7 +50,7 @@ namespace CuttingPlanMaker
             iRow.HeadingFormat = true;
             iRow.Format.Font.Bold = true;
             iRow.Shading.Color = Colors.Gray;
-            iRow[0].AddParagraph("Stock"); iRow[1].AddParagraph("Part"); iRow[2].AddParagraph("Length"); iRow[3].AddParagraph("Width"); iRow[4].AddParagraph("Thick"); iRow[5].AddParagraph("% / dLen"); iRow[6].AddParagraph("dWid");
+            iRow[0].AddParagraph("Stock"); iRow[1].AddParagraph("Part"); iRow[2].AddParagraph("Length"); iRow[3].AddParagraph("Width"); iRow[4].AddParagraph("Thick"); iRow[5].AddParagraph("%/dLen"); iRow[6].AddParagraph("dWid");
             for (int i = 0; i < Stock.Count; i++)
             {
                 var iStock = Stock[i];

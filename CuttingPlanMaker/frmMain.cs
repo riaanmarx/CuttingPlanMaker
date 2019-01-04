@@ -609,7 +609,7 @@ namespace CuttingPlanMaker
         private void mniReportPartsList_Click(object sender, EventArgs e)
         {
             new PartListReport()
-                .Generate(Parts, Materials)
+                .Generate(Settings.First(), Materials, Stock, Parts)
                 .Save("PartsReport.pdf");
             Process.Start("PartsReport.pdf");
         }
@@ -617,7 +617,7 @@ namespace CuttingPlanMaker
         private void mniReportStockList_Click(object sender, EventArgs e)
         {
             new StockReport()
-                .Generate(Stock, Materials)
+                .Generate(Settings.First(), Materials, Stock, Parts)
                 .Save("StockReport.pdf");
             Process.Start("StockReport.pdf");
         }
@@ -626,7 +626,7 @@ namespace CuttingPlanMaker
         private void mniReportLayout_Click(object sender, EventArgs e)
         {
             new LayoutReport()
-                .Generate(Stock, Materials)
+                .Generate(Settings.First(), Materials, Stock, Parts)
                 .Save("LayoutReport.pdf");
             Process.Start("LayoutReport.pdf");
         }
