@@ -358,7 +358,7 @@ namespace CuttingPlanMaker
 
             // testing the report ...
             StockReport report = new StockReport();
-            report.Generate(Stock);
+            report.Generate(Stock).Save("HelloWorld.pdf");
             Application.Exit();
         }
 

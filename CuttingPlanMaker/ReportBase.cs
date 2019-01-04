@@ -10,107 +10,117 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker
 {
-    class StockReport
+    class ReportBase
     {
+        // references needed by inheritants
+        internal Document document;
+        internal Section mainSection;
+        internal Table headerTable;
 
-        public PdfSharp.Pdf.PdfDocument Generate(BindingList<StockItem> Stock)
+        // constant sizes
+        internal Unit TitleBlockHeight = Unit.FromCentimeter(3.2);
+        internal Unit FooterHeight = Unit.FromCentimeter(0.4);
+        internal Unit LeftMargin = Unit.FromCentimeter(1.0);
+        internal Unit RightMargin = Unit.FromCentimeter(1.0);
+        internal Unit TopMargin = Unit.FromCentimeter(1.0);
+        internal Unit BottomMargin = Unit.FromCentimeter(0.7);
+        internal Unit TitleRowHeight = Unit.FromCentimeter(0.8);
+        internal Unit TitleFontSize = Unit.FromCentimeter(0.6);
+        internal Unit FooterFontSize = Unit.FromCentimeter(0.3);
+        internal Unit TitleBlockFontSize = Unit.FromCentimeter(0.4);
+        internal Unit ColWidthLabels = Unit.FromCentimeter(2.5);
+
+        public ReportBase()
         {
-            // Create a new MigraDoc document
-            Document document = new Document();
+            #region // Set up report document and page setup ...
+            // Create a new document
+            document = new Document();
+
+            // just in case we change something on the default page setup, lets clone it first
             document.DefaultPageSetup.Clone();
+
             // Add a section to the document
-            Section mainSection = document.AddSection();
-
-            Unit TitleBlockHeight = Unit.FromCentimeter(3);
-
-            // set up page header
-            mainSection.PageSetup.TopMargin = TitleBlockHeight + document.DefaultPageSetup.HeaderDistance;
-            mainSection.PageSetup.BottomMargin = Unit.FromCentimeter(1.7);
-            Table pageHeaderTable = mainSection.Headers.Primary.AddTable();
-            pageHeaderTable.Borders.Color = Colors.Gray;
-            pageHeaderTable.AddColumn();
-            pageHeaderTable.AddColumn();
-            pageHeaderTable.AddColumn();
-            pageHeaderTable.AddColumn();
-            pageHeaderTable.AddRow();
-            pageHeaderTable.AddRow();
-            pageHeaderTable.AddRow();
-            pageHeaderTable.AddRow();
-            pageHeaderTable.AddRow();
-            pageHeaderTable.AddRow();
-
-            pageHeaderTable.Rows[0][0].MergeRight = 3;
-            pageHeaderTable.Rows[5][0].MergeRight = 3;
-
-            //pageHeaderTable.Rows[0].Borders.Top.Color = Colors.Black;
-            //pageHeaderTable.Columns[0].Borders.Left.Color = Colors.Black;
-            //pageHeaderTable.Columns[3].Borders.Right.Color = Colors.Black;
-            //pageHeaderTable.Rows[5][0].Borders.Top.Color = Colors.Black;
-
-            pageHeaderTable.Rows[0].Height = 20;
-            pageHeaderTable.Rows.Height = (TitleBlockHeight - pageHeaderTable.Rows[0].Height) / 4;
-            pageHeaderTable.Rows[5].Height = document.DefaultPageSetup.PageHeight 
-                - mainSection.PageSetup.TopMargin
-                - mainSection.PageSetup.BottomMargin;
-
-            pageHeaderTable.Columns.Width = (document.DefaultPageSetup.PageWidth - document.DefaultPageSetup.LeftMargin - document.DefaultPageSetup.RightMargin)/4;
-
-            var titlePar = pageHeaderTable.Rows[0][0].AddParagraph();
-            titlePar.AddFormattedText("Report Title", TextFormat.Bold);
-            titlePar.Format.Alignment = ParagraphAlignment.Center;
-            titlePar.Format.Font.Size = 15;
-
-
-            // set up page footer
-            Paragraph pageFooter = mainSection.Footers.Primary.AddParagraph();
-            pageFooter.AddFormattedText("Generated using Cuttong Plan Maker", TextFormat.Italic);
-            pageFooter.Format.Font.Size = 6;
-            pageFooter.Format.Alignment = ParagraphAlignment.Center;
-
+            mainSection = document.AddSection();
             
-            
+            // get references to the section and default page setup
+            PageSetup psSection = mainSection.PageSetup;
+            PageSetup psDefault = document.DefaultPageSetup;
 
-            // Add a paragraph to the section
-            var paragraph = mainSection.AddParagraph();
+            // set up margins for content
+            psSection.PageWidth = psDefault.PageWidth;
+            psSection.PageHeight = psDefault.PageHeight;
+            psSection.HeaderDistance = TopMargin;
+            psSection.FooterDistance = BottomMargin;
+            psSection.LeftMargin = LeftMargin;
+            psSection.RightMargin = RightMargin;
+            psSection.TopMargin = TitleBlockHeight + TopMargin + Unit.FromCentimeter(0.2);
+            psSection.BottomMargin = BottomMargin + FooterHeight;
+            #endregion
 
-            // Add some text and an image to the paragraph
-            paragraph.AddFormattedText("Hello, World!", TextFormat.Italic);
-            //paragraph.AddImage("SomeImage.png");
+            #region // draw title block ...
+            // add a (4x6) table to the header for the title block
+            HeaderFooter header = mainSection.Headers.Primary;
+            headerTable = header.AddTable();
+            headerTable.Format.Font.Size = TitleBlockFontSize;
+            for (int i = 0; i < 4; i++) headerTable.AddColumn();
+            for (int i = 0; i < 6; i++) headerTable.AddRow();
+
+            // merge the columns for the top row and the row surrounding the content
+            headerTable[0,0].MergeRight = 3;
+            headerTable[5,0].MergeRight = 3;
+
+            // set cell sizes
+            headerTable.Columns.Width = ColWidthLabels;
+            headerTable.Columns[1].Width =
+            headerTable.Columns[3].Width = (psDefault.PageWidth - LeftMargin - RightMargin - 2 * ColWidthLabels) / 2;
+
+            headerTable.Columns[0].Format.Font.Bold = 
+            headerTable.Columns[2].Format.Font.Bold = true;
+
+            headerTable.Rows[0].Height = TitleRowHeight;
+            headerTable.Rows.Height = (TitleBlockHeight - TitleRowHeight) / 4;
+            headerTable.Rows[5].Height = psDefault.PageHeight
+                - psSection.TopMargin
+                - psSection.BottomMargin;
+
+            // set borders for the cells
+            //headerTable.Borders.Color = Colors.Gray;
+            headerTable[0, 0].Borders.Top.Width = 2;
+            headerTable.Columns[0].Borders.Left.Width = 2;
+            headerTable.Columns[3].Borders.Right.Width = 2;
+            headerTable[5, 0].Borders.Top.Width = 2;
+            headerTable[5, 0].Borders.Bottom.Width = 2;
+            headerTable[0, 0].Format.Alignment = ParagraphAlignment.Center;
+            headerTable[0, 0].Format.Font.Size = TitleFontSize;
+            #endregion
+
+            #region // set some default header values ...
+            headerTable[0, 0].AddParagraph().AddInfoField(MigraDoc.DocumentObjectModel.Fields.InfoFieldType.Title);
+            headerTable[1, 0].AddParagraph("Project:");
+            headerTable[1, 1].AddParagraph("Kitchen cabinets");
+            headerTable[1, 2].AddParagraph("Job ref:");
+            headerTable[1, 3].AddParagraph("201810-01"); 
+            #endregion
 
 
-
-            //// Create table 
-            //Table table = section.AddTable();
-
-            //// Define two columns 
-            //Column column = table.AddColumn();
-            //column = table.AddColumn();
-
-            //// Create two rows with content 
-            //Row row = table.AddRow();
-            //row.Borders.Color = Colors.Black;
-            //row.Cells[0].AddParagraph("Text row 0, column 0");
-
-            //// Nifty trick to get nested table 
-            //Table innerTableLeft = row.Cells[0].Elements.AddTable();
-            //innerTableLeft.AddColumn();
-            //Row innerRow = innerTableLeft.AddRow();
-            //innerRow.Cells[0].AddParagraph("some text in the inner table here");
-
-            //row.Cells[1].AddParagraph("Text in row 0, column 1");
-
-            //row = table.AddRow();
-            //row.Cells[0].AddParagraph("Text in row 1, column 0");
-            //row.Cells[1].AddParagraph("Text in row 1, column 1");
+            #region // set up footer ...
+            var FooterTable = mainSection.Footers.Primary.AddTable();
+            FooterTable.Format.Font.Size = FooterFontSize;
+            FooterTable.Format.Alignment = ParagraphAlignment.Center;
+            FooterTable.AddColumn("1cm");
+            FooterTable.AddColumn(psSection.PageWidth - Unit.FromCentimeter(6) - LeftMargin - RightMargin);
+            FooterTable.AddColumn("5cm");
+            FooterTable.AddRow();
+            FooterTable[0, 0].AddParagraph().AddPageField();
+            FooterTable[0, 1].AddParagraph().AddFormattedText("Generated using Cuttong Plan Maker", TextFormat.Italic);
+            FooterTable[0, 2].AddParagraph().AddFormattedText($"printed {DateTime.Now.ToString("HH:mm, dd MMM yyyy")}", TextFormat.Italic);
+            #endregion
 
 
-            for (int i = 0; i < 200; i++)
-            {
-                mainSection.AddParagraph($"paragraph {i}");
-            }
+        }
 
-
-
+        public PdfSharp.Pdf.PdfDocument RenderPdf()
+        {
             // Create a renderer for the MigraDoc document.
             PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer();
 
@@ -120,9 +130,11 @@ namespace CuttingPlanMaker
             // Layout and render document to PDF
             pdfRenderer.RenderDocument();
 
-
-            pdfRenderer.PdfDocument.Save("HelloWorld.pdf");
             return pdfRenderer.PdfDocument;
         }
+
     }
+
+
+    
 }
