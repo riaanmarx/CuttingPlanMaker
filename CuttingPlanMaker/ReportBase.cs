@@ -129,7 +129,7 @@ namespace CuttingPlanMaker
 
             // Layout and render document to PDF
             pdfRenderer.RenderDocument();
-
+            pdfRenderer.PdfDocument.PageLayout = PdfSharp.Pdf.PdfPageLayout.SinglePage;
             return pdfRenderer.PdfDocument;
         }
 

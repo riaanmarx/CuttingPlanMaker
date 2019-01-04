@@ -355,13 +355,6 @@ namespace CuttingPlanMaker
         {
             // load the default file as the default
             LoadDefault();
-
-            // testing the report ...
-            new StockReport()
-                .Generate(Stock,Materials)
-                .Save("StockReport.pdf");
-
-            Application.Exit();
         }
 
         private void mniFileNew_Click(object sender, EventArgs e)
@@ -613,14 +606,21 @@ namespace CuttingPlanMaker
                 MessageBox.Show(e.Exception.Message);
         }
 
-        #endregion
-
         private void mniReportPartsList_Click(object sender, EventArgs e)
-        {}
+        {
+            new PartListReport()
+                .Generate(Parts, Materials)
+                .Save("PartsReport.pdf");
+            Process.Start("PartsReport.pdf");
+        }
 
         private void mniReportStockList_Click(object sender, EventArgs e)
         {
-
+            new StockReport()
+                .Generate(Stock, Materials)
+                .Save("StockReport.pdf");
+            Process.Start("StockReport.pdf");
         }
+        #endregion
     }
 }
