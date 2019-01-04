@@ -403,7 +403,7 @@ namespace CuttingPlanMaker
         private void mniToolsOptions_Click(object sender, EventArgs e)
         {
             // show settings dialog, if close with save, save the config
-            if (new frmSettingsDialog(Settings.First()).ShowDialog() == DialogResult.OK)
+            if (new frmSettingsDialog(Settings.First()).ShowDialog() == DialogResult.OK && FilePath!="")
                 SaveConfig();
         }
 

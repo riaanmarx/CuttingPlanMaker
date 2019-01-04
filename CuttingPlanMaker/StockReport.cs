@@ -16,19 +16,19 @@ namespace CuttingPlanMaker
             #region // populate header text ...
             document.Info.Title = "Stock List Report";
             headerTable[2, 0].AddParagraph("Client:");
-            headerTable[2, 1].AddParagraph("Riaan Marx");
-            headerTable[2, 2].AddParagraph("Material:");
-            headerTable[2, 3].AddParagraph("Kiaat (AB)-25mm");
+            headerTable[2, 1].AddParagraph(Settings.ClientName);
+            //headerTable[2, 2].AddParagraph("Material:");
+            //headerTable[2, 3].AddParagraph("Kiaat (AB)-25mm");
 
             headerTable[3, 0].AddParagraph("Tel nr.:");
-            headerTable[3, 1].AddParagraph("0828088900");
+            headerTable[3, 1].AddParagraph(Settings.ClientTelNr);
             headerTable[3, 2].AddParagraph();
             headerTable[3, 3].AddParagraph();
 
             headerTable[4, 0].AddParagraph("Address:");
-            headerTable[4, 1].AddParagraph("129 Kestrel str., The Reeds");
+            headerTable[4, 1].AddParagraph(Settings.ClientAddr);
             headerTable[4, 2].AddParagraph("Date:");
-            headerTable[4, 3].AddParagraph(DateTime.Now.ToString("dd MMM yyyy"));
+            headerTable[4, 3].AddParagraph(Settings.TargetDate);
             #endregion
 
             #region // write content into document ...

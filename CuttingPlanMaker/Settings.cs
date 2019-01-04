@@ -26,5 +26,25 @@ namespace CuttingPlanMaker
 
         [CsvColumn(Name = "DrawUnusedStock", FieldIndex = 6)]
         public string DrawUnusedStock { get; set; }
+
+        [CsvColumn(Name = "ProjectName", FieldIndex = 7)]
+        public string ProjectName { get; set; }
+
+        [CsvColumn(Name = "JobID", FieldIndex = 8)]
+        public string JobID { get; set; }
+
+        [CsvColumn(Name = "ClientName", FieldIndex = 9)]
+        public string ClientName { get; set; }
+
+        [CsvColumn(Name = "ClientTel", FieldIndex =10)]
+        public string ClientTelNr { get; set; }
+
+        [CsvColumn(Name = "ClientAddr", FieldIndex = 11)]
+        public string ClientAddr { get; set; }
+
+        [CsvColumn(Name = "TargetDate", FieldIndex = 12)]
+        public string TargetDate { get; set; }
+
+
     }
 }

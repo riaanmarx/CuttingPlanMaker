@@ -28,6 +28,12 @@ namespace CuttingPlanMaker
             cbAutoRecalc.Checked = _settings.AutoRecalc == "true";
             cbDrawUnused.Checked = _settings.DrawUnusedStock == "true";
             ddlOrientation.Text = _settings.ResultOrientation;
+            tbProjectName.Text = _settings.ProjectName;
+            tbJobId.Text = _settings.JobID;
+            tbClientName.Text = _settings.ClientName;
+            tbClientNr.Text = _settings.ClientTelNr;
+            tbClientAddr.Text = _settings.ClientAddr;
+            dtpTargetDate.Value = DateTime.Parse(_settings.TargetDate ?? DateTime.Now.ToLongDateString());
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -39,6 +45,13 @@ namespace CuttingPlanMaker
             _settings.AutoRecalc = cbAutoRecalc.Checked ? "true" : "false";
             _settings.DrawUnusedStock = cbDrawUnused.Checked ? "true" : "false";
             _settings.ResultOrientation = ddlOrientation.Text;
+
+            _settings.ProjectName = tbProjectName.Text;
+            _settings.JobID = tbJobId.Text;
+            _settings.ClientName = tbClientName.Text;
+            _settings.ClientTelNr = tbClientNr.Text;
+            _settings.ClientAddr = tbClientAddr.Text;
+            _settings.TargetDate = dtpTargetDate.Value.ToLongDateString();
         }
     }
 }
