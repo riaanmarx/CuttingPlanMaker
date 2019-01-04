@@ -15,6 +15,11 @@ namespace CuttingPlanMaker
         {
             #region // populate header text ...
             document.Info.Title = "Stock List Report";
+            headerTable[1, 0].AddParagraph("Project:");
+            headerTable[1, 1].AddParagraph(Settings.ProjectName);
+            headerTable[1, 2].AddParagraph("Job ref:");
+            headerTable[1, 3].AddParagraph(Settings.JobID);
+
             headerTable[2, 0].AddParagraph("Client:");
             headerTable[2, 1].AddParagraph(Settings.ClientName);
             //headerTable[2, 2].AddParagraph("Material:");
@@ -27,8 +32,9 @@ namespace CuttingPlanMaker
 
             headerTable[4, 0].AddParagraph("Address:");
             headerTable[4, 1].AddParagraph(Settings.ClientAddr);
-            headerTable[4, 2].AddParagraph("Date:");
+            headerTable[4, 2].AddParagraph("Target Date:");
             headerTable[4, 3].AddParagraph(Settings.TargetDate);
+            headerTable.Columns[2].Width = Unit.FromCentimeter(2.5);
             #endregion
 
             #region // write content into document ...

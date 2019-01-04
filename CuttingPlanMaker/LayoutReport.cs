@@ -15,6 +15,11 @@ namespace CuttingPlanMaker
         {
             #region // populate header text ...
             document.Info.Title = "Layout Report";
+            headerTable[1, 0].AddParagraph("Project:");
+            headerTable[1, 1].AddParagraph(Settings.ProjectName);
+            headerTable[1, 2].AddParagraph("Job ref:");
+            headerTable[1, 3].AddParagraph(Settings.JobID);
+
             headerTable[2, 0].AddParagraph("Client:");
             headerTable[2, 1].AddParagraph(Settings.ClientName);
             //headerTable[2, 2].AddParagraph("Material:");

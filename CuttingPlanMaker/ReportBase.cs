@@ -96,10 +96,7 @@ namespace CuttingPlanMaker
 
             #region // set some default header values ...
             headerTable[0, 0].AddParagraph().AddInfoField(MigraDoc.DocumentObjectModel.Fields.InfoFieldType.Title);
-            headerTable[1, 0].AddParagraph("Project:");
-            headerTable[1, 1].AddParagraph("Kitchen cabinets");
-            headerTable[1, 2].AddParagraph("Job ref:");
-            headerTable[1, 3].AddParagraph("201810-01"); 
+            
             #endregion
 
 
