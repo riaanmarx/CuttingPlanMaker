@@ -357,8 +357,10 @@ namespace CuttingPlanMaker
             LoadDefault();
 
             // testing the report ...
-            StockReport report = new StockReport();
-            report.Generate(Stock).Save("HelloWorld.pdf");
+            new StockReport()
+                .Generate(Stock,Materials)
+                .Save("StockReport.pdf");
+
             Application.Exit();
         }
 
