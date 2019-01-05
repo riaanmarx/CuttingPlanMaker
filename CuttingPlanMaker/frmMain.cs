@@ -1,5 +1,4 @@
-﻿using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+﻿
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -344,6 +343,13 @@ namespace CuttingPlanMaker
         }
 
         #endregion
+
+
+
+       
+
+
+
 
         #region // Event handlers ...
 
@@ -883,6 +889,9 @@ namespace CuttingPlanMaker
             };
             var BoardH = Stock.First(t => t.Name == "H");
 
+
+
+            //Bitmap bitmap = Draw(BoardA);
         }
         #endregion
     }

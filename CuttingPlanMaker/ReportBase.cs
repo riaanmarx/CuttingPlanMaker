@@ -109,8 +109,8 @@ namespace CuttingPlanMaker
             FooterTable.AddColumn("5cm");
             FooterTable.AddRow();
             FooterTable[0, 0].AddParagraph().AddPageField();
-            FooterTable[0, 1].AddParagraph().AddFormattedText("Generated using Cuttong Plan Maker", TextFormat.Italic);
-            FooterTable[0, 2].AddParagraph().AddFormattedText($"printed {DateTime.Now.ToString("HH:mm, dd MMM yyyy")}", TextFormat.Italic);
+            FooterTable[0, 1].AddParagraph().AddFormattedText("Generated using Cutting Plan Maker", TextFormat.Italic);
+            FooterTable[0, 2].AddParagraph().AddFormattedText($"Printed {DateTime.Now.ToString("HH:mm, dd MMM yyyy")}", TextFormat.Italic);
             #endregion
 
 
