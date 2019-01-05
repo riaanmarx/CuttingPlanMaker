@@ -59,6 +59,10 @@ namespace CuttingPlanMaker
 
         // Data for the loaded file
         BindingList<Settings> Settings { get; set; }
+        Settings Setting
+        {
+            get { return Settings.FirstOrDefault(); }
+        }
         BindingList<Material> Materials { get; set; }
         BindingList<StockItem> Stock { get; set; }
         BindingList<Part> Parts { get; set; }
@@ -336,318 +340,31 @@ namespace CuttingPlanMaker
                 return true;
         }
 
-
         private void PackSolution()
         {
-
-        }
-
-        #endregion
-
-
-
-       
-
-
-
-
-        #region // Event handlers ...
-
-        private void mniFileExit_Click(object sender, EventArgs e)
-        {
-            // if the file was closed,
-            if (CloseFile())
-                // exit the application
-                Application.Exit();
-        }
-
-        private void mniEditDuplicate_Click(object sender, EventArgs e)
-        {
-            IsFileSaved = false;
-        }
-
-        private void frmMain_Load(object sender, EventArgs e)
-        {
-            // load the default file as the default
-            LoadDefault();
-        }
-
-        private void mniFileNew_Click(object sender, EventArgs e)
-        {
-            // if the current file was closed
-            if (CloseFile())
-                // load the default file as a new file
-                LoadDefault();
-        }
-
-        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // if the user just closes the applciation, check if the file is saved
-            e.Cancel = !CloseFile();
-        }
-
-        private void mniFileOpen_Click(object sender, EventArgs e)
-        {
-            if (CloseFile())
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                    LoadFile(openFileDialog.FileName);
-        }
-
-        private void mniFileSave_Click(object sender, EventArgs e)
-        {
-            if (FilePath == "")
-                SaveFileAs();
-            else
-                SaveFile();
-        }
-
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFileAs();
-        }
-
-        private void mniToolsOptions_Click(object sender, EventArgs e)
-        {
-            // show settings dialog, if close with save, save the config
-            if (new frmSettingsDialog(Settings.First()).ShowDialog() == DialogResult.OK && FilePath!="")
-                SaveConfig();
-        }
-
-        private void btnMaterialsTab_Click(object sender, EventArgs e)
-        {
-            // change button images to create appearance of tabs
-            btnStockTab.BackgroundImage = Properties.Resources.Stock_Materials;
-            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Materials;
-            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Materials;
-
-            // ensure info pane is visible
-            ctrSplitContainer.Panel1Collapsed = false;
-            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
-            ctrSplitContainer.SendToBack();
-
-            // select the materials tab
-            tcInputs.SelectedTab = tpMaterials;
-        }
-
-        private void btnStockTab_Click(object sender, EventArgs e)
-        {
-            // change button images to create appearance of tabs
-            btnStockTab.BackgroundImage = Properties.Resources.Stock_Stock;
-            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Stock;
-            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Stock;
-
-            // ensure info pane is visible
-            ctrSplitContainer.Panel1Collapsed = false;
-            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
-            ctrSplitContainer.SendToBack();
-
-            // select the materials tab
-            tcInputs.SelectedTab = tpStock;
-        }
-
-        private void btnPartsTab_Click(object sender, EventArgs e)
-        {
-            // change button images to create appearance of tabs
-            btnStockTab.BackgroundImage = Properties.Resources.Stock_Parts;
-            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Parts;
-            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Parts;
-
-            // ensure info pane is visible
-            ctrSplitContainer.Panel1Collapsed = false;
-            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
-            ctrSplitContainer.SendToBack();
-
-            // select the materials tab
-            tcInputs.SelectedTab = tpParts;
-        }
-
-        private void btnCollapseExpandTab_Click(object sender, EventArgs e)
-        {
-            if (ctrSplitContainer.Panel1Collapsed)
-            {
-                btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
-                ctrSplitContainer.Panel1Collapsed = false;
-                ctrSplitContainer.SendToBack();
-            }
-            else
-            {
-                btnCollapseExpandTab.BackgroundImage = Properties.Resources.expand;
-                ctrSplitContainer.Panel1Collapsed = true;
-                ctrSplitContainer.BringToFront();
-            }
-        }
-
-        private bool HasUserRemovedRow()
-        {
-            // check if the grid's row removed event was fired due to internal processes or the user removing a row
-            return !(System.Environment.StackTrace.Contains(".OnBindingContextChanged(") || System.Environment.StackTrace.Contains(".set_DataSource("));
-        }
-
-        private bool HasUserChangedCell()
-        {
-            // check if the cell was changed due to application processes or the user actually changed the cell value
-            return System.Environment.StackTrace.Contains(".CommitEdit(");
-        }
-
-        private void MaterialsGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-            // If the user removed the row - set the file saved flag
-            if (HasUserRemovedRow())
-                IsFileSaved = false;
-        }
-
-        private void StockGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-            // the user changed the file data - set the file saved flag
-            if (HasUserRemovedRow())
-                IsFileSaved = false;
-        }
-
-        private void PartsDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-            // the user changed the file data - set the file saved flag
-            if (HasUserRemovedRow())
-                IsFileSaved = false;
-        }
-
-        private void MaterialsGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (HasUserChangedCell())
-                IsFileSaved = false;
-        }
-
-        private void mniFileRevert_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Are you sure you want to discard all changes?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                if (FilePath == "")
-                    LoadDefault();
-                else
-                    LoadFile(FilePath);
-            }
-        }
-
-        private void StockGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (HasUserChangedCell())
-                IsFileSaved = false;
-        }
-
-        private void PartsDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (HasUserChangedCell())
-                IsFileSaved = false;
-        }
-
-        private void mniDuplicateRows_Click(object sender, EventArgs e)
-        {
-            foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
-            {
-                Material oldItem = (Material)item.DataBoundItem;
-                Material newItem = new Material()
-                {
-                    Name = oldItem.Name,
-                    Length = oldItem.Length,
-                    Width = oldItem.Width,
-                    Thickness = oldItem.Thickness,
-                    Cost = oldItem.Cost
-                };
-                Materials.Add(newItem);
-                IsFileSaved = false;
-            }
-        }
-
-        private void MaterialsGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            // decide how/with what to sort the grid
-            string columnname = MaterialsGridView.Columns[e.ColumnIndex].DataPropertyName;
-            if (MaterialGridSort.StartsWith(columnname) && MaterialGridSort.EndsWith("ASC"))
-                MaterialGridSort = $"{columnname} DESC";
-            else
-                MaterialGridSort = $"{columnname} ASC";
-
-            SortMaterials(MaterialGridSort);
-        }
-
-        private void StockGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            // decide how/with what to sort the grid
-            string columnname = StockGridView.Columns[e.ColumnIndex].DataPropertyName;
-            if (StockGridSort.StartsWith(columnname) && StockGridSort.EndsWith("ASC"))
-                StockGridSort = $"{columnname} DESC";
-            else
-                StockGridSort = $"{columnname} ASC";
-
-            // sort the grid according to choice
-            SortStock(StockGridSort);
-        }
-
-        private void PartsDataGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            string columnname = PartsGridView.Columns[e.ColumnIndex].DataPropertyName;
-            if (PartGridSort.StartsWith(columnname) && PartGridSort.EndsWith("ASC"))
-                PartGridSort = $"{columnname} DESC";
-            else
-                PartGridSort = $"{columnname} ASC";
-
-            // sort the grid according to choice
-            SortParts(PartGridSort);
-        }
-
-        private void mniRemoveRows_Click(object sender, EventArgs e)
-        {
-            foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
-            {
-                Materials.Remove((Material)item.DataBoundItem);
-                IsFileSaved = false;
-            }
-        }
-
-        private void MaterialsGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            if (e.Exception.Message == "Input string was not in a correct format.")
-                MessageBox.Show(e.Exception.Message);
-        }
-
-        private void StockGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            if (e.Exception.Message == "Input string was not in a correct format.")
-                MessageBox.Show(e.Exception.Message);
-        }
-
-        private void PartsGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            if (e.Exception.Message == "Input string was not in a correct format.")
-                MessageBox.Show(e.Exception.Message);
-        }
-
-        private void mniReportPartsList_Click(object sender, EventArgs e)
-        {
-            new PartListReport()
-                .Generate(Settings.First(), Materials, Stock, Parts)
-                .Save("PartsReport.pdf");
-            Process.Start("PartsReport.pdf");
-        }
-
-        private void mniReportStockList_Click(object sender, EventArgs e)
-        {
-            new StockReport()
-                .Generate(Settings.First(), Materials, Stock, Parts)
-                .Save("StockReport.pdf");
-            Process.Start("StockReport.pdf");
-        }
+            //clear current packing
+            Parts.ToList().ForEach(t => t.isPacked = false);
+            Stock.ToList().ForEach(t => {
+                t.AssociatedBoard = null;
+                t.dLength = 0;
+                t.dWidth = 0;
+                t.isComplete = false;
+                t.isInUse = false;
+                t.PackedPartdLengths = null;
+                t.PackedPartdWidths = null;
+                t.PackedParts = null;
+                t.PackedPartsCount = 0;
+                t.PackedPartsTotalArea = 0;
+            });
 
 
-        private void mniReportLayout_Click(object sender, EventArgs e)
-        {
-            new LayoutReport()
-                .Generate(Settings.First(), Materials, Stock, Parts)
-                .Save("LayoutReport.pdf");
-            Process.Start("LayoutReport.pdf");
-        }
-
-        private void mniToolsPack_Click(object sender, EventArgs e)
-        {
+            Packer.Pack( Parts.ToArray()
+                , Stock.ToArray()
+                , double.Parse(Setting.BladeKerf)
+                , double.Parse(Setting.PartPaddingLength)
+                , double.Parse(Setting.PartPaddingWidth));
+#if false
+            
             Parts.ToList().ForEach(t => t.isPacked = true);
 
             var BoardA = Stock.First(t => t.Name == "A");
@@ -889,10 +606,314 @@ namespace CuttingPlanMaker
             };
             var BoardH = Stock.First(t => t.Name == "H");
 
+#endif
 
-
-            //Bitmap bitmap = Draw(BoardA);
         }
+
         #endregion
+
+        #region // Event handlers ...
+
+        private void mniFileExit_Click(object sender, EventArgs e)
+        {
+            // if the file was closed,
+            if (CloseFile())
+                // exit the application
+                Application.Exit();
+        }
+
+        private void mniEditDuplicate_Click(object sender, EventArgs e)
+        {
+            IsFileSaved = false;
+        }
+
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+            // load the default file as the default
+            LoadDefault();
+        }
+
+        private void mniFileNew_Click(object sender, EventArgs e)
+        {
+            // if the current file was closed
+            if (CloseFile())
+                // load the default file as a new file
+                LoadDefault();
+        }
+
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // if the user just closes the applciation, check if the file is saved
+            e.Cancel = !CloseFile();
+        }
+
+        private void mniFileOpen_Click(object sender, EventArgs e)
+        {
+            if (CloseFile())
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    LoadFile(openFileDialog.FileName);
+        }
+
+        private void mniFileSave_Click(object sender, EventArgs e)
+        {
+            if (FilePath == "")
+                SaveFileAs();
+            else
+                SaveFile();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileAs();
+        }
+
+        private void mniToolsOptions_Click(object sender, EventArgs e)
+        {
+            // show settings dialog, if close with save, save the config
+            if (new frmSettingsDialog(Setting).ShowDialog() == DialogResult.OK && FilePath!="")
+                SaveConfig();
+        }
+
+        private void btnMaterialsTab_Click(object sender, EventArgs e)
+        {
+            // change button images to create appearance of tabs
+            btnStockTab.BackgroundImage = Properties.Resources.Stock_Materials;
+            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Materials;
+            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Materials;
+
+            // ensure info pane is visible
+            ctrSplitContainer.Panel1Collapsed = false;
+            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
+            ctrSplitContainer.SendToBack();
+
+            // select the materials tab
+            tcInputs.SelectedTab = tpMaterials;
+        }
+
+        private void btnStockTab_Click(object sender, EventArgs e)
+        {
+            // change button images to create appearance of tabs
+            btnStockTab.BackgroundImage = Properties.Resources.Stock_Stock;
+            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Stock;
+            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Stock;
+
+            // ensure info pane is visible
+            ctrSplitContainer.Panel1Collapsed = false;
+            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
+            ctrSplitContainer.SendToBack();
+
+            // select the materials tab
+            tcInputs.SelectedTab = tpStock;
+        }
+
+        private void btnPartsTab_Click(object sender, EventArgs e)
+        {
+            // change button images to create appearance of tabs
+            btnStockTab.BackgroundImage = Properties.Resources.Stock_Parts;
+            btnPartsTab.BackgroundImage = Properties.Resources.Parts_Parts;
+            btnMaterialsTab.BackgroundImage = Properties.Resources.Materials_Parts;
+
+            // ensure info pane is visible
+            ctrSplitContainer.Panel1Collapsed = false;
+            btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
+            ctrSplitContainer.SendToBack();
+
+            // select the materials tab
+            tcInputs.SelectedTab = tpParts;
+        }
+
+        private void btnCollapseExpandTab_Click(object sender, EventArgs e)
+        {
+            if (ctrSplitContainer.Panel1Collapsed)
+            {
+                btnCollapseExpandTab.BackgroundImage = Properties.Resources.collapse;
+                ctrSplitContainer.Panel1Collapsed = false;
+                ctrSplitContainer.SendToBack();
+            }
+            else
+            {
+                btnCollapseExpandTab.BackgroundImage = Properties.Resources.expand;
+                ctrSplitContainer.Panel1Collapsed = true;
+                ctrSplitContainer.BringToFront();
+            }
+        }
+
+        private bool HasUserRemovedRow()
+        {
+            // check if the grid's row removed event was fired due to internal processes or the user removing a row
+            return !(System.Environment.StackTrace.Contains(".OnBindingContextChanged(") || System.Environment.StackTrace.Contains(".set_DataSource("));
+        }
+
+        private bool HasUserChangedCell()
+        {
+            // check if the cell was changed due to application processes or the user actually changed the cell value
+            return System.Environment.StackTrace.Contains(".CommitEdit(");
+        }
+
+        private void MaterialsGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            // If the user removed the row - set the file saved flag
+            if (HasUserRemovedRow())
+                IsFileSaved = false;
+        }
+
+        private void StockGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            // the user changed the file data - set the file saved flag
+            if (HasUserRemovedRow())
+                IsFileSaved = false;
+        }
+
+        private void PartsDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            // the user changed the file data - set the file saved flag
+            if (HasUserRemovedRow())
+                IsFileSaved = false;
+        }
+
+        private void MaterialsGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (HasUserChangedCell())
+                IsFileSaved = false;
+        }
+
+        private void mniFileRevert_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to discard all changes?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                if (FilePath == "")
+                    LoadDefault();
+                else
+                    LoadFile(FilePath);
+            }
+        }
+
+        private void StockGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (HasUserChangedCell())
+                IsFileSaved = false;
+        }
+
+        private void PartsDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (HasUserChangedCell())
+                IsFileSaved = false;
+        }
+
+        private void mniDuplicateRows_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
+            {
+                Material oldItem = (Material)item.DataBoundItem;
+                Material newItem = new Material()
+                {
+                    Name = oldItem.Name,
+                    Length = oldItem.Length,
+                    Width = oldItem.Width,
+                    Thickness = oldItem.Thickness,
+                    Cost = oldItem.Cost
+                };
+                Materials.Add(newItem);
+                IsFileSaved = false;
+            }
+        }
+
+        private void MaterialsGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // decide how/with what to sort the grid
+            string columnname = MaterialsGridView.Columns[e.ColumnIndex].DataPropertyName;
+            if (MaterialGridSort.StartsWith(columnname) && MaterialGridSort.EndsWith("ASC"))
+                MaterialGridSort = $"{columnname} DESC";
+            else
+                MaterialGridSort = $"{columnname} ASC";
+
+            SortMaterials(MaterialGridSort);
+        }
+
+        private void StockGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // decide how/with what to sort the grid
+            string columnname = StockGridView.Columns[e.ColumnIndex].DataPropertyName;
+            if (StockGridSort.StartsWith(columnname) && StockGridSort.EndsWith("ASC"))
+                StockGridSort = $"{columnname} DESC";
+            else
+                StockGridSort = $"{columnname} ASC";
+
+            // sort the grid according to choice
+            SortStock(StockGridSort);
+        }
+
+        private void PartsDataGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string columnname = PartsGridView.Columns[e.ColumnIndex].DataPropertyName;
+            if (PartGridSort.StartsWith(columnname) && PartGridSort.EndsWith("ASC"))
+                PartGridSort = $"{columnname} DESC";
+            else
+                PartGridSort = $"{columnname} ASC";
+
+            // sort the grid according to choice
+            SortParts(PartGridSort);
+        }
+
+        private void mniRemoveRows_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
+            {
+                Materials.Remove((Material)item.DataBoundItem);
+                IsFileSaved = false;
+            }
+        }
+
+        private void MaterialsGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (e.Exception.Message == "Input string was not in a correct format.")
+                MessageBox.Show(e.Exception.Message);
+        }
+
+        private void StockGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (e.Exception.Message == "Input string was not in a correct format.")
+                MessageBox.Show(e.Exception.Message);
+        }
+
+        private void PartsGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (e.Exception.Message == "Input string was not in a correct format.")
+                MessageBox.Show(e.Exception.Message);
+        }
+
+        private void mniReportPartsList_Click(object sender, EventArgs e)
+        {
+            new PartListReport()
+                .Generate(Setting, Materials, Stock, Parts)
+                .Save("PartsReport.pdf");
+            Process.Start("PartsReport.pdf");
+        }
+
+        private void mniReportStockList_Click(object sender, EventArgs e)
+        {
+            new StockReport()
+                .Generate(Setting, Materials, Stock, Parts)
+                .Save("StockReport.pdf");
+            Process.Start("StockReport.pdf");
+        }
+
+
+        private void mniReportLayout_Click(object sender, EventArgs e)
+        {
+            PackSolution();
+
+            new LayoutReport()
+                .Generate(Setting, Materials, Stock, Parts)
+                .Save("LayoutReport.pdf");
+
+            Process.Start("LayoutReport.pdf");
+        }
+
+        private void mniToolsPack_Click(object sender, EventArgs e)
+        {
+            PackSolution();
+        }
+#endregion
     }
 }

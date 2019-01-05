@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="LayoutReport.cs" />
     <Compile Include="Material.cs" />
+    <Compile Include="Packer.cs" />
     <Compile Include="Part.cs" />
     <Compile Include="PartListReport.cs" />
     <Compile Include="Program.cs" />

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker
 {
-    class StockItem
+    public class StockItem
     {
         [CsvColumn(Name = "Name", FieldIndex = 1)]
         public string Name { get; set; }

@@ -71,22 +71,22 @@ namespace CuttingPlanMaker
             #region // populate header text ...
             document.Info.Title = "Layout Report";
             headerTable[1, 0].AddParagraph("Project:");
-            headerTable[1, 1].AddParagraph(Settings.ProjectName);
+            headerTable[1, 1].AddParagraph(Settings.ProjectName??"");
             headerTable[1, 2].AddParagraph("Job ref:");
-            headerTable[1, 3].AddParagraph(Settings.JobID);
+            headerTable[1, 3].AddParagraph(Settings.JobID??"");
 
             headerTable[2, 0].AddParagraph("Client:");
-            headerTable[2, 1].AddParagraph(Settings.ClientName);
+            headerTable[2, 1].AddParagraph(Settings.ClientName??"");
             //headerTable[2, 2].AddParagraph("Material:");
             //headerTable[2, 3].AddParagraph("Kiaat (AB)-25mm");
 
             headerTable[3, 0].AddParagraph("Tel nr.:");
-            headerTable[3, 1].AddParagraph(Settings.ClientTelNr);
+            headerTable[3, 1].AddParagraph(Settings.ClientTelNr??"");
             headerTable[3, 2].AddParagraph("Kerf:");
-            headerTable[3, 3].AddParagraph(Settings.BladeKerf);
+            headerTable[3, 3].AddParagraph(Settings.BladeKerf??"");
 
             headerTable[4, 0].AddParagraph("Address:");
-            headerTable[4, 1].AddParagraph(Settings.ClientAddr);
+            headerTable[4, 1].AddParagraph(Settings.ClientAddr??"");
             headerTable[4, 2].AddParagraph("Part-padding:");
             headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth}");
             headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
@@ -139,6 +139,7 @@ namespace CuttingPlanMaker
                     var iPart = iStock.PackedParts[j];
 
                     iRow = table.AddRow();
+                    iRow.Format.Font.Size = 8;
                     if (j % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
                     iRow[0].MergeRight = 1;
                     iRow[0].Format.Alignment = ParagraphAlignment.Right;
@@ -178,14 +179,14 @@ namespace CuttingPlanMaker
             table.AddColumn("1cm").Format.Alignment = ParagraphAlignment.Left;
             table.AddColumn("0.3cm").Format.Alignment = ParagraphAlignment.Right;
             table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
-            table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Left;
+            table.AddColumn("1.0cm").Format.Alignment = ParagraphAlignment.Left;
             table.AddRow()[0].MergeRight=6;
             table.AddRow();
+            table.AddRow().Shading.Color = Colors.WhiteSmoke;
             table.AddRow();
+            table.AddRow().Shading.Color = Colors.WhiteSmoke;
             table.AddRow();
-            table.AddRow();
-            table.AddRow();
-            table.AddRow();
+            table.AddRow().Shading.Color = Colors.WhiteSmoke;
 
             heading = table[0,0].AddParagraph("Solution Summary");
             heading.Format.Font.Bold = true;
@@ -215,9 +216,13 @@ namespace CuttingPlanMaker
             table[4, 2].AddParagraph(Parts.Count(t => t.isPacked).ToString());
             table[4, 5].AddParagraph(PlacedPartsArea.ToString("0.000"));
 
+            table[5, 2].Format.Font.Bold = true;
+            table[5, 3].Format.Font.Bold = true;
             table[5, 2].AddParagraph(((UsedStockArea - PlacedPartsArea) / UsedStockArea * 100).ToString("0.0"));
             table[5, 5].AddParagraph((UsedStockArea - PlacedPartsArea).ToString("0.000"));
 
+            table[6, 2].Format.Font.Bold = true;
+            table[6, 3].Format.Font.Bold = true;
             table[6, 2].AddParagraph((PlacedPartsArea / UsedStockArea * 100).ToString("0.0"));
             table[6, 5].AddParagraph(PlacedPartsArea.ToString("0.000"));
 
@@ -232,6 +237,7 @@ namespace CuttingPlanMaker
 
 
             #endregion
+
             return RenderPdf();
         }
     }

@@ -1,2 +1,2 @@
-﻿BladeKerf,PartPaddingLength,PartPaddingWidth,AutoRecalc,ResultOrientation,DrawUnusedStock
-3.2,0.5,0.5,true,Vertical,false
+﻿BladeKerf,PartPaddingLength,PartPaddingWidth,AutoRecalc,ResultOrientation,DrawUnusedStock,ProjectName,JobID,ClientName,ClientTel,ClientAddr,TargetDate
+3.2,0,0,true,Vertical,false,project name,1,Riaan Marx,0828088900,"129 Kestrel Str, The Reeds","Saturday, 05 January 2019"
