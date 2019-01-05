@@ -266,6 +266,8 @@ namespace CuttingPlanMaker
             // bind the Part
             BindPartsGrid();
 
+            PopulateMaterialTabs();
+
             IsFileSaved = true;
         }
 
@@ -344,7 +346,8 @@ namespace CuttingPlanMaker
         {
             //clear current packing
             Parts.ToList().ForEach(t => t.isPacked = false);
-            Stock.ToList().ForEach(t => {
+            Stock.ToList().ForEach(t =>
+            {
                 t.AssociatedBoard = null;
                 t.dLength = 0;
                 t.dWidth = 0;
@@ -358,7 +361,7 @@ namespace CuttingPlanMaker
             });
 
 
-            Packer.Pack( Parts.ToArray()
+            Packer.Pack(Parts.ToArray()
                 , Stock.ToArray()
                 , double.Parse(Setting.BladeKerf)
                 , double.Parse(Setting.PartPaddingLength)
@@ -614,13 +617,37 @@ namespace CuttingPlanMaker
 
         #region // Event handlers ...
 
+        private void PopulateMaterialTabs()
+        {
+            //add any new pages
+            for (int i = 0; i < Materials.Count; i++)
+            {
+                Material iMaterial = Materials[i];
+                if (!tcMaterials.TabPages.ContainsKey(iMaterial.Name))
+                    tcMaterials.TabPages.Add(iMaterial.Name, iMaterial.Name);
+            }
+
+            //remove any missing materials
+            for (int i = tcMaterials.TabPages.Count - 1; i >= 0; i--)
+            {
+                TabPage iTab = tcMaterials.TabPages[i];
+                if (Materials.FirstOrDefault(t => t.Name == iTab.Name) == null)
+                    tcMaterials.TabPages.Remove(iTab);
+            }
+        }
+
         private void onGridDataChangeByUser(object sender, DataGridViewRowsRemovedEventArgs e)
         {
+            if (sender == MaterialsGridView)
+                PopulateMaterialTabs();
             IsFileSaved = false;
             PackSolution();
         }
         private void onGridDataChangeByUser(object sender, DataGridViewCellEventArgs e)
         {
+            if (sender == MaterialsGridView)
+                PopulateMaterialTabs();
+
             IsFileSaved = false;
             PackSolution();
         }
@@ -915,7 +942,7 @@ namespace CuttingPlanMaker
 
         private void mniReportLayout_Click(object sender, EventArgs e)
         {
-            PackSolution();
+            //PackSolution();
 
             new LayoutReport()
                 .Generate(Setting, Materials, Stock, Parts)
@@ -928,6 +955,13 @@ namespace CuttingPlanMaker
         {
             PackSolution();
         }
-#endregion
+        #endregion
+
+        private void pbLayout_Paint(object sender, PaintEventArgs e)
+        {
+            // 
+            // filter stock and parts for chosen material
+            // draw the layout
+        }
     }
 }
