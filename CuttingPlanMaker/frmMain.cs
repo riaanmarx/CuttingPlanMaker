@@ -85,6 +85,111 @@ namespace CuttingPlanMaker
         #endregion
 
         #region // Internal helper functions ...
+        public static Bitmap Draw(StockItem[] boards, bool usedstockonly = true)
+        {
+            double xMargin = 50;
+            double yMargin = 50;
+            double boardSpacing = 70;
+
+            double yOffset = yMargin;
+            double imageHeight = 2 * yMargin;
+            double imageWidth = 0;
+            Font boardFont = new Font(new FontFamily("Consolas"), 15.0f);
+
+            // create list of boards to draw
+            List<StockItem> boardsToDraw = new List<StockItem>(boards);
+            if (usedstockonly)
+                boardsToDraw = boards.Where(t => t.PackedParts != null).ToList();
+
+            // calculate width & height required for the bitmap
+            foreach (var iBoard in boardsToDraw)
+            {
+                if (iBoard.Length > imageWidth) imageWidth = iBoard.Length;
+                imageHeight += iBoard.Width + boardSpacing;
+            }
+            imageWidth += 2 * xMargin;
+
+            // create bitmap
+            Bitmap bitmap = new Bitmap((int)imageWidth, (int)imageHeight);
+            Graphics g = Graphics.FromImage(bitmap);
+
+            // fill the background with black
+            g.FillRectangle(Brushes.Black, 0, 0, (int)imageWidth, (int)imageHeight);
+
+            // loop through all the boards to be drawn
+            yOffset = yMargin;
+            foreach (var iBoard in boardsToDraw)
+            {
+                // draw the board
+                g.FillRectangle(Brushes.DarkRed, (float)xMargin, (float)yOffset, (float)iBoard.Length, (float)iBoard.Width);
+                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}]";
+                SizeF textSizeBoard = g.MeasureString(boardheader, boardFont);
+                g.DrawString(boardheader, boardFont, Brushes.White, (float)(xMargin), (float)(yOffset - textSizeBoard.Height));
+
+                // loop through all the parts and draw the ones on the current board
+                //string overflowtext = "";
+                for (int i = 0; i < iBoard.PackedPartsCount; i++)
+                {
+                    Part iPlacement = iBoard.PackedParts[i];
+                    double dLength = iBoard.PackedPartdLengths[i];
+                    double dWidth = iBoard.PackedPartdWidths[i];
+
+                    // draw the part
+                    g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)iPlacement.Length, (float)iPlacement.Width);
+
+                    //    // print the part text
+                    //    string text1 = $"{iPlacement.Name} [{iPlacement.Length} x {iPlacement.Width}]";
+                    //    string text2a = $"{iPlacement.Name}";
+                    //    string text2b = $"[{iPlacement.Length} x {iPlacement.Width}]";
+                    //    g.TranslateTransform((float)(xOffset + dWidth + iPlacement.Width / 2), (float)(dLength + iPlacement.Length / 2 + yMargin));
+                    //    g.RotateTransform(-90);
+
+                    //    int sz = 16;
+                    //    do
+                    //    {
+                    //        Font partFont = new Font(new FontFamily("Consolas"), --sz);
+                    //        SizeF textSize = g.MeasureString(text1, partFont);
+                    //        if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
+                    //        {
+                    //            g.DrawString(text1, partFont, Brushes.White, -(textSize.Width / 2), -(textSize.Height / 2));
+                    //            break;
+                    //        }
+                    //        textSize = g.MeasureString(text2a, partFont);
+                    //        SizeF textSize2 = g.MeasureString(text2b, partFont);
+                    //        if (Math.Max(textSize.Width, textSize2.Width) < iPlacement.Length && textSize.Height + textSize2.Height < iPlacement.Width)
+                    //        {
+                    //            g.DrawString(text2a, partFont, Brushes.White, -(textSize.Width / 2), -textSize.Height);
+                    //            g.DrawString(text2b, partFont, Brushes.White, -(textSize2.Width / 2), 0);
+                    //            break;
+                    //        }
+                    //        if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
+                    //        {
+                    //            g.DrawString(text2a, partFont, Brushes.White, -(textSize.Width / 2), -(textSize.Height / 2));
+                    //            overflowtext += text1 + ", ";
+                    //            break;
+                    //        }
+                    //    } while (sz > 1);
+
+
+                    //    g.RotateTransform(90);
+                    //    g.TranslateTransform(-((float)xOffset + (float)(dWidth + iPlacement.Width / 2)), -((float)(dLength + iPlacement.Length / 2 + yMargin)));
+                }
+
+                //g.TranslateTransform((float)(xOffset + iBoard.Width), (float)(iBoard.Length + yMargin));
+                //g.RotateTransform(-90);
+                //g.DrawString(overflowtext.TrimEnd(',', ' '), boardFont, Brushes.White, 0, 0);
+                //g.RotateTransform(90);
+                //g.TranslateTransform(-(float)(xOffset + iBoard.Width), -(float)(iBoard.Length + yMargin));
+
+                yOffset += iBoard.Width + boardSpacing;
+            }
+
+            g.Flush();
+            //bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            return bitmap;
+        }
+
+
         private void SortParts(string partGridSort)
         {
             switch (partGridSort)
@@ -267,6 +372,8 @@ namespace CuttingPlanMaker
             BindPartsGrid();
 
             PopulateMaterialTabs();
+
+            PackSolution();
 
             IsFileSaved = true;
         }
@@ -610,6 +717,7 @@ namespace CuttingPlanMaker
             var BoardH = Stock.First(t => t.Name == "H");
 
 #endif
+            pbLayout.Invalidate();
 
         }
 
@@ -634,6 +742,7 @@ namespace CuttingPlanMaker
                 if (Materials.FirstOrDefault(t => t.Name == iTab.Name) == null)
                     tcMaterials.TabPages.Remove(iTab);
             }
+            pbLayout.Invalidate();
         }
 
         private void onGridDataChangeByUser(object sender, DataGridViewRowsRemovedEventArgs e)
@@ -643,6 +752,7 @@ namespace CuttingPlanMaker
             IsFileSaved = false;
             PackSolution();
         }
+
         private void onGridDataChangeByUser(object sender, DataGridViewCellEventArgs e)
         {
             if (sender == MaterialsGridView)
@@ -939,7 +1049,6 @@ namespace CuttingPlanMaker
             Process.Start("StockReport.pdf");
         }
 
-
         private void mniReportLayout_Click(object sender, EventArgs e)
         {
             //PackSolution();
@@ -955,13 +1064,27 @@ namespace CuttingPlanMaker
         {
             PackSolution();
         }
-        #endregion
 
         private void pbLayout_Paint(object sender, PaintEventArgs e)
         {
+            string SelectedMaterial = tcMaterials.SelectedTab.Name;
             // 
             // filter stock and parts for chosen material
+            StockItem[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
             // draw the layout
+            Graphics gfx = e.Graphics;
+            Bitmap bitmap = Draw(stockItems);
+            float ScaleF = Math.Min((float)e.ClipRectangle.Width/ bitmap.Width, (float) e.ClipRectangle.Height/ bitmap.Height);
+
+            gfx.DrawImage(bitmap, 0f,0f,bitmap.Width * ScaleF,bitmap.Height * ScaleF);
+
+            gfx.Flush();
+        }
+        #endregion
+
+        private void tcMaterials_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            pbLayout.Invalidate();
         }
     }
 }

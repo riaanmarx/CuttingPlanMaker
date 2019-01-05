@@ -29,18 +29,18 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileNew = new System.Windows.Forms.ToolStripMenuItem();
@@ -358,8 +358,8 @@
             // 
             this.MaterialsGridView.AllowUserToOrderColumns = true;
             this.MaterialsGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.MaterialsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.MaterialsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle13;
             this.MaterialsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -390,8 +390,8 @@
             // 
             this.MaterialNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.MaterialNameColumn.DataPropertyName = "Name";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.MaterialNameColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.MaterialNameColumn.DefaultCellStyle = dataGridViewCellStyle14;
             this.MaterialNameColumn.HeaderText = "Name";
             this.MaterialNameColumn.Name = "MaterialNameColumn";
             // 
@@ -399,9 +399,9 @@
             // 
             this.MaterialLengthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.MaterialLengthColumn.DataPropertyName = "Length";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle3.Format = "N1";
-            this.MaterialLengthColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle15.Format = "N1";
+            this.MaterialLengthColumn.DefaultCellStyle = dataGridViewCellStyle15;
             this.MaterialLengthColumn.FillWeight = 40F;
             this.MaterialLengthColumn.HeaderText = "Length";
             this.MaterialLengthColumn.Name = "MaterialLengthColumn";
@@ -410,9 +410,9 @@
             // 
             this.MaterialWidth.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.MaterialWidth.DataPropertyName = "Width";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle4.Format = "N1";
-            this.MaterialWidth.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle16.Format = "N1";
+            this.MaterialWidth.DefaultCellStyle = dataGridViewCellStyle16;
             this.MaterialWidth.FillWeight = 40F;
             this.MaterialWidth.HeaderText = "Width";
             this.MaterialWidth.Name = "MaterialWidth";
@@ -421,9 +421,9 @@
             // 
             this.MaterialThicknessColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.MaterialThicknessColumn.DataPropertyName = "Thickness";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle5.Format = "N1";
-            this.MaterialThicknessColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle17.Format = "N1";
+            this.MaterialThicknessColumn.DefaultCellStyle = dataGridViewCellStyle17;
             this.MaterialThicknessColumn.FillWeight = 40F;
             this.MaterialThicknessColumn.HeaderText = "Thickness";
             this.MaterialThicknessColumn.Name = "MaterialThicknessColumn";
@@ -432,9 +432,9 @@
             // 
             this.MaterialCostColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.MaterialCostColumn.DataPropertyName = "Cost";
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle6.Format = "C2";
-            this.MaterialCostColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle18.Format = "C2";
+            this.MaterialCostColumn.DefaultCellStyle = dataGridViewCellStyle18;
             this.MaterialCostColumn.FillWeight = 50F;
             this.MaterialCostColumn.HeaderText = "R/m3";
             this.MaterialCostColumn.Name = "MaterialCostColumn";
@@ -475,8 +475,8 @@
             // StockGridView
             // 
             this.StockGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.StockGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.StockGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.StockGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -510,9 +510,9 @@
             // StockLengthColumn
             // 
             this.StockLengthColumn.DataPropertyName = "Length";
-            dataGridViewCellStyle8.Format = "N1";
-            dataGridViewCellStyle8.NullValue = null;
-            this.StockLengthColumn.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle19.Format = "N1";
+            dataGridViewCellStyle19.NullValue = null;
+            this.StockLengthColumn.DefaultCellStyle = dataGridViewCellStyle19;
             this.StockLengthColumn.FillWeight = 40F;
             this.StockLengthColumn.HeaderText = "Length";
             this.StockLengthColumn.Name = "StockLengthColumn";
@@ -520,9 +520,9 @@
             // StockWidthColumn
             // 
             this.StockWidthColumn.DataPropertyName = "Width";
-            dataGridViewCellStyle9.Format = "N1";
-            dataGridViewCellStyle9.NullValue = null;
-            this.StockWidthColumn.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle20.Format = "N1";
+            dataGridViewCellStyle20.NullValue = null;
+            this.StockWidthColumn.DefaultCellStyle = dataGridViewCellStyle20;
             this.StockWidthColumn.FillWeight = 40F;
             this.StockWidthColumn.HeaderText = "Width";
             this.StockWidthColumn.Name = "StockWidthColumn";
@@ -549,8 +549,8 @@
             // PartsGridView
             // 
             this.PartsGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.PartsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle21.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.PartsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle21;
             this.PartsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -586,9 +586,9 @@
             // 
             this.PartLengthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.PartLengthColumn.DataPropertyName = "Length";
-            dataGridViewCellStyle11.Format = "N1";
-            dataGridViewCellStyle11.NullValue = null;
-            this.PartLengthColumn.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle22.Format = "N1";
+            dataGridViewCellStyle22.NullValue = null;
+            this.PartLengthColumn.DefaultCellStyle = dataGridViewCellStyle22;
             this.PartLengthColumn.FillWeight = 40F;
             this.PartLengthColumn.HeaderText = "Length";
             this.PartLengthColumn.Name = "PartLengthColumn";
@@ -597,9 +597,9 @@
             // 
             this.PartWidthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.PartWidthColumn.DataPropertyName = "Width";
-            dataGridViewCellStyle12.Format = "N1";
-            dataGridViewCellStyle12.NullValue = null;
-            this.PartWidthColumn.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle23.Format = "N1";
+            dataGridViewCellStyle23.NullValue = null;
+            this.PartWidthColumn.DefaultCellStyle = dataGridViewCellStyle23;
             this.PartWidthColumn.FillWeight = 40F;
             this.PartWidthColumn.HeaderText = "Width";
             this.PartWidthColumn.Name = "PartWidthColumn";
@@ -700,6 +700,7 @@
             this.tcMaterials.SelectedIndex = 0;
             this.tcMaterials.Size = new System.Drawing.Size(696, 22);
             this.tcMaterials.TabIndex = 1;
+            this.tcMaterials.SelectedIndexChanged += new System.EventHandler(this.tcMaterials_SelectedIndexChanged);
             // 
             // tabPage1
             // 
