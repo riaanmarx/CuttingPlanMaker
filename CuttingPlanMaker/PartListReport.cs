@@ -66,6 +66,7 @@ namespace CuttingPlanMaker
             for (int i = 0; i < Parts.Count; i++)
             {
                 var iPart = Parts[i];
+                if (Settings.IncludePaddingInReports == "true") iPart.Inflate(double.Parse(Settings.PartPaddingWidth), double.Parse(Settings.PartPaddingLength));
                 var iMaterial = Materials.First(t => t.Name == Parts[i].Material);
 
                 iRow = table.AddRow();
@@ -83,6 +84,8 @@ namespace CuttingPlanMaker
                 double cost = vol * iMaterial.Cost;
                 totCost += cost;
                 iRow[7].AddParagraph(cost.ToString("0.00"));
+                if (Settings.IncludePaddingInReports == "true") iPart.Inflate(-double.Parse(Settings.PartPaddingWidth), -double.Parse(Settings.PartPaddingLength));
+
             }
 
             iRow = table.AddRow();

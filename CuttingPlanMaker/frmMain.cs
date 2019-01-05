@@ -614,6 +614,17 @@ namespace CuttingPlanMaker
 
         #region // Event handlers ...
 
+        private void onGridDataChangeByUser(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            IsFileSaved = false;
+            PackSolution();
+        }
+        private void onGridDataChangeByUser(object sender, DataGridViewCellEventArgs e)
+        {
+            IsFileSaved = false;
+            PackSolution();
+        }
+
         private void mniFileExit_Click(object sender, EventArgs e)
         {
             // if the file was closed,
@@ -670,8 +681,11 @@ namespace CuttingPlanMaker
         private void mniToolsOptions_Click(object sender, EventArgs e)
         {
             // show settings dialog, if close with save, save the config
-            if (new frmSettingsDialog(Setting).ShowDialog() == DialogResult.OK && FilePath!="")
-                SaveConfig();
+            if (new frmSettingsDialog(Setting).ShowDialog() == DialogResult.OK)
+            {
+                if (FilePath != "") SaveConfig();
+                PackSolution();
+            }
         }
 
         private void btnMaterialsTab_Click(object sender, EventArgs e)
@@ -754,27 +768,27 @@ namespace CuttingPlanMaker
         {
             // If the user removed the row - set the file saved flag
             if (HasUserRemovedRow())
-                IsFileSaved = false;
+                onGridDataChangeByUser(sender, e);
         }
 
         private void StockGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             // the user changed the file data - set the file saved flag
             if (HasUserRemovedRow())
-                IsFileSaved = false;
+                onGridDataChangeByUser(sender, e);
         }
 
         private void PartsDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             // the user changed the file data - set the file saved flag
             if (HasUserRemovedRow())
-                IsFileSaved = false;
+                onGridDataChangeByUser(sender, e);
         }
 
         private void MaterialsGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (HasUserChangedCell())
-                IsFileSaved = false;
+                onGridDataChangeByUser(sender, e);
         }
 
         private void mniFileRevert_Click(object sender, EventArgs e)
@@ -791,13 +805,13 @@ namespace CuttingPlanMaker
         private void StockGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (HasUserChangedCell())
-                IsFileSaved = false;
+                onGridDataChangeByUser(sender, e);
         }
 
         private void PartsDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (HasUserChangedCell())
-                IsFileSaved = false;
+                onGridDataChangeByUser(sender, e);
         }
 
         private void mniDuplicateRows_Click(object sender, EventArgs e)

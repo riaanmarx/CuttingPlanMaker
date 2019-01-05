@@ -54,6 +54,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cbIncludePaddingOnReports = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -101,7 +102,7 @@
             // cbDrawUnused
             // 
             this.cbDrawUnused.AutoSize = true;
-            this.cbDrawUnused.Location = new System.Drawing.Point(264, 47);
+            this.cbDrawUnused.Location = new System.Drawing.Point(264, 34);
             this.cbDrawUnused.Name = "cbDrawUnused";
             this.cbDrawUnused.Size = new System.Drawing.Size(118, 17);
             this.cbDrawUnused.TabIndex = 14;
@@ -122,7 +123,7 @@
             // cbAutoRecalc
             // 
             this.cbAutoRecalc.AutoSize = true;
-            this.cbAutoRecalc.Location = new System.Drawing.Point(264, 22);
+            this.cbAutoRecalc.Location = new System.Drawing.Point(264, 16);
             this.cbAutoRecalc.Name = "cbAutoRecalc";
             this.cbAutoRecalc.Size = new System.Drawing.Size(109, 17);
             this.cbAutoRecalc.TabIndex = 10;
@@ -292,6 +293,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbIncludePaddingOnReports);
             this.groupBox2.Controls.Add(this.tbSawBladeKerf);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.cbDrawUnused);
@@ -308,6 +310,17 @@
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Processing settings";
+            // 
+            // cbIncludePaddingOnReports
+            // 
+            this.cbIncludePaddingOnReports.AccessibleDescription = "";
+            this.cbIncludePaddingOnReports.AutoSize = true;
+            this.cbIncludePaddingOnReports.Location = new System.Drawing.Point(218, 52);
+            this.cbIncludePaddingOnReports.Name = "cbIncludePaddingOnReports";
+            this.cbIncludePaddingOnReports.Size = new System.Drawing.Size(158, 17);
+            this.cbIncludePaddingOnReports.TabIndex = 15;
+            this.cbIncludePaddingOnReports.Text = "Include Padding on Reports";
+            this.cbIncludePaddingOnReports.UseVisualStyleBackColor = true;
             // 
             // frmSettingsDialog
             // 
@@ -358,5 +371,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox cbIncludePaddingOnReports;
     }
 }

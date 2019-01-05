@@ -34,6 +34,7 @@ namespace CuttingPlanMaker
             tbClientNr.Text = _settings.ClientTelNr;
             tbClientAddr.Text = _settings.ClientAddr;
             dtpTargetDate.Value = DateTime.Parse(_settings.TargetDate ?? DateTime.Now.ToLongDateString());
+            cbIncludePaddingOnReports.Checked = _settings.IncludePaddingInReports == "true";
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -45,6 +46,7 @@ namespace CuttingPlanMaker
             _settings.AutoRecalc = cbAutoRecalc.Checked ? "true" : "false";
             _settings.DrawUnusedStock = cbDrawUnused.Checked ? "true" : "false";
             _settings.ResultOrientation = ddlOrientation.Text;
+            _settings.IncludePaddingInReports = cbIncludePaddingOnReports.Checked ? "true" : "false";
 
             _settings.ProjectName = tbProjectName.Text;
             _settings.JobID = tbJobId.Text;

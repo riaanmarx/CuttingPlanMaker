@@ -137,7 +137,8 @@ namespace CuttingPlanMaker
                 for (int j = 0; j < iStock.PackedPartsCount; j++)
                 {
                     var iPart = iStock.PackedParts[j];
-
+                    if (Settings.IncludePaddingInReports == "true")
+                        iPart.Inflate(double.Parse(Settings.PartPaddingWidth), double.Parse(Settings.PartPaddingLength));
                     iRow = table.AddRow();
                     iRow.Format.Font.Size = 8;
                     if (j % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
@@ -158,6 +159,9 @@ namespace CuttingPlanMaker
                     var img = iRow[0].AddImage("base64:" + DrawBoard_base64(iStock));
                     img.Width = mainSection.PageSetup.PageWidth - LeftMargin - RightMargin - Unit.FromCentimeter(1);
                     img.LockAspectRatio = true;
+
+                    if (Settings.IncludePaddingInReports == "true")
+                        iStock.PackedParts.ToList().ForEach(t=>t.Inflate(-double.Parse(Settings.PartPaddingWidth),-double.Parse(Settings.PartPaddingLength)));
                 }
                 else
                 {
