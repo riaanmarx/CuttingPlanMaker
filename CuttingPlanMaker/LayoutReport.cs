@@ -59,7 +59,7 @@ namespace CuttingPlanMaker
             g.Flush();
 
             System.IO.MemoryStream ms = new MemoryStream();
-            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
             byte[] byteImage = ms.ToArray();
             var base64img = Convert.ToBase64String(byteImage);
 
@@ -123,7 +123,7 @@ namespace CuttingPlanMaker
                 var iMaterial = Materials.First(t => t.Name == Stock[i].Material);
 
                 iRow = table.AddRow();
-                iRow.KeepWith = iStock.PackedPartsCount==0 ? 0 : iStock.PackedPartsCount + 2;
+                iRow.KeepWith = iStock.PackedPartsCount==0 ? 1 : iStock.PackedPartsCount + 2;
                 iRow.Shading.Color = Colors.LightGray;
                 iRow.Format.Font.Bold = true;
                 iRow[0].MergeRight = 1;
@@ -158,6 +158,13 @@ namespace CuttingPlanMaker
                     img.Width = mainSection.PageSetup.PageWidth - LeftMargin - RightMargin - Unit.FromCentimeter(1);
                     img.LockAspectRatio = true;
                 }
+                else
+                {
+                    iRow = table.AddRow();
+                    iRow[0].MergeRight = 6;
+                    iRow[0].AddParagraph().AddFormattedText("  (Board not used in this layout.)", TextFormat.Italic);
+                }
+
                 table.AddRow();
             }
 
