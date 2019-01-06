@@ -27,14 +27,15 @@ namespace CuttingPlanMaker
 
             headerTable[3, 0].AddParagraph("Tel nr.:");
             headerTable[3, 1].AddParagraph(Settings.ClientTelNr);
-            headerTable[3, 2].AddParagraph();
-            headerTable[3, 3].AddParagraph();
+            headerTable[3, 2].AddParagraph("Target Date:");
+            headerTable[3, 3].AddParagraph(Settings.TargetDate);
 
             headerTable[4, 0].AddParagraph("Address:");
             headerTable[4, 1].AddParagraph(Settings.ClientAddr);
-            headerTable[4, 2].AddParagraph("Target Date:");
-            headerTable[4, 3].AddParagraph(Settings.TargetDate);
-            headerTable.Columns[2].Width = Unit.FromCentimeter(2.5);
+            
+            headerTable[4, 2].AddParagraph("Part-padding:");
+            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports=="true"?"included":"not included")})");
+            headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
             #endregion
 
             #region // write content into document ...

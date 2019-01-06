@@ -83,17 +83,22 @@ namespace CuttingPlanMaker
                     t.PackedPartsCount = 0;
                     t.PackedPartsTotalArea = 0;
                 });
-
                 // set the complete flag for the board with the best coverage
                 BestCoverredBoard.isComplete = true;
                 packedBoardsCount++;
 
-                //Compact the packed parts array of the board
-                BestCoverredBoard.PackedParts = BestCoverredBoard.PackedParts.Where(t => t != null).ToArray();
 
-                // set the packed flag for the packed parts
-                BestCoverredBoard.PackedParts.ToList().ForEach(t => t.isPacked = true);
-                packedPartsCount += BestCoverredBoard.PackedPartsCount;
+                if (BestCoverredBoard.PackedParts != null)
+                {
+                    
+
+                    //Compact the packed parts array of the board
+                    BestCoverredBoard.PackedParts = BestCoverredBoard.PackedParts.Where(t => t != null).ToArray();
+
+                    // set the packed flag for the packed parts
+                    BestCoverredBoard.PackedParts.ToList().ForEach(t => t.isPacked = true);
+                    packedPartsCount += BestCoverredBoard.PackedPartsCount;
+                }
             }
 
             // remove padding to all parts

@@ -77,8 +77,6 @@ namespace CuttingPlanMaker
 
             headerTable[2, 0].AddParagraph("Client:");
             headerTable[2, 1].AddParagraph(Settings.ClientName??"");
-            //headerTable[2, 2].AddParagraph("Material:");
-            //headerTable[2, 3].AddParagraph("Kiaat (AB)-25mm");
 
             headerTable[3, 0].AddParagraph("Tel nr.:");
             headerTable[3, 1].AddParagraph(Settings.ClientTelNr??"");
@@ -88,7 +86,7 @@ namespace CuttingPlanMaker
             headerTable[4, 0].AddParagraph("Address:");
             headerTable[4, 1].AddParagraph(Settings.ClientAddr??"");
             headerTable[4, 2].AddParagraph("Part-padding:");
-            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth}");
+            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports == "true" ? "included" : "not included")})");
             headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
             #endregion
 
@@ -173,9 +171,33 @@ namespace CuttingPlanMaker
                 table.AddRow();
             }
 
+            Part[] unpackedParts = Parts.Where(t => t.isPacked == false).ToArray();
+            if(unpackedParts.Length > 0)
+            {
+                iRow = table.AddRow();
+                iRow.Shading.Color = Colors.LightGray;
+                iRow.Format.Font.Bold = true;
+                iRow[0].MergeRight = 1;
+                iRow[0].Format.Alignment = ParagraphAlignment.Left;
+                iRow[0].AddParagraph($"Parts not packed");
+
+                for (int j = 0; j < unpackedParts.Length; j++)
+                {
+                    var iPart = unpackedParts[j];
+                    if (Settings.IncludePaddingInReports == "true")
+                        iPart.Inflate(double.Parse(Settings.PartPaddingWidth), double.Parse(Settings.PartPaddingLength));
+                    iRow = table.AddRow();
+                    iRow.Format.Font.Size = 8;
+                    if (j % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
+                    iRow[0].MergeRight = 1;
+                    iRow[0].Format.Alignment = ParagraphAlignment.Right;
+                    iRow[0].AddParagraph($"{iPart.Name} ({iPart.Material})");
+                    iRow[2].AddParagraph(iPart.Length.ToString("0.0"));
+                    iRow[3].AddParagraph(iPart.Width.ToString("0.0"));
+                }
+            }
             
             table = mainSection.AddTable();
-            //table.Borders.Color = Colors.WhiteSmoke;
             table.Rows.LeftIndent = 10;
             table.AddColumn("3cm").Format.Alignment = ParagraphAlignment.Left;
             table.AddColumn("0.3cm").Format.Alignment = ParagraphAlignment.Right;

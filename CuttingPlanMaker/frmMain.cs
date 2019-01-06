@@ -74,6 +74,8 @@ namespace CuttingPlanMaker
 
         bool isPackingRequired = false;
 
+        bool isAddingPart = false;
+
         #endregion
 
         #region // Constructor ...
@@ -158,14 +160,14 @@ namespace CuttingPlanMaker
                             break;
                         }
                         else sz--;
-                        
-                    } while (sz > 5);
-                    partLabel = $"{iPlacement.Name}";
-                    textSize = g.MeasureString(partLabel, partFont);
-                    if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
+
+                    } while (sz > 8);
+                    if (sz <= 8)
                     {
-                        g.DrawString(partLabel, partFont, Brushes.White, -(textSize.Width / 2), -(textSize.Height / 2));
-                        //break;
+                        partLabel = $"{iPlacement.Name}";
+                        textSize = g.MeasureString(partLabel, partFont);
+                        g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Width - 0.5 * textSize.Height));
+
                     }
                 }
 
@@ -482,6 +484,9 @@ namespace CuttingPlanMaker
             }
 
             isPackingRequired = false;
+
+           
+            
             pbLayout.Invalidate();
 
         }
@@ -736,19 +741,54 @@ namespace CuttingPlanMaker
 
         private void mniDuplicateRows_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
+            if (tcInputs.SelectedTab == tpMaterials)
             {
-                Material oldItem = (Material)item.DataBoundItem;
-                Material newItem = new Material()
+                foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
                 {
-                    Name = oldItem.Name,
-                    Length = oldItem.Length,
-                    Width = oldItem.Width,
-                    Thickness = oldItem.Thickness,
-                    Cost = oldItem.Cost
-                };
-                Materials.Add(newItem);
-                IsFileSaved = false;
+                    Material oldItem = (Material)item.DataBoundItem;
+                    Material newItem = new Material()
+                    {
+                        Name = oldItem.Name,
+                        Length = oldItem.Length,
+                        Width = oldItem.Width,
+                        Thickness = oldItem.Thickness,
+                        Cost = oldItem.Cost
+                    };
+                    Materials.Add(newItem);
+                    IsFileSaved = false;
+                }
+            }
+            if (tcInputs.SelectedTab == tpParts)
+            {
+                foreach (DataGridViewRow item in PartsGridView.SelectedRows)
+                {
+                    Part oldItem = (Part)item.DataBoundItem;
+                    Part newItem = new Part()
+                    {
+                        Name = oldItem.Name,
+                        Length = oldItem.Length,
+                        Width = oldItem.Width,
+                        Material = oldItem.Material,
+                    };
+                    Parts.Add(newItem);
+                    IsFileSaved = false;
+                }
+            }
+            if (tcInputs.SelectedTab == tpStock)
+            {
+                foreach (DataGridViewRow item in StockGridView.SelectedRows)
+                {
+                    StockItem oldItem = (StockItem)item.DataBoundItem;
+                    StockItem newItem = new StockItem()
+                    {
+                        Name = oldItem.Name,
+                        Length = oldItem.Length,
+                        Width = oldItem.Width,
+                        Material = oldItem.Material,
+                    };
+                    Stock.Add(newItem);
+                    IsFileSaved = false;
+                }
             }
         }
 
@@ -791,10 +831,29 @@ namespace CuttingPlanMaker
 
         private void mniRemoveRows_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
+            if (tcInputs.SelectedTab == tpMaterials)
             {
-                Materials.Remove((Material)item.DataBoundItem);
-                IsFileSaved = false;
+                foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
+                {
+                    Materials.Remove((Material)item.DataBoundItem);
+                    IsFileSaved = false;
+                }
+            }
+            if (tcInputs.SelectedTab == tpParts)
+            {
+                foreach (DataGridViewRow item in PartsGridView.SelectedRows)
+                {
+                    Parts.Remove((Part)item.DataBoundItem);
+                    IsFileSaved = false;
+                }
+            }
+            if (tcInputs.SelectedTab == tpStock)
+            {
+                foreach (DataGridViewRow item in StockGridView.SelectedRows)
+                {
+                    Stock.Remove((StockItem)item.DataBoundItem);
+                    IsFileSaved = false;
+                }
             }
         }
 
@@ -860,42 +919,47 @@ namespace CuttingPlanMaker
         private void pbLayout_Paint(object sender, PaintEventArgs e)
         {
             string SelectedMaterial = tcMaterials.SelectedTab.Name;
-            // 
+            
             // filter stock and parts for chosen material
             StockItem[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
             // draw the layout
-            Graphics gfx = e.Graphics;
             Bitmap bitmap = Draw(stockItems, Setting.DrawUnusedStock != "true");
+
+            // draw the image to the screen
+            Graphics gfx = e.Graphics;
             float ScaleF = Math.Min((float)e.ClipRectangle.Width / bitmap.Width, (float)e.ClipRectangle.Height / bitmap.Height);
-
             gfx.DrawImage(bitmap, 0f, 0f, bitmap.Width * ScaleF, bitmap.Height * ScaleF);
-
             gfx.Flush();
+
+            //update summary table
+            lblStockCount.Text = Stock.Count(q => q.Material == SelectedMaterial).ToString();
+            double StockArea = Stock.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6;
+            lblStockArea.Text = StockArea.ToString("0.000");
+            lblUsedStockCount.Text = Stock.Count(t => t.Material == SelectedMaterial && t.PackedPartsCount > 0).ToString();
+            double UsedStockArea = Stock.Where(q => q.Material == SelectedMaterial && q.PackedPartsCount > 0).Sum(t => t.Area) / 1e6f;
+            lblUsedStockArea.Text = UsedStockArea.ToString("0.000");
+            lblPartsCount.Text = Parts.Count(q => q.Material == SelectedMaterial).ToString();
+            lblPartsArea.Text = (Parts.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6f).ToString("0.000");
+            lblUsedPartsCount.Text = Parts.Count(t => t.Material == SelectedMaterial && t.isPacked).ToString();
+            double UsedPartsArea = (Parts.Where(q => q.Material == SelectedMaterial && q.isPacked).Sum(t => t.Area) / 1e6f);
+            lblUsedPartsArea.Text = UsedPartsArea.ToString("0.000");
+            lblWastePerc.Text = ((UsedStockArea - UsedPartsArea) / UsedStockArea * 100.0).ToString("00.0");
+            lblWasteArea.Text = (UsedStockArea - UsedPartsArea).ToString("0.000");
         }
 
         private void tcMaterials_SelectedIndexChanged(object sender, EventArgs e)
         {
+
             pbLayout.Invalidate();
         }
-        #endregion
 
-        private void PartsGridView_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        private void PartsGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            //PartsGridView.Rows[0].AdjustRowHeaderBorderStyle = new Func<DataGridViewAdvancedBorderStyle, DataGridViewAdvancedBorderStyle, bool, bool, bool, bool, DataGridViewAdvancedBorderStyle>() { };
-        }
-
-        private void PartsGridView_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (e.RowIndex < Parts.Count && !Parts[e.RowIndex].isPacked)
-                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.OrangeRed;
+            if (e.RowIndex < Parts.Count && Parts[e.RowIndex].Area > 0 && !Parts[e.RowIndex].isPacked)
+                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Red;
             else
-            {
-                if (e.RowIndex % 2 == 1)
-                    PartsGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGray;
-                else
-                    PartsGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White;
-            }
-
+                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
         }
+        #endregion
     }
 }
