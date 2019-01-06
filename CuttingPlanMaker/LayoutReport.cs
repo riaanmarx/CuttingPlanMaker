@@ -49,6 +49,7 @@ namespace CuttingPlanMaker
                 System.Drawing.SizeF textSize = g.MeasureString(text1, partFont);
 
                 if (textSize.Width > iPlacement.Length) text1 = iPlacement.Name;
+                textSize = g.MeasureString(text1, partFont);
 
                 g.DrawString(text1, partFont, System.Drawing.Brushes.White,
                     (int)(xMargin + board.PackedPartdLengths[i] + iPlacement.Length / 2.0 - textSize.Width / 2.0),
@@ -175,8 +176,9 @@ namespace CuttingPlanMaker
             if(unpackedParts.Length > 0)
             {
                 iRow = table.AddRow();
-                iRow.Shading.Color = Colors.LightGray;
+                iRow.Shading.Color = Colors.DarkRed;
                 iRow.Format.Font.Bold = true;
+                iRow.Format.Font.Color = Colors.White;
                 iRow[0].MergeRight = 1;
                 iRow[0].Format.Alignment = ParagraphAlignment.Left;
                 iRow[0].AddParagraph($"Parts not packed");
@@ -195,8 +197,10 @@ namespace CuttingPlanMaker
                     iRow[2].AddParagraph(iPart.Length.ToString("0.0"));
                     iRow[3].AddParagraph(iPart.Width.ToString("0.0"));
                 }
+                iRow = table.AddRow();
+
             }
-            
+
             table = mainSection.AddTable();
             table.Rows.LeftIndent = 10;
             table.AddColumn("3cm").Format.Alignment = ParagraphAlignment.Left;
@@ -227,13 +231,13 @@ namespace CuttingPlanMaker
             table[5, 0].AddParagraph("Waste");
             table[6, 0].AddParagraph("Coverage");
 
-            double UsedStockArea = Stock.Where(q => q.isComplete).Sum(t => t.Area) / 1e6;
+            double UsedStockArea = Stock.Where(q => q.PackedPartsCount>0).Sum(t => t.Area) / 1e6;
             double PlacedPartsArea = Parts.Where(q => q.isPacked).Sum(t => t.Area) / 1e6;
 
             table[1, 2].AddParagraph(Stock.Count.ToString());
             table[1, 5].AddParagraph((Stock.Sum(t => t.Area) / 1e6).ToString("0.000"));
 
-            table[2, 2].AddParagraph(Stock.Count(t => t.isComplete).ToString());
+            table[2, 2].AddParagraph(Stock.Count(t => t.PackedPartsCount>0).ToString());
             table[2, 5].AddParagraph(UsedStockArea.ToString("0.000"));
 
             table[3, 2].AddParagraph(Parts.Count.ToString());

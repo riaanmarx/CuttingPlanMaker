@@ -73,9 +73,7 @@ namespace CuttingPlanMaker
         string MaterialGridSort = "";
 
         bool isPackingRequired = false;
-
-        bool isAddingPart = false;
-
+                
         #endregion
 
         #region // Constructor ...
@@ -84,6 +82,7 @@ namespace CuttingPlanMaker
         {
             InitializeComponent();
             tcInputs.Top -= 22;
+            this.pbLayout.MouseWheel += PbLayout_MouseWheel;
         }
         #endregion
 
@@ -485,8 +484,8 @@ namespace CuttingPlanMaker
 
             isPackingRequired = false;
 
-           
-            
+
+
             pbLayout.Invalidate();
 
         }
@@ -916,20 +915,89 @@ namespace CuttingPlanMaker
             PackSolution();
         }
 
+
+
+
+
+
+        private void tcMaterials_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userOffset = new PointF(0, 0);
+            userZoomFactor = 1;
+            pbLayout.Invalidate();
+        }
+
+        private void PartsGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < Parts.Count && Parts[e.RowIndex].Area > 0 && !Parts[e.RowIndex].isPacked)
+                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Red;
+            else
+                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
+        }
+        #endregion
+
+        // zoom & panning for layout image
+        float userZoomFactor = 1.0f;  // a zoom factor of 1 will fill the picturbox with the image
+        PointF userOffset = new PointF(0, 0); //the offset with which the image has been panned, (0,0) would centre the image in the PB
+        Bitmap LayoutBitmap = null;
+        float unityScaleFactor;
+        PointF OrigMouseDownPoint;
+        PointF OrigUserOffset;
+
+
+        private RectangleF ImageToPbSpace(float X, float Y, float width, float height, SizeF pbSize, PointF imgCentre, float userZoom, float fillScale)
+        {
+            return new RectangleF(
+                pbSize.Width * 0.5f + fillScale * userZoom * (X - imgCentre.X),
+                pbSize.Height * 0.5f + fillScale * userZoom * (Y - imgCentre.Y),
+                width * fillScale * userZoom,
+                height * fillScale * userZoom
+                );
+        }
+        
+        private RectangleF PbToImageSpace(float X, float Y, float width, float height, SizeF pbSize, PointF imgCentre, float userZoom, float fillScale)
+        {
+            return new RectangleF(
+               -(X - pbSize.Width * 0.5f) / (fillScale * userZoom) + imgCentre.X,
+               -(Y - pbSize.Height * 0.5f) / (fillScale * userZoom) + imgCentre.Y ,
+               width / (fillScale * userZoom),
+               height / (fillScale * userZoom)
+               );
+        }
+        
+        private void PbLayout_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+                userZoomFactor = userZoomFactor * 1.2f;
+            else if (e.Delta < 0)
+                userZoomFactor = userZoomFactor / 1.2f;
+            pbLayout.Invalidate();
+        }
+
         private void pbLayout_Paint(object sender, PaintEventArgs e)
         {
+            // filter stock for chosen material
             string SelectedMaterial = tcMaterials.SelectedTab.Name;
-            
-            // filter stock and parts for chosen material
             StockItem[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
-            // draw the layout
-            Bitmap bitmap = Draw(stockItems, Setting.DrawUnusedStock != "true");
+            // draw the layout for filterred stock
+            if (LayoutBitmap != null) LayoutBitmap.Dispose();
+            LayoutBitmap = Draw(stockItems, Setting.DrawUnusedStock != "true");
 
             // draw the image to the screen
             Graphics gfx = e.Graphics;
-            float ScaleF = Math.Min((float)e.ClipRectangle.Width / bitmap.Width, (float)e.ClipRectangle.Height / bitmap.Height);
-            gfx.DrawImage(bitmap, 0f, 0f, bitmap.Width * ScaleF, bitmap.Height * ScaleF);
+
+            // scale factor for filling the screen - will be used with user-scale factor so that when user scale factor =1, the image would fit the picturebox
+            unityScaleFactor = Math.Min((float)e.ClipRectangle.Width / LayoutBitmap.Width, (float)e.ClipRectangle.Height / LayoutBitmap.Height);
+            PointF imgCentre = new PointF()
+            {
+                X = LayoutBitmap.Width * 0.5f - userOffset.X,
+                Y = LayoutBitmap.Height * 0.5f - userOffset.Y
+            };
+
+            RectangleF plotRect = ImageToPbSpace(0, 0, LayoutBitmap.Width, LayoutBitmap.Height, pbLayout.Size, imgCentre, userZoomFactor, unityScaleFactor);
+            gfx.DrawImage(LayoutBitmap, plotRect);
             gfx.Flush();
+
 
             //update summary table
             lblStockCount.Text = Stock.Count(q => q.Material == SelectedMaterial).ToString();
@@ -947,19 +1015,43 @@ namespace CuttingPlanMaker
             lblWasteArea.Text = (UsedStockArea - UsedPartsArea).ToString("0.000");
         }
 
-        private void tcMaterials_SelectedIndexChanged(object sender, EventArgs e)
+        private void pbLayout_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-
-            pbLayout.Invalidate();
+            if (e.Button == MouseButtons.Left)
+            {
+                RectangleF nr = PbToImageSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor);
+                //nr.X -= pbLayout.Width / 2;
+                //nr.Y -= pbLayout.Height / 2;
+                userOffset = nr.Location;
+                pbLayout.Invalidate();
+            }
+            if (e.Button == MouseButtons.Right)
+            {
+                userOffset = new PointF(0, 0);
+                userZoomFactor = 1;
+                pbLayout.Invalidate();
+            }
         }
 
-        private void PartsGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private void pbLayout_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.RowIndex < Parts.Count && Parts[e.RowIndex].Area > 0 && !Parts[e.RowIndex].isPacked)
-                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Red;
-            else
-                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
+            OrigMouseDownPoint = new PointF(e.X, e.Y);
+            OrigUserOffset = new PointF(userOffset.X, userOffset.Y);
         }
-        #endregion
+
+        private void pbLayout_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                //convert the mouse movement relative to its original mouse down position to image space movement
+                //add the image space movemnt to the original user offset
+                PointF DeltaMouse = new PointF(e.X - OrigMouseDownPoint.X, e.Y - OrigMouseDownPoint.Y);
+                PointF DeltaImage = new PointF(DeltaMouse.X / (userZoomFactor * unityScaleFactor), DeltaMouse.Y / (userZoomFactor * unityScaleFactor));
+                userOffset = new PointF(OrigUserOffset.X + DeltaImage.X, OrigUserOffset.Y + DeltaImage.Y);
+
+                //redraw the image
+                pbLayout.Invalidate();
+            }
+        }
     }
 }
