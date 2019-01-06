@@ -119,6 +119,7 @@
             this.ddlOrientation.Name = "ddlOrientation";
             this.ddlOrientation.Size = new System.Drawing.Size(109, 21);
             this.ddlOrientation.TabIndex = 13;
+            this.ddlOrientation.Visible = false;
             // 
             // cbAutoRecalc
             // 
@@ -146,6 +147,7 @@
             this.label4.Size = new System.Drawing.Size(61, 13);
             this.label4.TabIndex = 11;
             this.label4.Text = "Orientation:";
+            this.label4.Visible = false;
             // 
             // label3
             // 

@@ -96,7 +96,7 @@ namespace CuttingPlanMaker
             double yOffset = yMargin;
             double imageHeight = 2 * yMargin;
             double imageWidth = 0;
-            Font boardFont = new Font(new FontFamily("Consolas"), 15.0f);
+            Font boardFont = new Font(new FontFamily("Microsoft Sans Serif"), 15.0f);
 
             // create list of boards to draw
             List<StockItem> boardsToDraw = new List<StockItem>(boards);
@@ -143,48 +143,31 @@ namespace CuttingPlanMaker
                     g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)iPlacement.Length, (float)iPlacement.Width);
 
                     // print the part text
-                    string text1 = $"{iPlacement.Name} [{iPlacement.Length} x {iPlacement.Width}]";
-                    //    string text2a = $"{iPlacement.Name}";
-                    //    string text2b = $"[{iPlacement.Length} x {iPlacement.Width}]";
-                    //    g.TranslateTransform((float)(xOffset + dWidth + iPlacement.Width / 2), (float)(dLength + iPlacement.Length / 2 + yMargin));
-                    //    g.RotateTransform(-90);
+                    string partLabel = $"{iPlacement.Name} [{iPlacement.Length} x {iPlacement.Width}]";
 
                     int sz = 16;
+                    Font partFont;
+                    SizeF textSize;
                     do
                     {
-                        Font partFont = new Font(new FontFamily("Consolas"), --sz);
-                        SizeF textSize = g.MeasureString(text1, partFont);
+                        partFont = new Font(new FontFamily("Microsoft Sans Serif"), sz);
+                        textSize = g.MeasureString(partLabel, partFont);
                         if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
                         {
-                            g.DrawString(text1, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Width - 0.5 * textSize.Height));
+                            g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Width - 0.5 * textSize.Height));
                             break;
                         }
-                        //        textSize = g.MeasureString(text2a, partFont);
-                        //        SizeF textSize2 = g.MeasureString(text2b, partFont);
-                        //        if (Math.Max(textSize.Width, textSize2.Width) < iPlacement.Length && textSize.Height + textSize2.Height < iPlacement.Width)
-                        //        {
-                        //            g.DrawString(text2a, partFont, Brushes.White, -(textSize.Width / 2), -textSize.Height);
-                        //            g.DrawString(text2b, partFont, Brushes.White, -(textSize2.Width / 2), 0);
-                        //            break;
-                        //        }
-                        //        if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
-                        //        {
-                        //            g.DrawString(text2a, partFont, Brushes.White, -(textSize.Width / 2), -(textSize.Height / 2));
-                        //            overflowtext += text1 + ", ";
-                        //            break;
-                        //        }
-                    } while (sz > 1);
-
-
-                    //    g.RotateTransform(90);
-                    //    g.TranslateTransform(-((float)xOffset + (float)(dWidth + iPlacement.Width / 2)), -((float)(dLength + iPlacement.Length / 2 + yMargin)));
+                        else sz--;
+                        
+                    } while (sz > 5);
+                    partLabel = $"{iPlacement.Name}";
+                    textSize = g.MeasureString(partLabel, partFont);
+                    if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
+                    {
+                        g.DrawString(partLabel, partFont, Brushes.White, -(textSize.Width / 2), -(textSize.Height / 2));
+                        //break;
+                    }
                 }
-
-                //g.TranslateTransform((float)(xOffset + iBoard.Width), (float)(iBoard.Length + yMargin));
-                //g.RotateTransform(-90);
-                //g.DrawString(overflowtext.TrimEnd(',', ' '), boardFont, Brushes.White, 0, 0);
-                //g.RotateTransform(90);
-                //g.TranslateTransform(-(float)(xOffset + iBoard.Width), -(float)(iBoard.Length + yMargin));
 
                 yOffset += iBoard.Width + boardSpacing;
             }
@@ -376,6 +359,12 @@ namespace CuttingPlanMaker
             Stock = CSVFile.Read<StockItem>($"{FilePath}.Stock.CSV");
             Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
 
+            // update the tabs for the layout drawings
+            PopulateMaterialTabs();
+
+            // pack the solution before drawing the grids
+            PackSolution();
+
             // bind the materials grid
             BindMaterialsGrid();
 
@@ -385,10 +374,7 @@ namespace CuttingPlanMaker
             // bind the Part
             BindPartsGrid();
 
-            PopulateMaterialTabs();
-
-            PackSolution();
-
+            // ensure the saved flag is set - we just opened the file
             IsFileSaved = true;
         }
 
@@ -557,10 +543,8 @@ namespace CuttingPlanMaker
 
         private void mniFileExit_Click(object sender, EventArgs e)
         {
-            // if the file was closed,
-            if (CloseFile())
-                // exit the application
-                Application.Exit();
+            // exit the application
+            Application.Exit();
         }
 
         private void mniEditDuplicate_Click(object sender, EventArgs e)
@@ -902,7 +886,7 @@ namespace CuttingPlanMaker
 
         private void PartsGridView_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
-            if (!Parts[e.RowIndex].isPacked)
+            if (e.RowIndex < Parts.Count && !Parts[e.RowIndex].isPacked)
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.OrangeRed;
             else
             {

@@ -36,9 +36,9 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
@@ -79,16 +79,8 @@
             this.mniRemoveRows = new System.Windows.Forms.ToolStripMenuItem();
             this.tpStock = new System.Windows.Forms.TabPage();
             this.StockGridView = new System.Windows.Forms.DataGridView();
-            this.stocknamecolumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StockLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StockWidthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StockMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.tpParts = new System.Windows.Forms.TabPage();
             this.PartsGridView = new System.Windows.Forms.DataGridView();
-            this.PartNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PartLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PartWidthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PartMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.btnPartsTab = new System.Windows.Forms.Button();
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
@@ -96,6 +88,14 @@
             this.pbLayout = new System.Windows.Forms.PictureBox();
             this.tcMaterials = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.stocknamecolumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StockLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StockWidthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StockMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.PartNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartWidthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -149,7 +149,7 @@
             // 
             this.mniFileNew.Name = "mniFileNew";
             this.mniFileNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.mniFileNew.Size = new System.Drawing.Size(148, 22);
+            this.mniFileNew.Size = new System.Drawing.Size(180, 22);
             this.mniFileNew.Text = "&New";
             this.mniFileNew.Click += new System.EventHandler(this.mniFileNew_Click);
             // 
@@ -157,7 +157,7 @@
             // 
             this.mniFileOpen.Name = "mniFileOpen";
             this.mniFileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.mniFileOpen.Size = new System.Drawing.Size(148, 22);
+            this.mniFileOpen.Size = new System.Drawing.Size(180, 22);
             this.mniFileOpen.Text = "&Open";
             this.mniFileOpen.Click += new System.EventHandler(this.mniFileOpen_Click);
             // 
@@ -165,7 +165,7 @@
             // 
             this.mniFileRevert.Name = "mniFileRevert";
             this.mniFileRevert.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.mniFileRevert.Size = new System.Drawing.Size(148, 22);
+            this.mniFileRevert.Size = new System.Drawing.Size(180, 22);
             this.mniFileRevert.Text = "&Revert";
             this.mniFileRevert.Click += new System.EventHandler(this.mniFileRevert_Click);
             // 
@@ -173,21 +173,21 @@
             // 
             this.mniFileSave.Name = "mniFileSave";
             this.mniFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.mniFileSave.Size = new System.Drawing.Size(148, 22);
+            this.mniFileSave.Size = new System.Drawing.Size(180, 22);
             this.mniFileSave.Text = "&Save";
             this.mniFileSave.Click += new System.EventHandler(this.mniFileSave_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // mniFileImport
             // 
@@ -195,7 +195,7 @@
             this.mniFileImportSketchupCSV});
             this.mniFileImport.Enabled = false;
             this.mniFileImport.Name = "mniFileImport";
-            this.mniFileImport.Size = new System.Drawing.Size(148, 22);
+            this.mniFileImport.Size = new System.Drawing.Size(180, 22);
             this.mniFileImport.Text = "&Import";
             // 
             // mniFileImportSketchupCSV
@@ -208,18 +208,18 @@
             // 
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(145, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // mniFileExit
             // 
             this.mniFileExit.Name = "mniFileExit";
-            this.mniFileExit.Size = new System.Drawing.Size(148, 22);
+            this.mniFileExit.Size = new System.Drawing.Size(180, 22);
             this.mniFileExit.Text = "E&xit";
             this.mniFileExit.Click += new System.EventHandler(this.mniFileExit_Click);
             // 
@@ -235,14 +235,14 @@
             // mniToolsOptions
             // 
             this.mniToolsOptions.Name = "mniToolsOptions";
-            this.mniToolsOptions.Size = new System.Drawing.Size(128, 22);
+            this.mniToolsOptions.Size = new System.Drawing.Size(180, 22);
             this.mniToolsOptions.Text = "&Options";
             this.mniToolsOptions.Click += new System.EventHandler(this.mniToolsOptions_Click);
             // 
             // mniToolsPack
             // 
             this.mniToolsPack.Name = "mniToolsPack";
-            this.mniToolsPack.Size = new System.Drawing.Size(128, 22);
+            this.mniToolsPack.Size = new System.Drawing.Size(180, 22);
             this.mniToolsPack.Text = "Pack parts";
             this.mniToolsPack.Click += new System.EventHandler(this.mniToolsPack_Click);
             // 
@@ -323,7 +323,7 @@
             this.ctrSplitContainer.Panel2.Controls.Add(this.tcMaterials);
             this.ctrSplitContainer.Panel2.Controls.Add(this.pbLayout);
             this.ctrSplitContainer.Size = new System.Drawing.Size(1031, 560);
-            this.ctrSplitContainer.SplitterDistance = 329;
+            this.ctrSplitContainer.SplitterDistance = 274;
             this.ctrSplitContainer.TabIndex = 5;
             // 
             // tcInputs
@@ -340,7 +340,7 @@
             this.tcInputs.Name = "tcInputs";
             this.tcInputs.Padding = new System.Drawing.Point(0, 0);
             this.tcInputs.SelectedIndex = 0;
-            this.tcInputs.Size = new System.Drawing.Size(343, 658);
+            this.tcInputs.Size = new System.Drawing.Size(288, 658);
             this.tcInputs.TabIndex = 0;
             // 
             // tpMaterials
@@ -350,7 +350,7 @@
             this.tpMaterials.Location = new System.Drawing.Point(4, 22);
             this.tpMaterials.Margin = new System.Windows.Forms.Padding(0);
             this.tpMaterials.Name = "tpMaterials";
-            this.tpMaterials.Size = new System.Drawing.Size(335, 632);
+            this.tpMaterials.Size = new System.Drawing.Size(280, 632);
             this.tpMaterials.TabIndex = 0;
             this.tpMaterials.Text = "Materials";
             // 
@@ -379,7 +379,7 @@
             this.MaterialsGridView.Location = new System.Drawing.Point(-1, -1);
             this.MaterialsGridView.Name = "MaterialsGridView";
             this.MaterialsGridView.RowHeadersWidth = 25;
-            this.MaterialsGridView.Size = new System.Drawing.Size(329, 568);
+            this.MaterialsGridView.Size = new System.Drawing.Size(274, 568);
             this.MaterialsGridView.TabIndex = 2;
             this.MaterialsGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsGridView_CellValueChanged);
             this.MaterialsGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MaterialsGridView_ColumnHeaderMouseClick);
@@ -468,7 +468,7 @@
             this.tpStock.Location = new System.Drawing.Point(4, 22);
             this.tpStock.Name = "tpStock";
             this.tpStock.Padding = new System.Windows.Forms.Padding(3);
-            this.tpStock.Size = new System.Drawing.Size(335, 632);
+            this.tpStock.Size = new System.Drawing.Size(280, 632);
             this.tpStock.TabIndex = 1;
             this.tpStock.Text = "Stock";
             // 
@@ -494,47 +494,12 @@
             this.StockGridView.Margin = new System.Windows.Forms.Padding(0);
             this.StockGridView.Name = "StockGridView";
             this.StockGridView.RowHeadersWidth = 25;
-            this.StockGridView.Size = new System.Drawing.Size(329, 568);
+            this.StockGridView.Size = new System.Drawing.Size(274, 568);
             this.StockGridView.TabIndex = 1;
             this.StockGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.StockGridView_CellValueChanged);
             this.StockGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.StockGridView_ColumnHeaderMouseClick);
             this.StockGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.StockGridView_DataError);
             this.StockGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.StockGridView_RowsRemoved);
-            // 
-            // stocknamecolumn
-            // 
-            this.stocknamecolumn.DataPropertyName = "Name";
-            this.stocknamecolumn.HeaderText = "Name";
-            this.stocknamecolumn.Name = "stocknamecolumn";
-            // 
-            // StockLengthColumn
-            // 
-            this.StockLengthColumn.DataPropertyName = "Length";
-            dataGridViewCellStyle8.Format = "N1";
-            dataGridViewCellStyle8.NullValue = null;
-            this.StockLengthColumn.DefaultCellStyle = dataGridViewCellStyle8;
-            this.StockLengthColumn.FillWeight = 40F;
-            this.StockLengthColumn.HeaderText = "Length";
-            this.StockLengthColumn.Name = "StockLengthColumn";
-            // 
-            // StockWidthColumn
-            // 
-            this.StockWidthColumn.DataPropertyName = "Width";
-            dataGridViewCellStyle9.Format = "N1";
-            dataGridViewCellStyle9.NullValue = null;
-            this.StockWidthColumn.DefaultCellStyle = dataGridViewCellStyle9;
-            this.StockWidthColumn.FillWeight = 40F;
-            this.StockWidthColumn.HeaderText = "Width";
-            this.StockWidthColumn.Name = "StockWidthColumn";
-            // 
-            // StockMaterialColumn
-            // 
-            this.StockMaterialColumn.DataPropertyName = "Material";
-            this.StockMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.StockMaterialColumn.HeaderText = "Material";
-            this.StockMaterialColumn.Name = "StockMaterialColumn";
-            this.StockMaterialColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.StockMaterialColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // tpParts
             // 
@@ -542,7 +507,7 @@
             this.tpParts.Controls.Add(this.PartsGridView);
             this.tpParts.Location = new System.Drawing.Point(4, 22);
             this.tpParts.Name = "tpParts";
-            this.tpParts.Size = new System.Drawing.Size(335, 632);
+            this.tpParts.Size = new System.Drawing.Size(280, 632);
             this.tpParts.TabIndex = 2;
             this.tpParts.Text = "Parts";
             // 
@@ -568,7 +533,7 @@
             this.PartsGridView.Name = "PartsGridView";
             this.PartsGridView.RowHeadersWidth = 25;
             this.PartsGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.PartsGridView.Size = new System.Drawing.Size(329, 568);
+            this.PartsGridView.Size = new System.Drawing.Size(274, 568);
             this.PartsGridView.TabIndex = 2;
             this.PartsGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.PartsDataGridView_CellValueChanged);
             this.PartsGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.PartsDataGridView_ColumnHeaderMouseClick);
@@ -576,45 +541,6 @@
             this.PartsGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.PartsGridView_DataError);
             this.PartsGridView.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.PartsGridView_RowPrePaint);
             this.PartsGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.PartsDataGridView_RowsRemoved);
-            // 
-            // PartNameColumn
-            // 
-            this.PartNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PartNameColumn.DataPropertyName = "Name";
-            this.PartNameColumn.HeaderText = "Name";
-            this.PartNameColumn.Name = "PartNameColumn";
-            // 
-            // PartLengthColumn
-            // 
-            this.PartLengthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PartLengthColumn.DataPropertyName = "Length";
-            dataGridViewCellStyle11.Format = "N1";
-            dataGridViewCellStyle11.NullValue = null;
-            this.PartLengthColumn.DefaultCellStyle = dataGridViewCellStyle11;
-            this.PartLengthColumn.FillWeight = 40F;
-            this.PartLengthColumn.HeaderText = "Length";
-            this.PartLengthColumn.Name = "PartLengthColumn";
-            // 
-            // PartWidthColumn
-            // 
-            this.PartWidthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PartWidthColumn.DataPropertyName = "Width";
-            dataGridViewCellStyle12.Format = "N1";
-            dataGridViewCellStyle12.NullValue = null;
-            this.PartWidthColumn.DefaultCellStyle = dataGridViewCellStyle12;
-            this.PartWidthColumn.FillWeight = 40F;
-            this.PartWidthColumn.HeaderText = "Width";
-            this.PartWidthColumn.Name = "PartWidthColumn";
-            // 
-            // PartMaterialColumn
-            // 
-            this.PartMaterialColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PartMaterialColumn.DataPropertyName = "Material";
-            this.PartMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.PartMaterialColumn.HeaderText = "Material";
-            this.PartMaterialColumn.Name = "PartMaterialColumn";
-            this.PartMaterialColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.PartMaterialColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // btnPartsTab
             // 
@@ -688,7 +614,7 @@
             this.pbLayout.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.pbLayout.Location = new System.Drawing.Point(1, 20);
             this.pbLayout.Name = "pbLayout";
-            this.pbLayout.Size = new System.Drawing.Size(691, 535);
+            this.pbLayout.Size = new System.Drawing.Size(746, 535);
             this.pbLayout.TabIndex = 0;
             this.pbLayout.TabStop = false;
             this.pbLayout.Paint += new System.Windows.Forms.PaintEventHandler(this.pbLayout_Paint);
@@ -700,7 +626,7 @@
             this.tcMaterials.Location = new System.Drawing.Point(0, 0);
             this.tcMaterials.Name = "tcMaterials";
             this.tcMaterials.SelectedIndex = 0;
-            this.tcMaterials.Size = new System.Drawing.Size(696, 22);
+            this.tcMaterials.Size = new System.Drawing.Size(751, 22);
             this.tcMaterials.TabIndex = 1;
             this.tcMaterials.SelectedIndexChanged += new System.EventHandler(this.tcMaterials_SelectedIndexChanged);
             // 
@@ -709,10 +635,88 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(688, 0);
+            this.tabPage1.Size = new System.Drawing.Size(743, 0);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Material1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // stocknamecolumn
+            // 
+            this.stocknamecolumn.DataPropertyName = "Name";
+            this.stocknamecolumn.HeaderText = "Name";
+            this.stocknamecolumn.Name = "stocknamecolumn";
+            // 
+            // StockLengthColumn
+            // 
+            this.StockLengthColumn.DataPropertyName = "Length";
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle8.Format = "N1";
+            dataGridViewCellStyle8.NullValue = null;
+            this.StockLengthColumn.DefaultCellStyle = dataGridViewCellStyle8;
+            this.StockLengthColumn.FillWeight = 40F;
+            this.StockLengthColumn.HeaderText = "Length";
+            this.StockLengthColumn.Name = "StockLengthColumn";
+            // 
+            // StockWidthColumn
+            // 
+            this.StockWidthColumn.DataPropertyName = "Width";
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle9.Format = "N1";
+            dataGridViewCellStyle9.NullValue = null;
+            this.StockWidthColumn.DefaultCellStyle = dataGridViewCellStyle9;
+            this.StockWidthColumn.FillWeight = 40F;
+            this.StockWidthColumn.HeaderText = "Width";
+            this.StockWidthColumn.Name = "StockWidthColumn";
+            // 
+            // StockMaterialColumn
+            // 
+            this.StockMaterialColumn.DataPropertyName = "Material";
+            this.StockMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.StockMaterialColumn.HeaderText = "Material";
+            this.StockMaterialColumn.Name = "StockMaterialColumn";
+            this.StockMaterialColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.StockMaterialColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // PartNameColumn
+            // 
+            this.PartNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartNameColumn.DataPropertyName = "Name";
+            this.PartNameColumn.HeaderText = "Name";
+            this.PartNameColumn.Name = "PartNameColumn";
+            // 
+            // PartLengthColumn
+            // 
+            this.PartLengthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartLengthColumn.DataPropertyName = "Length";
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle11.Format = "N1";
+            dataGridViewCellStyle11.NullValue = null;
+            this.PartLengthColumn.DefaultCellStyle = dataGridViewCellStyle11;
+            this.PartLengthColumn.FillWeight = 40F;
+            this.PartLengthColumn.HeaderText = "Length";
+            this.PartLengthColumn.Name = "PartLengthColumn";
+            // 
+            // PartWidthColumn
+            // 
+            this.PartWidthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartWidthColumn.DataPropertyName = "Width";
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle12.Format = "N1";
+            dataGridViewCellStyle12.NullValue = null;
+            this.PartWidthColumn.DefaultCellStyle = dataGridViewCellStyle12;
+            this.PartWidthColumn.FillWeight = 40F;
+            this.PartWidthColumn.HeaderText = "Width";
+            this.PartWidthColumn.Name = "PartWidthColumn";
+            // 
+            // PartMaterialColumn
+            // 
+            this.PartMaterialColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartMaterialColumn.DataPropertyName = "Material";
+            this.PartMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.PartMaterialColumn.HeaderText = "Material";
+            this.PartMaterialColumn.Name = "PartMaterialColumn";
+            this.PartMaterialColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.PartMaterialColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // frmMain
             // 
@@ -797,6 +801,9 @@
         private System.Windows.Forms.ToolStripMenuItem mniDuplicateRows;
         private System.Windows.Forms.ToolStripMenuItem mniRemoveRows;
         private System.Windows.Forms.ToolStripMenuItem mniToolsPack;
+        private System.Windows.Forms.TabControl tcMaterials;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.PictureBox pbLayout;
         private System.Windows.Forms.DataGridViewTextBoxColumn stocknamecolumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn StockLengthColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn StockWidthColumn;
@@ -805,9 +812,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn PartLengthColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn PartWidthColumn;
         private System.Windows.Forms.DataGridViewComboBoxColumn PartMaterialColumn;
-        private System.Windows.Forms.TabControl tcMaterials;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.PictureBox pbLayout;
     }
 }
 
