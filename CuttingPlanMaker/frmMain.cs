@@ -72,6 +72,7 @@ namespace CuttingPlanMaker
         string StockGridSort = "";
         string MaterialGridSort = "";
 
+        bool isPackingRequired = false;
 
         #endregion
 
@@ -85,8 +86,9 @@ namespace CuttingPlanMaker
         #endregion
 
         #region // Internal helper functions ...
-        public static Bitmap Draw(StockItem[] boards, bool usedstockonly = true)
+        public Bitmap Draw(StockItem[] boards, bool usedstockonly = true)
         {
+
             double xMargin = 50;
             double yMargin = 50;
             double boardSpacing = 70;
@@ -111,10 +113,13 @@ namespace CuttingPlanMaker
 
             // create bitmap
             Bitmap bitmap = new Bitmap((int)imageWidth, (int)imageHeight);
+
+
+
             Graphics g = Graphics.FromImage(bitmap);
 
             // fill the background with black
-            g.FillRectangle(Brushes.Black, 0, 0, (int)imageWidth, (int)imageHeight);
+            g.FillRectangle(SystemBrushes.ButtonHighlight, g.ClipBounds);
 
             // loop through all the boards to be drawn
             yOffset = yMargin;
@@ -124,7 +129,7 @@ namespace CuttingPlanMaker
                 g.FillRectangle(Brushes.DarkRed, (float)xMargin, (float)yOffset, (float)iBoard.Length, (float)iBoard.Width);
                 string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}]";
                 SizeF textSizeBoard = g.MeasureString(boardheader, boardFont);
-                g.DrawString(boardheader, boardFont, Brushes.White, (float)(xMargin), (float)(yOffset - textSizeBoard.Height));
+                g.DrawString(boardheader, boardFont, Brushes.Black, (float)(xMargin), (float)(yOffset - textSizeBoard.Height));
 
                 // loop through all the parts and draw the ones on the current board
                 //string overflowtext = "";
@@ -137,38 +142,38 @@ namespace CuttingPlanMaker
                     // draw the part
                     g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)iPlacement.Length, (float)iPlacement.Width);
 
-                    //    // print the part text
-                    //    string text1 = $"{iPlacement.Name} [{iPlacement.Length} x {iPlacement.Width}]";
+                    // print the part text
+                    string text1 = $"{iPlacement.Name} [{iPlacement.Length} x {iPlacement.Width}]";
                     //    string text2a = $"{iPlacement.Name}";
                     //    string text2b = $"[{iPlacement.Length} x {iPlacement.Width}]";
                     //    g.TranslateTransform((float)(xOffset + dWidth + iPlacement.Width / 2), (float)(dLength + iPlacement.Length / 2 + yMargin));
                     //    g.RotateTransform(-90);
 
-                    //    int sz = 16;
-                    //    do
-                    //    {
-                    //        Font partFont = new Font(new FontFamily("Consolas"), --sz);
-                    //        SizeF textSize = g.MeasureString(text1, partFont);
-                    //        if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
-                    //        {
-                    //            g.DrawString(text1, partFont, Brushes.White, -(textSize.Width / 2), -(textSize.Height / 2));
-                    //            break;
-                    //        }
-                    //        textSize = g.MeasureString(text2a, partFont);
-                    //        SizeF textSize2 = g.MeasureString(text2b, partFont);
-                    //        if (Math.Max(textSize.Width, textSize2.Width) < iPlacement.Length && textSize.Height + textSize2.Height < iPlacement.Width)
-                    //        {
-                    //            g.DrawString(text2a, partFont, Brushes.White, -(textSize.Width / 2), -textSize.Height);
-                    //            g.DrawString(text2b, partFont, Brushes.White, -(textSize2.Width / 2), 0);
-                    //            break;
-                    //        }
-                    //        if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
-                    //        {
-                    //            g.DrawString(text2a, partFont, Brushes.White, -(textSize.Width / 2), -(textSize.Height / 2));
-                    //            overflowtext += text1 + ", ";
-                    //            break;
-                    //        }
-                    //    } while (sz > 1);
+                    int sz = 16;
+                    do
+                    {
+                        Font partFont = new Font(new FontFamily("Consolas"), --sz);
+                        SizeF textSize = g.MeasureString(text1, partFont);
+                        if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
+                        {
+                            g.DrawString(text1, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Width - 0.5 * textSize.Height));
+                            break;
+                        }
+                        //        textSize = g.MeasureString(text2a, partFont);
+                        //        SizeF textSize2 = g.MeasureString(text2b, partFont);
+                        //        if (Math.Max(textSize.Width, textSize2.Width) < iPlacement.Length && textSize.Height + textSize2.Height < iPlacement.Width)
+                        //        {
+                        //            g.DrawString(text2a, partFont, Brushes.White, -(textSize.Width / 2), -textSize.Height);
+                        //            g.DrawString(text2b, partFont, Brushes.White, -(textSize2.Width / 2), 0);
+                        //            break;
+                        //        }
+                        //        if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
+                        //        {
+                        //            g.DrawString(text2a, partFont, Brushes.White, -(textSize.Width / 2), -(textSize.Height / 2));
+                        //            overflowtext += text1 + ", ";
+                        //            break;
+                        //        }
+                    } while (sz > 1);
 
 
                     //    g.RotateTransform(90);
@@ -183,6 +188,15 @@ namespace CuttingPlanMaker
 
                 yOffset += iBoard.Width + boardSpacing;
             }
+
+
+            if (isPackingRequired)
+            {
+                Brush hbrush = new SolidBrush(Color.FromArgb(40, Color.Red));
+                g.FillRectangle(hbrush, g.ClipBounds);
+                //g.DrawString("Repacking is required", boardFont,Brushes.White,0,0);
+            }
+
 
             g.Flush();
             //bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
@@ -467,256 +481,21 @@ namespace CuttingPlanMaker
                 t.PackedPartsTotalArea = 0;
             });
 
+            // for every material, filter the parts and stock and pack each set separately
+            for (int i = 0; i < Materials.Count; i++)
+            {
+                Material iMaterial = Materials[i];
+                Part[] iParts = Parts.Where(t => t.Material == iMaterial.Name).ToArray();
+                StockItem[] iStock = Stock.Where(t => t.Material == iMaterial.Name).ToArray();
 
-            Packer.Pack(Parts.ToArray()
-                , Stock.ToArray()
+                Packer.Pack(iParts
+                , iStock
                 , double.Parse(Setting.BladeKerf)
                 , double.Parse(Setting.PartPaddingLength)
                 , double.Parse(Setting.PartPaddingWidth));
-#if false
-            
-            Parts.ToList().ForEach(t => t.isPacked = true);
+            }
 
-            var BoardA = Stock.First(t => t.Name == "A");
-            BoardA.PackedParts = new Part[]
-            {
-                Parts.First(t => t.Name == "023"),
-                Parts.First(t => t.Name == "008"),
-                Parts.First(t => t.Name == "007"),
-                Parts.First(t => t.Name == "005"),
-                Parts.First(t => t.Name == "046"),
-                Parts.First(t => t.Name == "037"),
-                Parts.First(t => t.Name == "036"),
-                Parts.First(t => t.Name == "027"),
-                Parts.First(t => t.Name == "026"),
-                Parts.First(t => t.Name == "014"),
-            };
-            BoardA.PackedPartsCount = 10;
-            BoardA.isComplete = true;
-            BoardA.PackedPartsTotalArea = .87 * BoardA.Area;
-            BoardA.isInUse = true;
-            BoardA.PackedPartdLengths = new double[]
-            {
-                    0.0,
-                 958.2,
-                 0.0,
-                 958.2,
-                   0.0,
-                 313.2,
-                 626.4,
-                 939.6,
-                1252.8,
-                1566.0,
-            };
-            BoardA.PackedPartdWidths = new double[]
-            {
-                 0.0,
-                 0.0,
-                83.2,
-                83.2,
-                156.0,
-                156.0,
-                156.0,
-                156.0,
-                156.0,
-                156.0
-            };
-            var BoardB = Stock.First(t => t.Name == "B");
-            BoardB.PackedParts = new Part[]
-            {
-                Parts.First(t => t.Name == "002"),
-            };
-            BoardB.PackedPartsCount = 1;
-            BoardB.isComplete = true;
-            BoardB.PackedPartsTotalArea = .09 * BoardB.Area;
-            BoardB.isInUse = true;
-            BoardB.PackedPartdLengths = new double[]
-            {
-                    0.0,
-            };
-            BoardB.PackedPartdWidths = new double[]
-            {
-                 0.0,
-            };
-            var BoardC = Stock.First(t => t.Name == "C");
-            BoardC.PackedParts = new Part[]
-                 {
-                Parts.First(t => t.Name == "043"),
-                Parts.First(t => t.Name == "033"),
-                Parts.First(t => t.Name == "038"),
-                Parts.First(t => t.Name == "029"),
-                Parts.First(t => t.Name == "028"),
-                Parts.First(t => t.Name == "016"),
-                Parts.First(t => t.Name == "015"),
-                Parts.First(t => t.Name == "047"),
-                Parts.First(t => t.Name == "022"),
-                Parts.First(t => t.Name == "021"),
-                Parts.First(t => t.Name == "050"),
-                Parts.First(t => t.Name == "040"),
-                Parts.First(t => t.Name == "030"),
-                Parts.First(t => t.Name == "020"),
-                 };
-            BoardC.PackedPartsCount = 14;
-            BoardC.isComplete = true;
-            BoardC.PackedPartsTotalArea = .882 * BoardC.Area;
-            BoardC.isInUse = true;
-            BoardC.PackedPartdLengths = new double[]
-            {
-  0.0,
-    958.2, 
-            0.0, 
-            357.7,
-            715.4,
-           1073.1, 
-          1430.8, 
-          1788.5, 
-           0.0, 
-            330.7,
-          661.4, 
-         963.6, 
-          1265.8, 
-            1568.0,
-            };
-            BoardC.PackedPartdWidths = new double[]
-            {
-            0.0,
-            0.0,
-             83.2,
-             83.2,
-             83.2,
-             83.2,
-             83.2,
-             83.2,
-             122.4,
-             122.4,
-             122.4,
-             122.4,
-             122.4,
-             122.4,
-            };
-            var BoardD = Stock.First(t => t.Name == "D");
-            BoardD.PackedParts = new Part[]
-                 {
-                Parts.First(t => t.Name == "010"),
-                Parts.First(t => t.Name == "009"),
-                Parts.First(t => t.Name == "006"),
-                Parts.First(t => t.Name == "045"),
-                Parts.First(t => t.Name == "044"),
-                Parts.First(t => t.Name == "035"),
-                Parts.First(t => t.Name == "013"),
-                Parts.First(t => t.Name == "019"),
-                Parts.First(t => t.Name == "018"),
-                Parts.First(t => t.Name == "017"),
-                 };
-            BoardD.PackedPartsCount = 10;
-            BoardD.isComplete = true;
-            BoardD.PackedPartsTotalArea = .824 * BoardD.Area;
-            BoardD.isInUse = true;
-            BoardD.PackedPartdLengths = new double[]
-            {
-       0.0,
-       958.2,
-       0.0,
-       958.2,
-       1271.4,
-       1584.6,
-       0.0,
-       313.2,
-       313.2,
-       615.4,
-            };
-            BoardD.PackedPartdWidths = new double[]
-            {
-                   0.0,
-        0.0,
-        63.2,
-        63.2,
-        63.2,
-        63.2,
-        126.4,
-        126.4,
-        149.6,
-        126.4,
-            };
-            var BoardE = Stock.First(t => t.Name == "E");
-           
-            var BoardF = Stock.First(t => t.Name == "F");
-            BoardF.PackedParts = new Part[]
-    {
-                Parts.First(t => t.Name == "003"),
-                Parts.First(t => t.Name == "001"),
-                Parts.First(t => t.Name == "049"),
-                Parts.First(t => t.Name == "048"),
-                Parts.First(t => t.Name == "039"),
-                Parts.First(t => t.Name == "042"),
-                Parts.First(t => t.Name == "041"),
-                Parts.First(t => t.Name == "032"),
-                Parts.First(t => t.Name == "032"),
-    };
-            BoardF.PackedPartsCount = 9;
-            BoardF.isComplete = true;
-            BoardF.PackedPartsTotalArea = .927 * BoardF.Area;
-            BoardF.isInUse = true;
-            BoardF.PackedPartdLengths = new double[]
-            {
-       0.0,
-       0.0,
-       1724.9,
-       1724.9,
-       1724.9,
-       1724.9,
-       1724.9,
-       1724.9,
-       1724.9,
-            };
-            BoardF.PackedPartdWidths = new double[]
-            {
-                   0.0,
-        103.2,
-        0.0,
-        39.2,
-        78.4,
-        117.6,
-        140.8,
-        164.0,
-        187.2,
-            };
-            var BoardG = Stock.First(t => t.Name == "G");
-            
-            BoardG.PackedParts = new Part[]
-{
-                Parts.First(t => t.Name == "034"),
-                Parts.First(t => t.Name == "025"),
-                Parts.First(t => t.Name == "024"),
-                Parts.First(t => t.Name == "012"),
-                Parts.First(t => t.Name == "011"),
-                Parts.First(t => t.Name == "004"),
-};
-            BoardG.PackedPartsCount = 6;
-            BoardG.isComplete = true;
-            BoardG.PackedPartsTotalArea = .647 * BoardG.Area;
-            BoardG.isInUse = true;
-            BoardG.PackedPartdLengths = new double[]
-            {
-            0.0,
-            313.2,
-            626.4,
-            939.6,
-            1252.8,
-            1566.0,
-            };
-            BoardG.PackedPartdWidths = new double[]
-            {
-                   0.0,
-             0.0,
-             0.0,
-             0.0,
-             0.0,
-             0.0,
-            };
-            var BoardH = Stock.First(t => t.Name == "H");
-
-#endif
+            isPackingRequired = false;
             pbLayout.Invalidate();
 
         }
@@ -749,8 +528,16 @@ namespace CuttingPlanMaker
         {
             if (sender == MaterialsGridView)
                 PopulateMaterialTabs();
+
             IsFileSaved = false;
-            PackSolution();
+
+            if (Setting.AutoRepack == "true")
+                PackSolution();
+            else
+            {
+                isPackingRequired = true;
+                pbLayout.Invalidate();
+            }
         }
 
         private void onGridDataChangeByUser(object sender, DataGridViewCellEventArgs e)
@@ -759,7 +546,13 @@ namespace CuttingPlanMaker
                 PopulateMaterialTabs();
 
             IsFileSaved = false;
-            PackSolution();
+            if (Setting.AutoRepack == "true")
+                PackSolution();
+            else
+            {
+                isPackingRequired = true;
+                pbLayout.Invalidate();
+            }
         }
 
         private void mniFileExit_Click(object sender, EventArgs e)
@@ -821,7 +614,13 @@ namespace CuttingPlanMaker
             if (new frmSettingsDialog(Setting).ShowDialog() == DialogResult.OK)
             {
                 if (FilePath != "") SaveConfig();
-                PackSolution();
+                if (Setting.AutoRepack == "true")
+                    PackSolution();
+                else
+                {
+                    isPackingRequired = true;
+                    pbLayout.Invalidate();
+                }
             }
         }
 
@@ -1051,7 +850,16 @@ namespace CuttingPlanMaker
 
         private void mniReportLayout_Click(object sender, EventArgs e)
         {
-            //PackSolution();
+            if (Setting.AutoRepack == "true")
+                PackSolution();
+            else
+            {
+                if (isPackingRequired)
+                {
+                    MessageBox.Show("Parts have not been packed after changes were made. Please repack first");
+                    return;
+                }
+            }
 
             new LayoutReport()
                 .Generate(Setting, Materials, Stock, Parts)
@@ -1073,18 +881,37 @@ namespace CuttingPlanMaker
             StockItem[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
             // draw the layout
             Graphics gfx = e.Graphics;
-            Bitmap bitmap = Draw(stockItems);
-            float ScaleF = Math.Min((float)e.ClipRectangle.Width/ bitmap.Width, (float) e.ClipRectangle.Height/ bitmap.Height);
+            Bitmap bitmap = Draw(stockItems, Setting.DrawUnusedStock != "true");
+            float ScaleF = Math.Min((float)e.ClipRectangle.Width / bitmap.Width, (float)e.ClipRectangle.Height / bitmap.Height);
 
-            gfx.DrawImage(bitmap, 0f,0f,bitmap.Width * ScaleF,bitmap.Height * ScaleF);
+            gfx.DrawImage(bitmap, 0f, 0f, bitmap.Width * ScaleF, bitmap.Height * ScaleF);
 
             gfx.Flush();
         }
-        #endregion
 
         private void tcMaterials_SelectedIndexChanged(object sender, EventArgs e)
         {
             pbLayout.Invalidate();
+        }
+        #endregion
+
+        private void PartsGridView_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            //PartsGridView.Rows[0].AdjustRowHeaderBorderStyle = new Func<DataGridViewAdvancedBorderStyle, DataGridViewAdvancedBorderStyle, bool, bool, bool, bool, DataGridViewAdvancedBorderStyle>() { };
+        }
+
+        private void PartsGridView_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        {
+            if (!Parts[e.RowIndex].isPacked)
+                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.OrangeRed;
+            else
+            {
+                if (e.RowIndex % 2 == 1)
+                    PartsGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGray;
+                else
+                    PartsGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White;
+            }
+
         }
     }
 }

@@ -25,7 +25,7 @@ namespace CuttingPlanMaker
             tbSawBladeKerf.Text = _settings.BladeKerf;
             tbPartPaddingLength.Text = _settings.PartPaddingLength;
             tbPartPaddingWidth.Text = _settings.PartPaddingWidth;
-            cbAutoRecalc.Checked = _settings.AutoRecalc == "true";
+            cbAutoRecalc.Checked = _settings.AutoRepack == "true";
             cbDrawUnused.Checked = _settings.DrawUnusedStock == "true";
             ddlOrientation.Text = _settings.ResultOrientation;
             tbProjectName.Text = _settings.ProjectName;
@@ -43,7 +43,7 @@ namespace CuttingPlanMaker
             _settings.BladeKerf = tbSawBladeKerf.Text;
             _settings.PartPaddingLength = tbPartPaddingLength.Text;
             _settings.PartPaddingWidth = tbPartPaddingWidth.Text;
-            _settings.AutoRecalc = cbAutoRecalc.Checked ? "true" : "false";
+            _settings.AutoRepack = cbAutoRecalc.Checked ? "true" : "false";
             _settings.DrawUnusedStock = cbDrawUnused.Checked ? "true" : "false";
             _settings.ResultOrientation = ddlOrientation.Text;
             _settings.IncludePaddingInReports = cbIncludePaddingOnReports.Checked ? "true" : "false";

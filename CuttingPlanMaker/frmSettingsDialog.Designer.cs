@@ -125,9 +125,9 @@
             this.cbAutoRecalc.AutoSize = true;
             this.cbAutoRecalc.Location = new System.Drawing.Point(264, 16);
             this.cbAutoRecalc.Name = "cbAutoRecalc";
-            this.cbAutoRecalc.Size = new System.Drawing.Size(109, 17);
+            this.cbAutoRecalc.Size = new System.Drawing.Size(95, 17);
             this.cbAutoRecalc.TabIndex = 10;
-            this.cbAutoRecalc.Text = "Auto - recalculate";
+            this.cbAutoRecalc.Text = "Auto - Repack";
             this.cbAutoRecalc.UseVisualStyleBackColor = true;
             // 
             // tbPartPaddingWidth

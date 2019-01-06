@@ -19,7 +19,7 @@ namespace CuttingPlanMaker
         public string PartPaddingWidth { get; set; }
 
         [CsvColumn(Name = "AutoRecalc", FieldIndex = 4)]
-        public string AutoRecalc { get; set; }
+        public string AutoRepack { get; set; }
 
         [CsvColumn(Name = "ResultOrientation", FieldIndex = 5)]
         public string ResultOrientation { get; set; }
