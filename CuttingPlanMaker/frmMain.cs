@@ -400,7 +400,7 @@ namespace CuttingPlanMaker
         private void LoadDefault()
         {
             // start from scratch
-            LoadFile("Default");
+            LoadFile("test");
             FilePath = "";
         }
 
@@ -969,7 +969,7 @@ namespace CuttingPlanMaker
         {
             if (e.Delta > 0)
                 userZoomFactor = userZoomFactor * 1.2f;
-            else if (e.Delta < 0)
+            else if (e.Delta < 0 && userZoomFactor >= 1)
                 userZoomFactor = userZoomFactor / 1.2f;
             pbLayout.Invalidate();
         }
@@ -1019,10 +1019,11 @@ namespace CuttingPlanMaker
         {
             if (e.Button == MouseButtons.Left)
             {
-                RectangleF nr = PbToImageSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor);
-                //nr.X -= pbLayout.Width / 2;
-                //nr.Y -= pbLayout.Height / 2;
-                userOffset = nr.Location;
+                userOffset = PbToImageSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor).Location;
+                if (userOffset.X < -LayoutBitmap.Width / 2) userOffset.X = -LayoutBitmap.Width / 2;
+                if (userOffset.X > LayoutBitmap.Width / 2) userOffset.X = LayoutBitmap.Width / 2;
+                if (userOffset.Y < -LayoutBitmap.Height / 2) userOffset.Y = -LayoutBitmap.Height / 2;
+                if (userOffset.Y > LayoutBitmap.Height / 2) userOffset.Y = LayoutBitmap.Height / 2;
                 pbLayout.Invalidate();
             }
             if (e.Button == MouseButtons.Right)
@@ -1048,7 +1049,10 @@ namespace CuttingPlanMaker
                 PointF DeltaMouse = new PointF(e.X - OrigMouseDownPoint.X, e.Y - OrigMouseDownPoint.Y);
                 PointF DeltaImage = new PointF(DeltaMouse.X / (userZoomFactor * unityScaleFactor), DeltaMouse.Y / (userZoomFactor * unityScaleFactor));
                 userOffset = new PointF(OrigUserOffset.X + DeltaImage.X, OrigUserOffset.Y + DeltaImage.Y);
-
+                if (userOffset.X < -LayoutBitmap.Width / 2) userOffset.X = -LayoutBitmap.Width / 2;
+                if (userOffset.X > LayoutBitmap.Width / 2) userOffset.X = LayoutBitmap.Width / 2;
+                if (userOffset.Y < -LayoutBitmap.Height / 2) userOffset.Y = -LayoutBitmap.Height / 2;
+                if (userOffset.Y > LayoutBitmap.Height / 2) userOffset.Y = LayoutBitmap.Height / 2;
                 //redraw the image
                 pbLayout.Invalidate();
             }

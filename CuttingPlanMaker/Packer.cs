@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -6,6 +8,50 @@ namespace CuttingPlanMaker
 {
     public class Packer
     {
+        public static Bitmap Drawboard_debug(StockItem board, StockItem[] segments, int segcount)
+        {
+            double xMargin = 50;
+            double yMargin = 50;
+
+            double imageHeight = board.Width + 2 * yMargin;
+            double imageWidth = board.Length + 2 * xMargin;
+
+            // create bitmap
+            Bitmap bitmap = new Bitmap((int)imageWidth, (int)imageHeight);
+            Graphics g = Graphics.FromImage(bitmap);
+            // draw the board
+            g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
+
+            for (int i = 0; i < segcount; i++)
+            {
+                StockItem iseg = segments[i];
+                if(!iseg.isInUse)
+                    g.FillRectangle(new SolidBrush(Color.FromArgb(30,Color.Red)), (float)(xMargin + iseg.dLength), (float)(yMargin + iseg.dWidth), (float)iseg.Length, (float)iseg.Width);
+            }
+
+            // loop through all the parts and draw the ones on the current board
+            for (int i = 0; i < board.PackedPartsCount; i++)
+            {
+                Part iPlacement = board.PackedParts[i];
+                double dLength = board.PackedPartdLengths[i];
+                double dWidth = board.PackedPartdWidths[i];
+
+                // draw the part
+                g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yMargin + dWidth), (float)iPlacement.Length, (float)iPlacement.Width);
+
+                // print the part text
+                string partLabel = $"{iPlacement.Name}";
+                Font partFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
+                g.DrawString(partLabel, partFont, Brushes.Black, (float)(xMargin + dLength), (float)(yMargin + dWidth));
+            }
+            // draw the board
+            //g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
+
+            g.Flush();
+            return bitmap;
+        }
+
+
         /// <summary>
         ///  do the internal preperation to pack a set of parts onto a set of boards with a collection of options
         /// </summary>
@@ -34,8 +80,10 @@ namespace CuttingPlanMaker
             int packedBoardsCount = 0;
 
             // repeat until all parts are placed, or all boards packed
+            int iteration = 0;
             while (packedPartsCount < partsCount && packedBoardsCount < boardsCount)
             {
+                iteration++;
                 Task[] threads = new Task[boardsCount];
                 for (int i = 0; i < boardsCount; i++)
                 {
@@ -56,7 +104,8 @@ namespace CuttingPlanMaker
                             BoardSectionsCount = 1,
                             CurrentSolution = new Part[partsCount],
                             CurrentSolutionDLengths = new double[partsCount],
-                            CurrentSolutionDWidths = new double[partsCount]
+                            CurrentSolutionDWidths = new double[partsCount],
+                            iteration = iteration
                         };
                         iPacker.BoardSections[0] = new StockItem(iBoard.Name, iBoard.Length, iBoard.Width, iBoard.dLength, iBoard.dWidth);
 
@@ -69,6 +118,7 @@ namespace CuttingPlanMaker
                 // Find the best packed board from this iteration
                 IEnumerable<StockItem> incompleteBoards = orderredBoards.Where(q => !q.isComplete);
                 StockItem BestCoverredBoard = incompleteBoards.OrderByDescending(t => t.PackedPartsTotalArea / t.Area).FirstOrDefault();
+                //StockItem BestCoverredBoard = incompleteBoards.OrderBy(t => t.Area-t.PackedPartsTotalArea).FirstOrDefault();
 
                 // If no board could be packed, exit
                 if (BestCoverredBoard == null)
@@ -90,7 +140,7 @@ namespace CuttingPlanMaker
 
                 if (BestCoverredBoard.PackedParts != null)
                 {
-                    
+
 
                     //Compact the packed parts array of the board
                     BestCoverredBoard.PackedParts = BestCoverredBoard.PackedParts.Where(t => t != null).ToArray();
@@ -122,7 +172,8 @@ namespace CuttingPlanMaker
             public double CurrentSolutionTotalArea;
 
             public double sawkerf;
-
+            int cn = 0;
+            public int iteration = 0;
             public void StartPacking()
             {
                 double lastPartLength = -1;
@@ -140,6 +191,7 @@ namespace CuttingPlanMaker
                     if (iPart.Area > Board.Area) continue;
                     // short-circuit repeat parts
                     if (iPart.Length == lastPartLength && iPart.Width == lastPartWidth) continue;
+
                     // ignore parts already temporarily packed
                     if (CurrentSolution.Contains(iPart)) continue;
 
@@ -163,10 +215,12 @@ namespace CuttingPlanMaker
                     CurrentSolutionDWidths[CurrentSolutionPartCount] = iBoardSection.dWidth;
                     CurrentSolution[CurrentSolutionPartCount++] = iPart;
                     CurrentSolutionTotalArea += iPart.Area;
+                    iBoardSection.isInUse = true;
                     #endregion
 
                     #region // store best solution ...
                     //if this is a better solution than the current best one ... replace the current best one
+                    bool replaced = false;
                     if (CurrentSolutionTotalArea > Board.PackedPartsTotalArea)
                     {
                         Board.PackedParts = CurrentSolution.Clone() as Part[];
@@ -174,6 +228,8 @@ namespace CuttingPlanMaker
                         Board.PackedPartdWidths = CurrentSolutionDWidths.Clone() as double[];
                         Board.PackedPartsCount = CurrentSolutionPartCount;
                         Board.PackedPartsTotalArea = CurrentSolutionTotalArea;
+                        replaced = true;
+                        
                     }
                     #endregion
 
@@ -183,6 +239,7 @@ namespace CuttingPlanMaker
                         oAssocWidth = 0,
                         oiBoardLength = 0,
                         oiBoardWidth = 0;
+
                     // if the board section used has a buddy from a previous placement
                     if (iAssocBoardSection != null)
                     {
@@ -213,17 +270,18 @@ namespace CuttingPlanMaker
                             else
                                 // adjust rem2 so it does not overlap rem1
                                 iBoardSection.Length -= (iAssocBoardSection.Length + sawkerf);
-                        }
 
+                        }
                         // break the association
                         iAssocBoardSection.AssociatedBoard = null;
                         iBoardSection.AssociatedBoard = null;
+
                     }
                     #endregion
 
                     #region // replace the used board with 2 overlapping remainder pieces after subtracting the part ...
                     // divide the board into two overlapping remainder sections
-                    iBoardSection.isInUse = true;
+
 
                     // create new sections
                     StockItem boardSection1 = new StockItem(iBoardSection.Name, iBoardSection.Length - iPart.Length - sawkerf, iBoardSection.Width, iBoardSection.dLength + iPart.Length + sawkerf, iBoardSection.dWidth);
@@ -233,7 +291,11 @@ namespace CuttingPlanMaker
                     int boardSection1Index = BoardSectionsCount;
                     int boardSection2Index = BoardSectionsCount;
 
-                    if (boardSection1.Area > Parts[0].Area)
+                    double smallestPartArea = Parts.OrderBy(t=>t.Area).First().Area;
+                    double smallestPartWidth = Parts.OrderBy(t=>t.Width).First().Width;
+                    double smallestPartLength = Parts.OrderBy(t => t.Length).First().Length;
+
+                    if (boardSection1.Area > smallestPartArea && boardSection1.Length >= smallestPartLength && boardSection1.Width >= smallestPartWidth)
                     {
                         // insert the new rem1 section so the boardsections remain sorted by area
                         for (boardSection1Index = BoardSectionsCount; ; boardSection1Index--)
@@ -253,7 +315,7 @@ namespace CuttingPlanMaker
                     }
 
 
-                    if (boardSection2.Area > Parts[0].Area)
+                    if (boardSection2.Area > smallestPartArea && boardSection2.Length >= smallestPartLength && boardSection2.Width >= smallestPartWidth)
                     {
                         // insert the new rem2 section so the boardsections remain sorted by area
                         for (boardSection2Index = BoardSectionsCount; ; boardSection2Index--)
@@ -273,6 +335,12 @@ namespace CuttingPlanMaker
                     }
 
                     #endregion
+
+                    if (replaced)
+                    {
+                        Bitmap bmp = Drawboard_debug(Board, BoardSections, BoardSectionsCount);
+                        bmp.Save($"dbgimages\\{Board.Name}_{iteration}_{cn++}.bmp");
+                    }
 
                     #region // pack the remaining parts on the remaining boards ...
                     // pack the remaining parts on the remaining boards
