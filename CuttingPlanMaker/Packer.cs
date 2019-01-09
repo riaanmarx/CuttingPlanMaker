@@ -211,13 +211,14 @@ namespace CuttingPlanMaker
                     #region // check if the part is a viable candidate ...
                     // ignore parts already packed
                     if (iPart.isPacked) continue;
+                    // ignore parts already temporarily packed
+                    if (CurrentSolution.Contains(iPart)) continue;
                     // ignore parts larger than the largest board section
                     if (iPart.Area > Board.Area) break;
                     // short-circuit repeat parts
                     if (iPart.Length == lastPartLength && iPart.Width == lastPartWidth) continue;
 
-                    // ignore parts already temporarily packed
-                    if (CurrentSolution.Contains(iPart)) continue;
+                    
 
                     lastPartLength = iPart.Length;
                     lastPartWidth = iPart.Width;
@@ -226,7 +227,7 @@ namespace CuttingPlanMaker
                     #region // Find first board that will fit the part ...
                     // find first board that will accomodate the part
                     int j = 0;
-                    while (j < BoardSectionsCount && BoardSections[j].Area < iPart.Area) j++;
+                    //while (j < BoardSectionsCount && BoardSections[j].Area < iPart.Area) j++;
                     while (j < BoardSectionsCount && (BoardSections[j].isInUse || iPart.Length > BoardSections[j].Length || iPart.Width > BoardSections[j].Width)) j++;
 
                     // if no boards will accomodate the part, continue to next part
