@@ -87,6 +87,7 @@
     <Compile Include="ReportBase.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="StockItem.cs" />
+    <Compile Include="CuttingLabelsReport.cs" />
     <Compile Include="StockReport.cs" />
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>

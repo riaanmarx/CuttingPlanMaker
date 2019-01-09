@@ -359,12 +359,12 @@ namespace CuttingPlanMaker
             Materials = CSVFile.Read<Material>($"{FilePath}.Materials.CSV");
             Stock = CSVFile.Read<StockItem>($"{FilePath}.Stock.CSV");
             Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
-
+            
             // update the tabs for the layout drawings
             PopulateMaterialTabs();
 
             // pack the solution before drawing the grids
-            PackSolution();
+           // if(Setting.AutoRepack=="true") PackSolution();
 
             // bind the materials grid
             BindMaterialsGrid();
@@ -400,7 +400,7 @@ namespace CuttingPlanMaker
         private void LoadDefault()
         {
             // start from scratch
-            LoadFile("test");
+            LoadFile("Default");
             FilePath = "";
         }
 
@@ -1056,6 +1056,15 @@ namespace CuttingPlanMaker
                 //redraw the image
                 pbLayout.Invalidate();
             }
+        }
+
+        private void mniReportLayoutLabels_Click(object sender, EventArgs e)
+        {
+            new CuttingLabelReport()
+               .Generate(Setting, Materials, Stock, Parts)
+               .Save("CuttingLabelsReport.pdf");
+
+            Process.Start("CuttingLabelsReport.pdf");
         }
     }
 }

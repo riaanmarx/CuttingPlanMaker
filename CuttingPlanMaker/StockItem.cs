@@ -29,13 +29,16 @@ namespace CuttingPlanMaker
 
         public StockItem AssociatedBoard { get; set; }
 
-        public Part[] PackedParts { get; set; }
+        public Part[] PackedParts;
         public double[] PackedPartdLengths { get; set; }
         public double[] PackedPartdWidths { get; set; }
         public double PackedPartsTotalArea { get; set; }
         public int PackedPartsCount { get; set; }
         public bool isComplete { get; set; }
         public bool isInUse { get; set; }
+
+        public double oldLength;// { get; set; }
+        public double oldWidth;// { get; set; }
 
         public StockItem()
         { }
