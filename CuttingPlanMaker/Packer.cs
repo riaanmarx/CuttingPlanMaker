@@ -97,7 +97,7 @@ namespace CuttingPlanMaker
                         // reference board[i]
                         StockItem iBoard = orderredBoards[(int)o];
                         if (iBoard.isComplete) return;
-                        if (iBoard.Name != "B") return;
+                        //if (iBoard.Name != "B") return;
 
                         // init a packer object
                         Packer_internal iPacker = new Packer_internal()
@@ -197,6 +197,7 @@ namespace CuttingPlanMaker
 
             public double sawkerf;
             public int iteration = 0;
+            public int cn = 0;
             public void StartPacking(int iStart)
             {
                 double lastPartLength = -1;
@@ -354,7 +355,7 @@ namespace CuttingPlanMaker
                     //Drawboard_debug(
                     //    Board,
                     //    BoardSections, BoardSectionsCount,
-                    //    CurrentSolution, CurrentSolutionDLengths, CurrentSolutionDWidths, CurrentSolutionPartCount, CurrentSolutionTotalArea).Save($"dbgimages\\{Board.Name}_{iteration}_{cn++}{(replaced ? "_better" : "")}.bmp");
+                    //    CurrentSolution, CurrentSolutionDLengths, CurrentSolutionDWidths, CurrentSolutionPartCount, CurrentSolutionTotalArea).Save($"dbgimages\\{Board.Name}_{cn++}.bmp");
 #endif
                     #region // pack the remaining parts on the remaining boards ...
                     // pack the remaining parts on the remaining boards
