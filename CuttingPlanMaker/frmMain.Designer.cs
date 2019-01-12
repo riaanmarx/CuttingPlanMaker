@@ -61,6 +61,7 @@
             this.mniReportPartsList = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportStockList = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportLayout = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportLayoutLabels = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -118,7 +119,6 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
-            this.mniReportLayoutLabels = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -284,23 +284,30 @@
             // mniReportPartsList
             // 
             this.mniReportPartsList.Name = "mniReportPartsList";
-            this.mniReportPartsList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportPartsList.Size = new System.Drawing.Size(143, 22);
             this.mniReportPartsList.Text = "Parts list";
             this.mniReportPartsList.Click += new System.EventHandler(this.mniReportPartsList_Click);
             // 
             // mniReportStockList
             // 
             this.mniReportStockList.Name = "mniReportStockList";
-            this.mniReportStockList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportStockList.Size = new System.Drawing.Size(143, 22);
             this.mniReportStockList.Text = "Stock list";
             this.mniReportStockList.Click += new System.EventHandler(this.mniReportStockList_Click);
             // 
             // mniReportLayout
             // 
             this.mniReportLayout.Name = "mniReportLayout";
-            this.mniReportLayout.Size = new System.Drawing.Size(180, 22);
+            this.mniReportLayout.Size = new System.Drawing.Size(143, 22);
             this.mniReportLayout.Text = "Layout";
             this.mniReportLayout.Click += new System.EventHandler(this.mniReportLayout_Click);
+            // 
+            // mniReportLayoutLabels
+            // 
+            this.mniReportLayoutLabels.Name = "mniReportLayoutLabels";
+            this.mniReportLayoutLabels.Size = new System.Drawing.Size(143, 22);
+            this.mniReportLayoutLabels.Text = "Layout labels";
+            this.mniReportLayoutLabels.Click += new System.EventHandler(this.mniReportLayoutLabels_Click);
             // 
             // mniHelp
             // 
@@ -985,13 +992,6 @@
             this.btnCollapseExpandTab.TabIndex = 4;
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
-            // 
-            // mniReportLayoutLabels
-            // 
-            this.mniReportLayoutLabels.Name = "mniReportLayoutLabels";
-            this.mniReportLayoutLabels.Size = new System.Drawing.Size(180, 22);
-            this.mniReportLayoutLabels.Text = "Layout labels";
-            this.mniReportLayoutLabels.Click += new System.EventHandler(this.mniReportLayoutLabels_Click);
             // 
             // frmMain
             // 

@@ -102,7 +102,7 @@ namespace CuttingPlanMaker
             // create list of boards to draw
             List<StockItem> boardsToDraw = new List<StockItem>(boards);
             if (usedstockonly)
-                boardsToDraw = boards.Where(t => t.PackedParts != null).ToList();
+                boardsToDraw = boards.Where(t => t.PackedPartsCount>0).ToList();
 
             // calculate width & height required for the bitmap
             foreach (var iBoard in boardsToDraw)
@@ -128,7 +128,7 @@ namespace CuttingPlanMaker
             {
                 // draw the board
                 g.FillRectangle(Brushes.DarkRed, (float)xMargin, (float)yOffset, (float)iBoard.Length, (float)iBoard.Width);
-                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}]";
+                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}] ({iBoard.PackedPartsTotalArea / iBoard.Area * 100 :0.0}%)";
                 SizeF textSizeBoard = g.MeasureString(boardheader, boardFont);
                 g.DrawString(boardheader, boardFont, Brushes.Black, (float)(xMargin), (float)(yOffset - textSizeBoard.Height));
 
@@ -139,12 +139,14 @@ namespace CuttingPlanMaker
                     Part iPlacement = iBoard.PackedParts[i];
                     double dLength = iBoard.PackedPartdLengths[i];
                     double dWidth = iBoard.PackedPartdWidths[i];
+                    double Length = iPlacement.Length + (Setting.IncludePaddingInDisplay == "true" ? double.Parse(Setting.PartPaddingLength) : 0f);
+                    double Width = iPlacement.Width + (Setting.IncludePaddingInDisplay == "true" ? double.Parse(Setting.PartPaddingWidth) : 0f);
 
                     // draw the part
-                    g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)iPlacement.Length, (float)iPlacement.Width);
+                    g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
 
                     // print the part text
-                    string partLabel = $"{iPlacement.Name} [{iPlacement.Length} x {iPlacement.Width}]";
+                    string partLabel = $"{iPlacement.Name} [{Length} x {iPlacement.Width}]";
 
                     int sz = 16;
                     Font partFont;
@@ -364,7 +366,7 @@ namespace CuttingPlanMaker
             PopulateMaterialTabs();
 
             // pack the solution before drawing the grids
-           // if(Setting.AutoRepack=="true") PackSolution();
+            if(Setting.AutoRepack=="true") PackSolution();
 
             // bind the materials grid
             BindMaterialsGrid();
@@ -475,19 +477,22 @@ namespace CuttingPlanMaker
                 Part[] iParts = Parts.Where(t => t.Material == iMaterial.Name).ToArray();
                 StockItem[] iStock = Stock.Where(t => t.Material == iMaterial.Name).ToArray();
 
-                Packer.Pack(iParts
-                , iStock
-                , double.Parse(Setting.BladeKerf)
-                , double.Parse(Setting.PartPaddingLength)
-                , double.Parse(Setting.PartPaddingWidth));
+                try
+                {
+                    Packer_points.Pack(iParts
+                            , iStock
+                            , double.Parse(Setting.BladeKerf)
+                            , double.Parse(Setting.PartPaddingLength)
+                            , double.Parse(Setting.PartPaddingWidth));
+                }
+                catch (Exception)
+                {
+                }
             }
 
             isPackingRequired = false;
-
-
-
+                       
             pbLayout.Invalidate();
-
         }
 
         #endregion
@@ -522,7 +527,9 @@ namespace CuttingPlanMaker
             IsFileSaved = false;
 
             if (Setting.AutoRepack == "true")
-                PackSolution();
+            {
+                //PackSolution();
+            }
             else
             {
                 isPackingRequired = true;
@@ -536,13 +543,17 @@ namespace CuttingPlanMaker
                 PopulateMaterialTabs();
 
             IsFileSaved = false;
+
             if (Setting.AutoRepack == "true")
+            {
                 PackSolution();
+            }
             else
             {
                 isPackingRequired = true;
                 pbLayout.Invalidate();
             }
+
         }
 
         private void mniFileExit_Click(object sender, EventArgs e)
@@ -832,26 +843,59 @@ namespace CuttingPlanMaker
         {
             if (tcInputs.SelectedTab == tpMaterials)
             {
+                MaterialsGridView.SuspendLayout();
                 foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
                 {
                     Materials.Remove((Material)item.DataBoundItem);
                     IsFileSaved = false;
                 }
+                MaterialsGridView.ResumeLayout();
+                if (Setting.AutoRepack == "true")
+                {
+                    PackSolution();
+                }
+                else
+                {
+                    isPackingRequired = true;
+                    pbLayout.Invalidate();
+                }
             }
             if (tcInputs.SelectedTab == tpParts)
             {
+                PartsGridView.SuspendLayout();
                 foreach (DataGridViewRow item in PartsGridView.SelectedRows)
                 {
                     Parts.Remove((Part)item.DataBoundItem);
                     IsFileSaved = false;
                 }
+                PartsGridView.ResumeLayout();
+                if (Setting.AutoRepack == "true")
+                {
+                    PackSolution();
+                }
+                else
+                {
+                    isPackingRequired = true;
+                    pbLayout.Invalidate();
+                }
             }
             if (tcInputs.SelectedTab == tpStock)
             {
+                StockGridView.SuspendLayout();
                 foreach (DataGridViewRow item in StockGridView.SelectedRows)
                 {
                     Stock.Remove((StockItem)item.DataBoundItem);
                     IsFileSaved = false;
+                }
+                StockGridView.ResumeLayout();
+                if (Setting.AutoRepack == "true")
+                {
+                    PackSolution();
+                }
+                else
+                {
+                    isPackingRequired = true;
+                    pbLayout.Invalidate();
                 }
             }
         }
@@ -1066,5 +1110,6 @@ namespace CuttingPlanMaker
 
             Process.Start("CuttingLabelsReport.pdf");
         }
+
     }
 }

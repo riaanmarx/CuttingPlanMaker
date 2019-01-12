@@ -55,6 +55,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cbIncludePaddingOnReports = new System.Windows.Forms.CheckBox();
+            this.cbIncludePaddingOnDisplay = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -63,7 +64,7 @@
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnSave.Location = new System.Drawing.Point(431, 264);
+            this.btnSave.Location = new System.Drawing.Point(431, 293);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 0;
@@ -75,7 +76,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(512, 264);
+            this.btnCancel.Location = new System.Drawing.Point(512, 293);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 0;
@@ -115,7 +116,7 @@
             this.ddlOrientation.Items.AddRange(new object[] {
             "Horizontal",
             "Vertical"});
-            this.ddlOrientation.Location = new System.Drawing.Point(280, 73);
+            this.ddlOrientation.Location = new System.Drawing.Point(280, 103);
             this.ddlOrientation.Name = "ddlOrientation";
             this.ddlOrientation.Size = new System.Drawing.Size(109, 21);
             this.ddlOrientation.TabIndex = 13;
@@ -142,7 +143,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(213, 76);
+            this.label4.Location = new System.Drawing.Point(213, 106);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(61, 13);
             this.label4.TabIndex = 11;
@@ -295,6 +296,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbIncludePaddingOnDisplay);
             this.groupBox2.Controls.Add(this.cbIncludePaddingOnReports);
             this.groupBox2.Controls.Add(this.tbSawBladeKerf);
             this.groupBox2.Controls.Add(this.label1);
@@ -308,7 +310,7 @@
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Location = new System.Drawing.Point(12, 184);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(401, 107);
+            this.groupBox2.Size = new System.Drawing.Size(401, 132);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Processing settings";
@@ -324,11 +326,22 @@
             this.cbIncludePaddingOnReports.Text = "Include Padding on Reports";
             this.cbIncludePaddingOnReports.UseVisualStyleBackColor = true;
             // 
+            // cbIncludePaddingOnDisplay
+            // 
+            this.cbIncludePaddingOnDisplay.AccessibleDescription = "";
+            this.cbIncludePaddingOnDisplay.AutoSize = true;
+            this.cbIncludePaddingOnDisplay.Location = new System.Drawing.Point(218, 75);
+            this.cbIncludePaddingOnDisplay.Name = "cbIncludePaddingOnDisplay";
+            this.cbIncludePaddingOnDisplay.Size = new System.Drawing.Size(155, 17);
+            this.cbIncludePaddingOnDisplay.TabIndex = 16;
+            this.cbIncludePaddingOnDisplay.Text = "Include Padding on Display";
+            this.cbIncludePaddingOnDisplay.UseVisualStyleBackColor = true;
+            // 
             // frmSettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(599, 299);
+            this.ClientSize = new System.Drawing.Size(599, 328);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
@@ -337,6 +350,7 @@
             this.Name = "frmSettingsDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configuration settings";
+            this.Load += new System.EventHandler(this.frmSettingsDialog_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -374,5 +388,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox cbIncludePaddingOnReports;
+        private System.Windows.Forms.CheckBox cbIncludePaddingOnDisplay;
     }
 }

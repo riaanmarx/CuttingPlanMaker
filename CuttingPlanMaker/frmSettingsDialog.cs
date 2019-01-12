@@ -35,6 +35,7 @@ namespace CuttingPlanMaker
             tbClientAddr.Text = _settings.ClientAddr;
             dtpTargetDate.Value = DateTime.Parse(_settings.TargetDate ?? DateTime.Now.ToLongDateString());
             cbIncludePaddingOnReports.Checked = _settings.IncludePaddingInReports == "true";
+            cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay == "true";
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -47,6 +48,7 @@ namespace CuttingPlanMaker
             _settings.DrawUnusedStock = cbDrawUnused.Checked ? "true" : "false";
             _settings.ResultOrientation = ddlOrientation.Text;
             _settings.IncludePaddingInReports = cbIncludePaddingOnReports.Checked ? "true" : "false";
+            _settings.IncludePaddingInDisplay = cbIncludePaddingOnDisplay.Checked ? "true" : "false";
 
             _settings.ProjectName = tbProjectName.Text;
             _settings.JobID = tbJobId.Text;
@@ -54,6 +56,11 @@ namespace CuttingPlanMaker
             _settings.ClientTelNr = tbClientNr.Text;
             _settings.ClientAddr = tbClientAddr.Text;
             _settings.TargetDate = dtpTargetDate.Value.ToLongDateString();
+        }
+
+        private void frmSettingsDialog_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
