@@ -78,20 +78,18 @@ namespace CuttingPlanMaker
 
                     c = labelTable[1, 0];       // reference the second row
                     c.Format.Font.Size = 12;
-                    c = labelTable[2, 0];
-                    c.Format.Font.Size = 8;
-                    c = labelTable[4, 0];
-                    c.Format.Font.Size = 8;
                     c.AddParagraph($"[{iPart.Length:0.0} x {iPart.Width:0.0}]");
 
-                    // populate third row
-                    labelTable[2, 0].AddParagraph($" + [{(2*Settings.PartPaddingLength):0.0} x {(2*Settings.PartPaddingWidth):0.0}]");
+                    c = labelTable[2, 0];       // populate third row
+                    c.Format.Font.Size = 8;
+                    c.AddParagraph($" + [{(2 * Settings.PartPaddingLength):0.0} x {(2 * Settings.PartPaddingWidth):0.0}]");
 
-                    // populate fourth row
-                    labelTable[3, 0].AddParagraph().AddFormattedText("on ").AddFormattedText($"{iStock.Name}",TextFormat.Bold);
+                    c = labelTable[3, 0];
+                    c.AddParagraph().AddFormattedText("on ").AddFormattedText($"{iStock.Name}", TextFormat.Bold);
 
-                    // populate sixth row
-                    labelTable[4, 0].AddParagraph($"@ ({iStock.PackedPartdLengths[j]:0.0}, {iStock.PackedPartdWidths[j]:0.0})");
+                    c = labelTable[4, 0];
+                    c.Format.Font.Size = 8;
+                    c.AddParagraph($"@ ({iStock.PackedPartdLengths[j]:0.0}, {iStock.PackedPartdWidths[j]:0.0})");
 
                     cntr++;
                 }

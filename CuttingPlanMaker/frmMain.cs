@@ -1267,6 +1267,17 @@ namespace CuttingPlanMaker
             }
         }
 
+        private void mniSaveCopyAs_Click(object sender, EventArgs e)
+        {
+            // store old file path
+            string currentfilepath = FilePath;
+
+            // let the user pick a new filename to save the copy as
+            SaveFileAs();
+
+            // restore old path
+            FilePath = currentfilepath;
+        }
         #endregion
 
     }

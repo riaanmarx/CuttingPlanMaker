@@ -120,6 +120,7 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
+            this.mniSaveCopyAs = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -159,6 +160,7 @@
             this.mniFileRevert,
             this.mniFileSave,
             this.saveAsToolStripMenuItem,
+            this.mniSaveCopyAs,
             this.toolStripSeparator1,
             this.mniFileImport,
             this.exportToolStripMenuItem,
@@ -174,7 +176,7 @@
             // 
             this.mniFileNew.Name = "mniFileNew";
             this.mniFileNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.mniFileNew.Size = new System.Drawing.Size(148, 22);
+            this.mniFileNew.Size = new System.Drawing.Size(206, 22);
             this.mniFileNew.Text = "&New";
             this.mniFileNew.Click += new System.EventHandler(this.mniFileNew_Click);
             // 
@@ -182,7 +184,7 @@
             // 
             this.mniFileOpen.Name = "mniFileOpen";
             this.mniFileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.mniFileOpen.Size = new System.Drawing.Size(148, 22);
+            this.mniFileOpen.Size = new System.Drawing.Size(206, 22);
             this.mniFileOpen.Text = "&Open";
             this.mniFileOpen.Click += new System.EventHandler(this.mniFileOpen_Click);
             // 
@@ -190,7 +192,7 @@
             // 
             this.mniFileRevert.Name = "mniFileRevert";
             this.mniFileRevert.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.mniFileRevert.Size = new System.Drawing.Size(148, 22);
+            this.mniFileRevert.Size = new System.Drawing.Size(206, 22);
             this.mniFileRevert.Text = "&Revert";
             this.mniFileRevert.Click += new System.EventHandler(this.mniFileRevert_Click);
             // 
@@ -198,21 +200,23 @@
             // 
             this.mniFileSave.Name = "mniFileSave";
             this.mniFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.mniFileSave.Size = new System.Drawing.Size(148, 22);
+            this.mniFileSave.Size = new System.Drawing.Size(206, 22);
             this.mniFileSave.Text = "&Save";
             this.mniFileSave.Click += new System.EventHandler(this.mniFileSave_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(203, 6);
             // 
             // mniFileImport
             // 
@@ -220,7 +224,7 @@
             this.mniFileImportSketchupCSV});
             this.mniFileImport.Enabled = false;
             this.mniFileImport.Name = "mniFileImport";
-            this.mniFileImport.Size = new System.Drawing.Size(148, 22);
+            this.mniFileImport.Size = new System.Drawing.Size(206, 22);
             this.mniFileImport.Text = "&Import";
             // 
             // mniFileImportSketchupCSV
@@ -233,18 +237,18 @@
             // 
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(145, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(203, 6);
             // 
             // mniFileExit
             // 
             this.mniFileExit.Name = "mniFileExit";
-            this.mniFileExit.Size = new System.Drawing.Size(148, 22);
+            this.mniFileExit.Size = new System.Drawing.Size(206, 22);
             this.mniFileExit.Text = "E&xit";
             this.mniFileExit.Click += new System.EventHandler(this.mniFileExit_Click);
             // 
@@ -1002,7 +1006,16 @@
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
             // 
-            // frmMain
+            // mniSaveCopyAs
+            // 
+            this.mniSaveCopyAs.Name = "mniSaveCopyAs";
+            this.mniSaveCopyAs.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.S)));
+            this.mniSaveCopyAs.Size = new System.Drawing.Size(206, 22);
+            this.mniSaveCopyAs.Text = "Save &Copy as";
+            this.mniSaveCopyAs.Click += new System.EventHandler(this.mniSaveCopyAs_Click);
+            // 
+            // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1014,7 +1027,7 @@
             this.Controls.Add(this.btnCollapseExpandTab);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = this.mnuMain;
-            this.Name = "frmMain";
+            this.Name = "FrmMain";
             this.Text = "Cutting Plan Maker";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
@@ -1124,6 +1137,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ToolStripMenuItem mniReportLayoutLabels;
         private System.Windows.Forms.ToolStripMenuItem mniCentreItem;
+        private System.Windows.Forms.ToolStripMenuItem mniSaveCopyAs;
     }
 }
 
