@@ -136,6 +136,26 @@ namespace CuttingPlanMaker
 
         #region // Internal helper functions ...
         /// <summary>
+        /// function to check if the rows removed was due to a user instruction, or system processes
+        /// </summary>
+        /// <returns></returns>
+        private bool HasUserRemovedRow()
+        {
+            // check if the grid's row removed event was fired due to internal processes or the user removing a row
+            return !(System.Environment.StackTrace.Contains(".OnBindingContextChanged(") || System.Environment.StackTrace.Contains(".set_DataSource("));
+        }
+
+        /// <summary>
+        /// function to check if the change to a cell value was due to a user instruction or system processes
+        /// </summary>
+        /// <returns></returns>
+        private bool HasUserChangedCell()
+        {
+            // check if the cell was changed due to application processes or the user actually changed the cell value
+            return System.Environment.StackTrace.Contains(".CommitEdit(");
+        }
+
+        /// <summary>
         /// Make a copy of the selected rows on the current input grid
         /// </summary>
         private void DuplicateGridRows()
@@ -198,11 +218,8 @@ namespace CuttingPlanMaker
         /// <param name="boards"></param>
         /// <param name="usedstockonly"></param>
         /// <returns></returns>
-        public Bitmap Draw(StockItem[] boards, bool usedstockonly = true)
+        public Bitmap Draw(StockItem[] boards, bool drawunusedstock = true)
         {
-
-
-
             double yOffset = yMargin;
             double imageHeight = 2 * yMargin;
             double imageWidth = 0;
@@ -210,7 +227,7 @@ namespace CuttingPlanMaker
 
             // create list of boards to draw
             List<StockItem> boardsToDraw = new List<StockItem>(boards);
-            if (usedstockonly)
+            if (!drawunusedstock)
                 boardsToDraw = boards.Where(t => t.PackedPartsCount > 0).ToList();
 
             // calculate width & height required for the bitmap
@@ -248,8 +265,8 @@ namespace CuttingPlanMaker
                     Part iPlacement = iBoard.PackedParts[i];
                     double dLength = iBoard.PackedPartdLengths[i];
                     double dWidth = iBoard.PackedPartdWidths[i];
-                    double Length = iPlacement.Length + (Setting.IncludePaddingInDisplay == "true" ? double.Parse(Setting.PartPaddingLength) : 0f);
-                    double Width = iPlacement.Width + (Setting.IncludePaddingInDisplay == "true" ? double.Parse(Setting.PartPaddingWidth) : 0f);
+                    double Length = iPlacement.Length + (Setting.IncludePaddingInDisplay ? Setting.PartPaddingLength : 0f);
+                    double Width = iPlacement.Width + (Setting.IncludePaddingInDisplay  ? Setting.PartPaddingWidth : 0f);
 
                     // draw the part
                     g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
@@ -495,7 +512,7 @@ namespace CuttingPlanMaker
             PopulateMaterialTabs();
 
             // pack the solution before drawing the grids
-            if (Setting.AutoRepack == "true") PackSolution();
+            if (Setting.AutoRepack) PackSolution();
 
             // bind the materials grid
             BindMaterialsGrid();
@@ -624,9 +641,9 @@ namespace CuttingPlanMaker
             {
                 Packer_points.Pack(iParts
                         , iStock
-                        , double.Parse(Setting.BladeKerf)
-                        , double.Parse(Setting.PartPaddingLength)
-                        , double.Parse(Setting.PartPaddingWidth));
+                        , Setting.BladeKerf
+                        , Setting.PartPaddingLength
+                        , Setting.PartPaddingWidth);
             }
             catch (Exception)
             {
@@ -667,7 +684,6 @@ namespace CuttingPlanMaker
 
         #region // Event handlers ...
 
-
         private void onGridDataChangeByUser(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             if (sender == MaterialsGridView)
@@ -675,7 +691,7 @@ namespace CuttingPlanMaker
 
             IsFileSaved = false;
 
-            if (Setting.AutoRepack == "true")
+            if (Setting.AutoRepack)
             {
                 PackSolution();
             }
@@ -693,7 +709,7 @@ namespace CuttingPlanMaker
 
             IsFileSaved = false;
 
-            if (Setting.AutoRepack == "true")
+            if (Setting.AutoRepack)
             {
                 PackSolution();
             }
@@ -762,7 +778,7 @@ namespace CuttingPlanMaker
             if (new frmSettingsDialog(Setting).ShowDialog() == DialogResult.OK)
             {
                 if (FilePath != "") SaveConfig();
-                if (Setting.AutoRepack == "true")
+                if (Setting.AutoRepack)
                     PackSolution();
                 else
                 {
@@ -835,19 +851,7 @@ namespace CuttingPlanMaker
                 ctrSplitContainer.BringToFront();
             }
         }
-
-        private bool HasUserRemovedRow()
-        {
-            // check if the grid's row removed event was fired due to internal processes or the user removing a row
-            return !(System.Environment.StackTrace.Contains(".OnBindingContextChanged(") || System.Environment.StackTrace.Contains(".set_DataSource("));
-        }
-
-        private bool HasUserChangedCell()
-        {
-            // check if the cell was changed due to application processes or the user actually changed the cell value
-            return System.Environment.StackTrace.Contains(".CommitEdit(");
-        }
-
+        
         private void MaterialsGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             // If the user removed the row - set the file saved flag
@@ -1035,7 +1039,7 @@ namespace CuttingPlanMaker
 
         private void mniReportLayout_Click(object sender, EventArgs e)
         {
-            if (Setting.AutoRepack == "true")
+            if (Setting.AutoRepack)
                 PackSolution();
             else
             {
@@ -1120,7 +1124,7 @@ namespace CuttingPlanMaker
             StockItem[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
             // draw the layout for filterred stock
             if (LayoutBitmap != null) LayoutBitmap.Dispose();
-            LayoutBitmap = Draw(stockItems, Setting.DrawUnusedStock != "true");
+            LayoutBitmap = Draw(stockItems, Setting.DrawUnusedStock);
 
             // draw the image to the screen
             Graphics gfx = e.Graphics;
@@ -1244,7 +1248,7 @@ namespace CuttingPlanMaker
                 {
                     si = Stock[i];
                     if (si.PackedParts.Contains(p)) break;
-                    if (si.PackedPartsCount > 0 || Setting.DrawUnusedStock == "true")
+                    if (si.PackedPartsCount > 0 || Setting.DrawUnusedStock)
                         yOffset += si.Width + boardSpacing;
                 }
                 int partindex = 0;

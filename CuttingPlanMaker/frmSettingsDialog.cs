@@ -22,11 +22,11 @@ namespace CuttingPlanMaker
             _settings = settings;
 
             // populate the local controls with the current values
-            tbSawBladeKerf.Text = _settings.BladeKerf;
-            tbPartPaddingLength.Text = _settings.PartPaddingLength;
-            tbPartPaddingWidth.Text = _settings.PartPaddingWidth;
-            cbAutoRecalc.Checked = _settings.AutoRepack == "true";
-            cbDrawUnused.Checked = _settings.DrawUnusedStock == "true";
+            tbSawBladeKerf.Text = _settings.BladeKerf.ToString();
+            tbPartPaddingLength.Text = _settings.PartPaddingLength.ToString();
+            tbPartPaddingWidth.Text = _settings.PartPaddingWidth.ToString();
+            cbAutoRecalc.Checked = _settings.AutoRepack;
+            cbDrawUnused.Checked = _settings.DrawUnusedStock;
             ddlOrientation.Text = _settings.ResultOrientation;
             tbProjectName.Text = _settings.ProjectName;
             tbJobId.Text = _settings.JobID;
@@ -34,21 +34,21 @@ namespace CuttingPlanMaker
             tbClientNr.Text = _settings.ClientTelNr;
             tbClientAddr.Text = _settings.ClientAddr;
             dtpTargetDate.Value = DateTime.Parse(_settings.TargetDate ?? DateTime.Now.ToLongDateString());
-            cbIncludePaddingOnReports.Checked = _settings.IncludePaddingInReports == "true";
-            cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay == "true";
+            cbIncludePaddingOnReports.Checked = _settings.IncludePaddingInReports ;
+            cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay ;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             // populate the new values back to the instance
-            _settings.BladeKerf = tbSawBladeKerf.Text;
-            _settings.PartPaddingLength = tbPartPaddingLength.Text;
-            _settings.PartPaddingWidth = tbPartPaddingWidth.Text;
-            _settings.AutoRepack = cbAutoRecalc.Checked ? "true" : "false";
-            _settings.DrawUnusedStock = cbDrawUnused.Checked ? "true" : "false";
+            _settings.BladeKerf = double.Parse(tbSawBladeKerf.Text);
+            _settings.PartPaddingLength = double.Parse(tbPartPaddingLength.Text);
+            _settings.PartPaddingWidth = double.Parse(tbPartPaddingWidth.Text);
+            _settings.AutoRepack = cbAutoRecalc.Checked;
+            _settings.DrawUnusedStock = cbDrawUnused.Checked;
             _settings.ResultOrientation = ddlOrientation.Text;
-            _settings.IncludePaddingInReports = cbIncludePaddingOnReports.Checked ? "true" : "false";
-            _settings.IncludePaddingInDisplay = cbIncludePaddingOnDisplay.Checked ? "true" : "false";
+            _settings.IncludePaddingInReports = cbIncludePaddingOnReports.Checked ;
+            _settings.IncludePaddingInDisplay = cbIncludePaddingOnDisplay.Checked ;
 
             _settings.ProjectName = tbProjectName.Text;
             _settings.JobID = tbJobId.Text;

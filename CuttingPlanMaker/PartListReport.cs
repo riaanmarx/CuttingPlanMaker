@@ -22,8 +22,6 @@ namespace CuttingPlanMaker
 
             headerTable[2, 0].AddParagraph("Client:");
             headerTable[2, 1].AddParagraph(Settings.ClientName);
-            //headerTable[2, 2].AddParagraph("Material:");
-            //headerTable[2, 3].AddParagraph("Kiaat (AB)-25mm");
 
             headerTable[3, 0].AddParagraph("Tel nr.:");
             headerTable[3, 1].AddParagraph(Settings.ClientTelNr);
@@ -34,7 +32,7 @@ namespace CuttingPlanMaker
             headerTable[4, 1].AddParagraph(Settings.ClientAddr);
             
             headerTable[4, 2].AddParagraph("Part-padding:");
-            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports=="true"?"included":"not included")})");
+            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports?"included":"not included")})");
             headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
             #endregion
 
@@ -42,8 +40,7 @@ namespace CuttingPlanMaker
             // Create table 
             Table table = mainSection.AddTable();
             table.Format.Font.Size = 9;
-            //table.Borders.Width = 1;
-            //Name Material Length Width Thickness Vol unitCost cost
+
             for (int i = 0; i < 8; i++)
                 table.AddColumn().Format.Alignment = i < 2 ? ParagraphAlignment.Left : ParagraphAlignment.Right;
             table.Columns.Width = Unit.FromCentimeter(1.5);
@@ -67,7 +64,7 @@ namespace CuttingPlanMaker
             for (int i = 0; i < Parts.Count; i++)
             {
                 var iPart = Parts[i];
-                if (Settings.IncludePaddingInReports == "true") iPart.Inflate(double.Parse(Settings.PartPaddingWidth), double.Parse(Settings.PartPaddingLength));
+                if (Settings.IncludePaddingInReports) iPart.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
                 var iMaterial = Materials.First(t => t.Name == Parts[i].Material);
 
                 iRow = table.AddRow();
@@ -85,7 +82,7 @@ namespace CuttingPlanMaker
                 double cost = vol * iMaterial.Cost;
                 totCost += cost;
                 iRow[7].AddParagraph(cost.ToString("0.00"));
-                if (Settings.IncludePaddingInReports == "true") iPart.Inflate(-double.Parse(Settings.PartPaddingWidth), -double.Parse(Settings.PartPaddingLength));
+                if (Settings.IncludePaddingInReports) iPart.Inflate(-Settings.PartPaddingWidth, -Settings.PartPaddingLength);
 
             }
 

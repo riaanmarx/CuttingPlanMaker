@@ -93,12 +93,12 @@ namespace CuttingPlanMaker
             headerTable[3, 0].AddParagraph("Tel nr.:");
             headerTable[3, 1].AddParagraph(Settings.ClientTelNr ?? "");
             headerTable[3, 2].AddParagraph("Kerf:");
-            headerTable[3, 3].AddParagraph(Settings.BladeKerf ?? "");
+            headerTable[3, 3].AddParagraph(Settings.BladeKerf.ToString());
 
             headerTable[4, 0].AddParagraph("Address:");
             headerTable[4, 1].AddParagraph(Settings.ClientAddr ?? "");
             headerTable[4, 2].AddParagraph("Part-padding:");
-            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports == "true" ? "included" : "not included")})");
+            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports? "included" : "not included")})");
             headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
             #endregion
 
@@ -147,8 +147,8 @@ namespace CuttingPlanMaker
                 for (int j = 0; j < iStock.PackedPartsCount; j++)
                 {
                     var iPart = iStock.PackedParts[j];
-                    if (Settings.IncludePaddingInReports == "true")
-                        iPart.Inflate(double.Parse(Settings.PartPaddingWidth), double.Parse(Settings.PartPaddingLength));
+                    if (Settings.IncludePaddingInReports)
+                        iPart.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
                     iRow = table.AddRow();
                     iRow.Format.Font.Size = 8;
                     if (j % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
@@ -180,8 +180,8 @@ namespace CuttingPlanMaker
                     else
                         img.Height = maximgheight;
 
-                    if (Settings.IncludePaddingInReports == "true")
-                        iStock.PackedParts.ToList().ForEach(t => t.Inflate(-double.Parse(Settings.PartPaddingWidth), -double.Parse(Settings.PartPaddingLength)));
+                    if (Settings.IncludePaddingInReports)
+                        iStock.PackedParts.ToList().ForEach(t => t.Inflate(-Settings.PartPaddingWidth, -Settings.PartPaddingLength));
                 }
                 else
                 {
@@ -207,8 +207,8 @@ namespace CuttingPlanMaker
                 for (int j = 0; j < unpackedParts.Length; j++)
                 {
                     var iPart = unpackedParts[j];
-                    if (Settings.IncludePaddingInReports == "true")
-                        iPart.Inflate(double.Parse(Settings.PartPaddingWidth), double.Parse(Settings.PartPaddingLength));
+                    if (Settings.IncludePaddingInReports)
+                        iPart.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
                     iRow = table.AddRow();
                     iRow.Format.Font.Size = 8;
                     if (j % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;

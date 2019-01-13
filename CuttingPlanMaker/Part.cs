@@ -28,13 +28,6 @@ namespace CuttingPlanMaker
         public Part()
         {}
 
-        public Part(string name, double length, double width, double dlength = 0, double dwidth = 0)
-        {
-            Name = name;
-            Length = length;
-            Width = width;
-        }
-
         public override string ToString()
         {
             return $"{Name} [{Length,7:0.0} x {Width,5:0.0}]";

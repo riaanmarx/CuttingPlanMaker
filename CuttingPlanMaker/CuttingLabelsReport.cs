@@ -85,7 +85,7 @@ namespace CuttingPlanMaker
                     c.AddParagraph($"[{iPart.Length:0.0} x {iPart.Width:0.0}]");
 
                     // populate third row
-                    labelTable[2, 0].AddParagraph($" + [{(2*double.Parse(Settings.PartPaddingLength)):0.0} x {(2*double.Parse(Settings.PartPaddingWidth)):0.0}]");
+                    labelTable[2, 0].AddParagraph($" + [{(2*Settings.PartPaddingLength):0.0} x {(2*Settings.PartPaddingWidth):0.0}]");
 
                     // populate fourth row
                     labelTable[3, 0].AddParagraph().AddFormattedText("on ").AddFormattedText($"{iStock.Name}",TextFormat.Bold);
