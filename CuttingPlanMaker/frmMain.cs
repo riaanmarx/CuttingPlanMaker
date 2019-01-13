@@ -825,8 +825,6 @@ namespace CuttingPlanMaker
             DuplicateGridRows();
         }
 
-
-
         private void MaterialsGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // decide how/with what to sort the grid
@@ -850,6 +848,7 @@ namespace CuttingPlanMaker
 
             // sort the grid according to choice
             SortStock(StockGridSort);
+            pbLayout.Invalidate();
         }
 
         private void PartsDataGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -1068,11 +1067,23 @@ namespace CuttingPlanMaker
             lblUsedStockCount.Text = Stock.Count(t => t.Material == SelectedMaterial && t.PackedPartsCount > 0).ToString();
             double UsedStockArea = Stock.Where(q => q.Material == SelectedMaterial && q.PackedPartsCount > 0).Sum(t => t.Area) / 1e6f;
             lblUsedStockArea.Text = UsedStockArea.ToString("0.000");
-            lblPartsCount.Text = Parts.Count(q => q.Material == SelectedMaterial).ToString();
+            int partscount = Parts.Count(q => q.Material == SelectedMaterial);
+            lblPartsCount.Text = partscount.ToString();
             lblPartsArea.Text = (Parts.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6f).ToString("0.000");
-            lblUsedPartsCount.Text = Parts.Count(t => t.Material == SelectedMaterial && t.isPacked).ToString();
+            int placedpartcount = Parts.Count(t => t.Material == SelectedMaterial && t.isPacked);
+            lblUsedPartsCount.Text = placedpartcount.ToString();
             double UsedPartsArea = (Parts.Where(q => q.Material == SelectedMaterial && q.isPacked).Sum(t => t.Area) / 1e6f);
             lblUsedPartsArea.Text = UsedPartsArea.ToString("0.000");
+            if (placedpartcount < partscount)
+            {
+                lblUsedPartsCount.BackColor = Color.DarkRed;
+                lblUsedPartsCount.ForeColor = Color.White;
+            }
+            else
+            {
+                lblUsedPartsCount.BackColor = SystemColors.Control;
+                lblUsedPartsCount.ForeColor = Color.Black;
+            }
             lblWastePerc.Text = ((UsedStockArea - UsedPartsArea) / UsedStockArea * 100.0).ToString("00.0");
             lblWasteArea.Text = (UsedStockArea - UsedPartsArea).ToString("0.000");
         }
@@ -1140,7 +1151,6 @@ namespace CuttingPlanMaker
                 Process.Start(filename);
 
         }
-        #endregion
 
         private void mniCentreItem_Click(object sender, EventArgs e)
         {
@@ -1156,7 +1166,7 @@ namespace CuttingPlanMaker
                 {
                     si = Stock[i];
                     if (si.PackedParts.Contains(p)) break;
-                    if(si.PackedPartsCount > 0 || Setting.DrawUnusedStock == "true")
+                    if (si.PackedPartsCount > 0 || Setting.DrawUnusedStock == "true")
                         yOffset += si.Width + boardSpacing;
                 }
                 int partindex = 0;
@@ -1173,5 +1183,8 @@ namespace CuttingPlanMaker
                 pbLayout.Invalidate();
             }
         }
+
+        #endregion
+
     }
 }

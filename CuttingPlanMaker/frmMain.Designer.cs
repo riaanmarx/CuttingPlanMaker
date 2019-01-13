@@ -93,6 +93,7 @@
             this.mnuGridContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mniDuplicateRows = new System.Windows.Forms.ToolStripMenuItem();
             this.mniRemoveRows = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniCentreItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tpMaterials = new System.Windows.Forms.TabPage();
             this.MaterialsGridView = new System.Windows.Forms.DataGridView();
             this.MaterialNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -119,7 +120,6 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
-            this.mniCentreItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -285,28 +285,28 @@
             // mniReportPartsList
             // 
             this.mniReportPartsList.Name = "mniReportPartsList";
-            this.mniReportPartsList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportPartsList.Size = new System.Drawing.Size(143, 22);
             this.mniReportPartsList.Text = "Parts list";
             this.mniReportPartsList.Click += new System.EventHandler(this.mniReportPartsList_Click);
             // 
             // mniReportStockList
             // 
             this.mniReportStockList.Name = "mniReportStockList";
-            this.mniReportStockList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportStockList.Size = new System.Drawing.Size(143, 22);
             this.mniReportStockList.Text = "Stock list";
             this.mniReportStockList.Click += new System.EventHandler(this.mniReportStockList_Click);
             // 
             // mniReportLayout
             // 
             this.mniReportLayout.Name = "mniReportLayout";
-            this.mniReportLayout.Size = new System.Drawing.Size(180, 22);
+            this.mniReportLayout.Size = new System.Drawing.Size(143, 22);
             this.mniReportLayout.Text = "Layout";
             this.mniReportLayout.Click += new System.EventHandler(this.mniReportLayout_Click);
             // 
             // mniReportLayoutLabels
             // 
             this.mniReportLayoutLabels.Name = "mniReportLayoutLabels";
-            this.mniReportLayoutLabels.Size = new System.Drawing.Size(180, 22);
+            this.mniReportLayoutLabels.Size = new System.Drawing.Size(143, 22);
             this.mniReportLayoutLabels.Text = "Layout labels";
             this.mniReportLayoutLabels.Click += new System.EventHandler(this.mniReportLayoutLabels_Click);
             // 
@@ -439,9 +439,9 @@
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(3, 51);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(68, 13);
+            this.label4.Size = new System.Drawing.Size(78, 13);
             this.label4.TabIndex = 0;
-            this.label4.Text = "Used parts";
+            this.label4.Text = "Placed parts";
             // 
             // label5
             // 
@@ -456,7 +456,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(99, 68);
+            this.label6.Location = new System.Drawing.Point(106, 68);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(15, 13);
             this.label6.TabIndex = 0;
@@ -465,7 +465,7 @@
             // lblStockCount
             // 
             this.lblStockCount.AutoSize = true;
-            this.lblStockCount.Location = new System.Drawing.Point(80, 0);
+            this.lblStockCount.Location = new System.Drawing.Point(87, 0);
             this.lblStockCount.Name = "lblStockCount";
             this.lblStockCount.Size = new System.Drawing.Size(13, 13);
             this.lblStockCount.TabIndex = 1;
@@ -474,7 +474,7 @@
             // lblUsedStockCount
             // 
             this.lblUsedStockCount.AutoSize = true;
-            this.lblUsedStockCount.Location = new System.Drawing.Point(80, 17);
+            this.lblUsedStockCount.Location = new System.Drawing.Point(87, 17);
             this.lblUsedStockCount.Name = "lblUsedStockCount";
             this.lblUsedStockCount.Size = new System.Drawing.Size(13, 13);
             this.lblUsedStockCount.TabIndex = 1;
@@ -483,7 +483,7 @@
             // lblPartsCount
             // 
             this.lblPartsCount.AutoSize = true;
-            this.lblPartsCount.Location = new System.Drawing.Point(80, 34);
+            this.lblPartsCount.Location = new System.Drawing.Point(87, 34);
             this.lblPartsCount.Name = "lblPartsCount";
             this.lblPartsCount.Size = new System.Drawing.Size(13, 13);
             this.lblPartsCount.TabIndex = 1;
@@ -492,7 +492,7 @@
             // lblUsedPartsCount
             // 
             this.lblUsedPartsCount.AutoSize = true;
-            this.lblUsedPartsCount.Location = new System.Drawing.Point(80, 51);
+            this.lblUsedPartsCount.Location = new System.Drawing.Point(87, 51);
             this.lblUsedPartsCount.Name = "lblUsedPartsCount";
             this.lblUsedPartsCount.Size = new System.Drawing.Size(13, 13);
             this.lblUsedPartsCount.TabIndex = 1;
@@ -501,7 +501,7 @@
             // lblWastePerc
             // 
             this.lblWastePerc.AutoSize = true;
-            this.lblWastePerc.Location = new System.Drawing.Point(80, 68);
+            this.lblWastePerc.Location = new System.Drawing.Point(87, 68);
             this.lblWastePerc.Name = "lblWastePerc";
             this.lblWastePerc.Size = new System.Drawing.Size(13, 13);
             this.lblWastePerc.TabIndex = 1;
@@ -510,7 +510,7 @@
             // lblWasteArea
             // 
             this.lblWasteArea.AutoSize = true;
-            this.lblWasteArea.Location = new System.Drawing.Point(120, 68);
+            this.lblWasteArea.Location = new System.Drawing.Point(127, 68);
             this.lblWasteArea.Name = "lblWasteArea";
             this.lblWasteArea.Size = new System.Drawing.Size(13, 13);
             this.lblWasteArea.TabIndex = 1;
@@ -519,7 +519,7 @@
             // lblStockArea
             // 
             this.lblStockArea.AutoSize = true;
-            this.lblStockArea.Location = new System.Drawing.Point(120, 0);
+            this.lblStockArea.Location = new System.Drawing.Point(127, 0);
             this.lblStockArea.Name = "lblStockArea";
             this.lblStockArea.Size = new System.Drawing.Size(13, 13);
             this.lblStockArea.TabIndex = 1;
@@ -528,7 +528,7 @@
             // lblUsedStockArea
             // 
             this.lblUsedStockArea.AutoSize = true;
-            this.lblUsedStockArea.Location = new System.Drawing.Point(120, 17);
+            this.lblUsedStockArea.Location = new System.Drawing.Point(127, 17);
             this.lblUsedStockArea.Name = "lblUsedStockArea";
             this.lblUsedStockArea.Size = new System.Drawing.Size(13, 13);
             this.lblUsedStockArea.TabIndex = 1;
@@ -537,7 +537,7 @@
             // lblPartsArea
             // 
             this.lblPartsArea.AutoSize = true;
-            this.lblPartsArea.Location = new System.Drawing.Point(120, 34);
+            this.lblPartsArea.Location = new System.Drawing.Point(127, 34);
             this.lblPartsArea.Name = "lblPartsArea";
             this.lblPartsArea.Size = new System.Drawing.Size(13, 13);
             this.lblPartsArea.TabIndex = 1;
@@ -546,7 +546,7 @@
             // lblUsedPartsArea
             // 
             this.lblUsedPartsArea.AutoSize = true;
-            this.lblUsedPartsArea.Location = new System.Drawing.Point(120, 51);
+            this.lblUsedPartsArea.Location = new System.Drawing.Point(127, 51);
             this.lblUsedPartsArea.Name = "lblUsedPartsArea";
             this.lblUsedPartsArea.Size = new System.Drawing.Size(13, 13);
             this.lblUsedPartsArea.TabIndex = 1;
@@ -555,7 +555,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(139, 0);
+            this.label7.Location = new System.Drawing.Point(146, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(18, 13);
             this.label7.TabIndex = 1;
@@ -564,7 +564,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(139, 17);
+            this.label8.Location = new System.Drawing.Point(146, 17);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(18, 13);
             this.label8.TabIndex = 1;
@@ -573,7 +573,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(139, 34);
+            this.label9.Location = new System.Drawing.Point(146, 34);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(18, 13);
             this.label9.TabIndex = 1;
@@ -582,7 +582,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(139, 51);
+            this.label10.Location = new System.Drawing.Point(146, 51);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(18, 13);
             this.label10.TabIndex = 1;
@@ -591,7 +591,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(139, 68);
+            this.label11.Location = new System.Drawing.Point(146, 68);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(18, 13);
             this.label11.TabIndex = 1;
@@ -622,7 +622,7 @@
             this.mniRemoveRows,
             this.mniCentreItem});
             this.mnuGridContextMenu.Name = "mnuGridContextMenu";
-            this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 92);
+            this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 70);
             // 
             // mniDuplicateRows
             // 
@@ -637,6 +637,13 @@
             this.mniRemoveRows.Size = new System.Drawing.Size(206, 22);
             this.mniRemoveRows.Text = "Remove selected row(s)";
             this.mniRemoveRows.Click += new System.EventHandler(this.mniRemoveRows_Click);
+            // 
+            // mniCentreItem
+            // 
+            this.mniCentreItem.Name = "mniCentreItem";
+            this.mniCentreItem.Size = new System.Drawing.Size(206, 22);
+            this.mniCentreItem.Text = "Centre selected item";
+            this.mniCentreItem.Click += new System.EventHandler(this.mniCentreItem_Click);
             // 
             // tpMaterials
             // 
@@ -994,13 +1001,6 @@
             this.btnCollapseExpandTab.TabIndex = 4;
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
-            // 
-            // mniCentreItem
-            // 
-            this.mniCentreItem.Name = "mniCentreItem";
-            this.mniCentreItem.Size = new System.Drawing.Size(206, 22);
-            this.mniCentreItem.Text = "Centre selected item";
-            this.mniCentreItem.Click += new System.EventHandler(this.mniCentreItem_Click);
             // 
             // frmMain
             // 
