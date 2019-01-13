@@ -25,7 +25,8 @@ namespace CuttingPlanMaker
         //TODO: undo function....
         //TODO: splash screen
         //TODO: handle writing reports to file thats locked
-        //TODO: ammend settings class to be typed
+        //TODO: review stock and part classes to remove dead wood
+        //TODO: refactor stock class to have a placedpart class with offset and part all in one instance
 
         #region // Fields & Properties ...
 

@@ -37,9 +37,6 @@ namespace CuttingPlanMaker
         public bool isComplete { get; set; }
         public bool isInUse { get; set; }
 
-        public double oldLength;// { get; set; }
-        public double oldWidth;// { get; set; }
-
         public StockItem()
         { }
 
