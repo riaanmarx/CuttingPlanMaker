@@ -14,9 +14,9 @@ using System.Windows.Forms;
 namespace CuttingPlanMaker
 {
     /// <summary>
-    /// main form of the application
+    /// Main form of the application
     /// </summary>
-    public partial class frmMain : Form
+    public partial class FrmMain : Form
     {
         //TODO: Add board column on parts grid to see what board the part was placed on
         //TODO: create interface for packers and allow user to pick pick a packer algorithm
@@ -25,10 +25,13 @@ namespace CuttingPlanMaker
         //TODO: undo function....
         //TODO: splash screen
         //TODO: handle writing reports to file thats locked
+        //TODO: ammend settings class to be typed
 
         #region // Fields & Properties ...
 
-        // flag to keep track if the current file is saved
+        /// <summary>
+        /// Flag to keep track if the current file is saved
+        /// </summary>
         bool IsFileSaved
         {
             get { return _isFileSaved; }
@@ -40,13 +43,17 @@ namespace CuttingPlanMaker
         }
         bool _isFileSaved = true;
 
-        // the name of the current file
+        /// <summary>
+        /// The name of the current file
+        /// </summary>        
         string FileName
         {
             get { return Path.GetFileNameWithoutExtension(FilePath); }
         }
 
-        // the full path to the current file
+        /// <summary>
+        /// The full path to the current file
+        /// </summary>
         string FilePath
         {
             get
@@ -65,43 +72,72 @@ namespace CuttingPlanMaker
         }
         private string _filePath = "";
 
-        // Data for the loaded file
+        /// <summary>
+        /// Settings collection for the currently loaded project
+        /// </summary>
         BindingList<Settings> Settings { get; set; }
+
+        /// <summary>
+        /// A setting reference to the first record in the settings collection. This publishes all the settings for the project in a typed property.
+        /// </summary>
         Settings Setting
         {
             get { return Settings.FirstOrDefault(); }
         }
+
+        /// <summary>
+        /// List of material types that the project is using. The standard board sizes is not used anywhere, except for the thickness and cost, which are used in the reports
+        /// </summary>
         BindingList<Material> Materials { get; set; }
+
+        /// <summary>
+        /// A list of all the stock items (boards) that are available to place the parts on
+        /// </summary>
         BindingList<StockItem> Stock { get; set; }
+
+        /// <summary>
+        /// A list of parts which will be placed on the boards
+        /// </summary>
         BindingList<Part> Parts { get; set; }
 
-        // grid sort options
-        string PartGridSort = "";
-        string StockGridSort = "";
-        string MaterialGridSort = "";
+        // grid sort options - keep track of which column the input grids are sorted by, and if it is ASC or DESC
+        private string PartGridSort = "";       // The sorting option for the parts grid
+        private string StockGridSort = "";      // The sorting option for the stock grid
+        private string MaterialGridSort = "";   // The sorting option for the Materials grid
 
-        bool isPackingRequired = false;
+        // a flag to indicate when packing is required (when auto-repacking is disabled)
+        private bool isPackingRequired = false;
 
-        float userZoomFactor = 1.0f;  // a zoom factor of 1 will fill the picturbox with the image
-        PointF userOffset = new PointF(0, 0); //the offset with which the image has been panned, (0,0) would centre the image in the PB
-        Bitmap LayoutBitmap = null;
-        float unityScaleFactor;
-        PointF OrigMouseDownPoint;
-        PointF OrigUserOffset;
+        // layout painting fields
+        float userZoomFactor = 1.0f;            // Zoom factor set by the user - a zoom factor of 1 will fill the picturbox with the image
+        PointF userOffset = new PointF(0, 0);   // The offset with which the image has been panned, (0,0) would centre the image in the picturebox control
+        Bitmap LayoutBitmap = null;             // Keep a copy of the drawn bitmap, to repaint the control as necesary
+        float unityScaleFactor;                 // The scale needed to allow a userzoomfactor of 1 to fill the picturebox with the image
+        PointF OrigMouseDownPoint;              // The original mouse location when starting to drag/pan the image
+        PointF OrigUserOffset;                  // The original user offset of the image when starting to drag/pan the image
+
+        // layout drawing configuration options
+        double xMargin = 50;                    // the x-margin for drawing the layout image
+        double yMargin = 50;                    // the y-nargub for drawing the layout image
+        double boardSpacing = 70;               // the spacing between boards when drawing the layout image
         #endregion
 
         #region // Constructor ...
         // constructor for the main form
-        public frmMain()
+        public FrmMain()
         {
             InitializeComponent();
-            tcInputs.Top -= 22;
+            tcInputs.Top -= 22;                 // Hide the standard tab control's tabs by moving it up 
+
+            // subscribe to the picturebox's MouseWheel event - not in the property dialog to bind at design-time
             this.pbLayout.MouseWheel += PbLayout_MouseWheel;
         }
         #endregion
 
         #region // Internal helper functions ...
-
+        /// <summary>
+        /// Make a copy of the selected rows on the current input grid
+        /// </summary>
         private void DuplicateGridRows()
         {
             if (tcInputs.SelectedTab == tpMaterials)
@@ -156,10 +192,12 @@ namespace CuttingPlanMaker
             PackSolution();
         }
 
-        double xMargin = 50;
-        double yMargin = 50;
-        double boardSpacing = 70;
-
+        /// <summary>
+        /// Draw the layout of the specified stock-items/boards
+        /// </summary>
+        /// <param name="boards"></param>
+        /// <param name="usedstockonly"></param>
+        /// <returns></returns>
         public Bitmap Draw(StockItem[] boards, bool usedstockonly = true)
         {
 
@@ -260,7 +298,10 @@ namespace CuttingPlanMaker
             return bitmap;
         }
 
-
+        /// <summary>
+        /// Sort the parts input grid according to the sort specification
+        /// </summary>
+        /// <param name="partGridSort"></param>
         private void SortParts(string partGridSort)
         {
             switch (partGridSort)
@@ -298,6 +339,10 @@ namespace CuttingPlanMaker
             BindPartsGrid();
         }
 
+        /// <summary>
+        /// Sort the stock items input grid according to the sort specification
+        /// </summary>
+        /// <param name="sortOption"></param>
         private void SortStock(string sortOption)
         {
             switch (StockGridSort)
@@ -335,6 +380,10 @@ namespace CuttingPlanMaker
             BindStockGrid();
         }
 
+        /// <summary>
+        /// Sort the Materials input grid according to the specification
+        /// </summary>
+        /// <param name="sortoption"></param>
         private void SortMaterials(string sortoption)
         {
             // sort the grid according to choice
@@ -394,11 +443,17 @@ namespace CuttingPlanMaker
             IsFileSaved = true;
         }
 
+        /// <summary>
+        /// Save the current configuration only
+        /// </summary>
         private void SaveConfig()
         {
             CSVFile.Write(Settings, $"{FilePath}.Settings.CSV");
         }
 
+        /// <summary>
+        /// Save the current data/project as a new file set by specifying the target using a file save dialog
+        /// </summary>
         private void SaveFileAs()
         {
             // ask the user where to save the file. If he picked a location and name
@@ -412,6 +467,9 @@ namespace CuttingPlanMaker
             }
         }
 
+        /// <summary>
+        /// Bind the materials input grid to the materials list
+        /// </summary>
         private void BindMaterialsGrid()
         {
             MaterialsGridView.AutoGenerateColumns = false;
@@ -452,6 +510,9 @@ namespace CuttingPlanMaker
             IsFileSaved = true;
         }
 
+        /// <summary>
+        /// Bind the parts input grid to the parts list
+        /// </summary>
         private void BindPartsGrid()
         {
             PartsGridView.AutoGenerateColumns = false;
@@ -461,6 +522,9 @@ namespace CuttingPlanMaker
             PartsGridView.DataSource = Parts;
         }
 
+        /// <summary>
+        /// Bind the Stock input grid to the stock list
+        /// </summary>
         private void BindStockGrid()
         {
             StockGridView.AutoGenerateColumns = false;
@@ -470,6 +534,9 @@ namespace CuttingPlanMaker
             StockGridView.DataSource = Stock;
         }
 
+        /// <summary>
+        /// Load the defaults for the application by loading the files called Default.*.CSV
+        /// </summary>
         private void LoadDefault()
         {
             // start from scratch
@@ -477,6 +544,10 @@ namespace CuttingPlanMaker
             FilePath = "";
         }
 
+        /// <summary>
+        /// Close the current project, but check if it is saved and prompt to save if not - prior to closing the project
+        /// </summary>
+        /// <returns></returns>
         private bool CloseFile()
         {
             // if the current file is not saved
@@ -523,6 +594,9 @@ namespace CuttingPlanMaker
                 return true;
         }
 
+        /// <summary>
+        /// Place the parts on the available stock and refresh the display
+        /// </summary>
         private void PackSolution()
         {
             //clear current packing
@@ -541,38 +615,36 @@ namespace CuttingPlanMaker
                 t.PackedPartsTotalArea = 0;
             });
 
-            // for every material, filter the parts and stock and pack each set separately
-            for (int i = 0; i < Materials.Count; i++)
+            // filter the parts and stock for te current material and pack them
+            string sMaterialsName = tcMaterials.SelectedTab.Name;
+            Material iMaterial = Materials.First(t => t.Name == sMaterialsName);
+            Part[] iParts = Parts.Where(t => t.Material == iMaterial.Name).ToArray();
+            StockItem[] iStock = Stock.Where(t => t.Material == iMaterial.Name).ToArray();
+            try
             {
-                Material iMaterial = Materials[i];
-                Part[] iParts = Parts.Where(t => t.Material == iMaterial.Name).ToArray();
-                StockItem[] iStock = Stock.Where(t => t.Material == iMaterial.Name).ToArray();
-
-                try
-                {
-                    Packer_points.Pack(iParts
-                            , iStock
-                            , double.Parse(Setting.BladeKerf)
-                            , double.Parse(Setting.PartPaddingLength)
-                            , double.Parse(Setting.PartPaddingWidth));
-                }
-                catch (Exception)
-                {
-                }
+                Packer_points.Pack(iParts
+                        , iStock
+                        , double.Parse(Setting.BladeKerf)
+                        , double.Parse(Setting.PartPaddingLength)
+                        , double.Parse(Setting.PartPaddingWidth));
+            }
+            catch (Exception)
+            {
             }
 
+            // clear the packing required flag
             isPackingRequired = false;
 
+            // repaint the layout picture box
             pbLayout.Invalidate();
         }
 
-        #endregion
-
-        #region // Event handlers ...
-
+        /// <summary>
+        /// Populate the tabs for the materials tab control with all the currently registerred material types
+        /// </summary>
         private void PopulateMaterialTabs()
         {
-            //add any new pages
+            // add any materials not already listed in the tab pages
             for (int i = 0; i < Materials.Count; i++)
             {
                 Material iMaterial = Materials[i];
@@ -580,15 +652,21 @@ namespace CuttingPlanMaker
                     tcMaterials.TabPages.Add(iMaterial.Name, iMaterial.Name);
             }
 
-            //remove any missing materials
+            // remove any materials that are listed on the tab pages, that no longer exist in the list of materials
             for (int i = tcMaterials.TabPages.Count - 1; i >= 0; i--)
             {
                 TabPage iTab = tcMaterials.TabPages[i];
                 if (Materials.FirstOrDefault(t => t.Name == iTab.Name) == null)
                     tcMaterials.TabPages.Remove(iTab);
             }
+
+            // repaint the layout picture box in case the selected page changed
             pbLayout.Invalidate();
         }
+        #endregion
+
+        #region // Event handlers ...
+
 
         private void onGridDataChangeByUser(object sender, DataGridViewRowsRemovedEventArgs e)
         {

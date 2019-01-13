@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker
 {
+    /// <summary>
+    /// A simple class to deal with CSV files
+    /// </summary>
     class CSVFile
     {
         /// <summary>

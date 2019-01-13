@@ -18,6 +18,7 @@ namespace CuttingPlanMaker
             public int Height;
             public int Width;
         }
+
         private Base64Image DrawBoard_base64(StockItem board)
         {
             double xMargin = 0;

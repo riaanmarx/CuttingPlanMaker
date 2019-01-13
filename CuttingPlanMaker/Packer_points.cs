@@ -22,7 +22,7 @@ namespace CuttingPlanMaker
     /// When all the points are disabled, the board is complete
     /// 
     /// </summary>
-    class Packer_points
+    class Packer_points:IPacker
     {
         private class PointD
         {
