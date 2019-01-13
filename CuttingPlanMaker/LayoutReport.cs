@@ -177,7 +177,7 @@ namespace CuttingPlanMaker
                     if (xscale > yscale)
                         img.Width = mainSection.PageSetup.PageWidth - LeftMargin - RightMargin - Unit.FromCentimeter(1);
                     else
-                        img.Height = Unit.FromCentimeter(3);
+                        img.Height = maximgheight;
 
                     if (Settings.IncludePaddingInReports == "true")
                         iStock.PackedParts.ToList().ForEach(t => t.Inflate(-double.Parse(Settings.PartPaddingWidth), -double.Parse(Settings.PartPaddingLength)));

@@ -19,14 +19,12 @@ namespace CuttingPlanMaker
     public partial class frmMain : Form
     {
         //TODO: Add board column on parts grid to see what board the part was placed on
-        //TODO: DEL keyboard button not causing auto-repack
-        //TODO: review events for grids - not making sense yet
         //TODO: create interface for packers and allow user to pick pick a packer algorithm
         //TODO: create import/export functionality
         //TODO: on points algorithm, see if we can allign parts to improve sawing 
-        //TODO: add stock required table on parts report
-
-
+        //TODO: undo function....
+        //TODO: splash screen
+        //TODO: handle writing reports to file thats locked
 
         #region // Fields & Properties ...
 
@@ -83,7 +81,13 @@ namespace CuttingPlanMaker
         string MaterialGridSort = "";
 
         bool isPackingRequired = false;
-                
+
+        float userZoomFactor = 1.0f;  // a zoom factor of 1 will fill the picturbox with the image
+        PointF userOffset = new PointF(0, 0); //the offset with which the image has been panned, (0,0) would centre the image in the PB
+        Bitmap LayoutBitmap = null;
+        float unityScaleFactor;
+        PointF OrigMouseDownPoint;
+        PointF OrigUserOffset;
         #endregion
 
         #region // Constructor ...
@@ -97,12 +101,69 @@ namespace CuttingPlanMaker
         #endregion
 
         #region // Internal helper functions ...
+
+        private void DuplicateGridRows()
+        {
+            if (tcInputs.SelectedTab == tpMaterials)
+            {
+                foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
+                {
+                    Material oldItem = (Material)item.DataBoundItem;
+                    Material newItem = new Material()
+                    {
+                        Name = oldItem.Name,
+                        Length = oldItem.Length,
+                        Width = oldItem.Width,
+                        Thickness = oldItem.Thickness,
+                        Cost = oldItem.Cost
+                    };
+                    Materials.Add(newItem);
+                    IsFileSaved = false;
+                }
+            }
+            if (tcInputs.SelectedTab == tpParts)
+            {
+                foreach (DataGridViewRow item in PartsGridView.SelectedRows)
+                {
+                    Part oldItem = (Part)item.DataBoundItem;
+                    Part newItem = new Part()
+                    {
+                        Name = oldItem.Name,
+                        Length = oldItem.Length,
+                        Width = oldItem.Width,
+                        Material = oldItem.Material,
+                    };
+                    Parts.Add(newItem);
+                    IsFileSaved = false;
+                }
+            }
+            if (tcInputs.SelectedTab == tpStock)
+            {
+                foreach (DataGridViewRow item in StockGridView.SelectedRows)
+                {
+                    StockItem oldItem = (StockItem)item.DataBoundItem;
+                    StockItem newItem = new StockItem()
+                    {
+                        Name = oldItem.Name,
+                        Length = oldItem.Length,
+                        Width = oldItem.Width,
+                        Material = oldItem.Material,
+                    };
+                    Stock.Add(newItem);
+                    IsFileSaved = false;
+                }
+            }
+            PackSolution();
+        }
+
+        double xMargin = 50;
+        double yMargin = 50;
+        double boardSpacing = 70;
+
         public Bitmap Draw(StockItem[] boards, bool usedstockonly = true)
         {
 
-            double xMargin = 50;
-            double yMargin = 50;
-            double boardSpacing = 70;
+
 
             double yOffset = yMargin;
             double imageHeight = 2 * yMargin;
@@ -112,7 +173,7 @@ namespace CuttingPlanMaker
             // create list of boards to draw
             List<StockItem> boardsToDraw = new List<StockItem>(boards);
             if (usedstockonly)
-                boardsToDraw = boards.Where(t => t.PackedPartsCount>0).ToList();
+                boardsToDraw = boards.Where(t => t.PackedPartsCount > 0).ToList();
 
             // calculate width & height required for the bitmap
             foreach (var iBoard in boardsToDraw)
@@ -138,7 +199,7 @@ namespace CuttingPlanMaker
             {
                 // draw the board
                 g.FillRectangle(Brushes.DarkRed, (float)xMargin, (float)yOffset, (float)iBoard.Length, (float)iBoard.Width);
-                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}] ({iBoard.PackedPartsTotalArea / iBoard.Area * 100 :0.0}%)";
+                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}] ({iBoard.PackedPartsTotalArea / iBoard.Area * 100:0.0}%)";
                 SizeF textSizeBoard = g.MeasureString(boardheader, boardFont);
                 g.DrawString(boardheader, boardFont, Brushes.Black, (float)(xMargin), (float)(yOffset - textSizeBoard.Height));
 
@@ -371,12 +432,12 @@ namespace CuttingPlanMaker
             Materials = CSVFile.Read<Material>($"{FilePath}.Materials.CSV");
             Stock = CSVFile.Read<StockItem>($"{FilePath}.Stock.CSV");
             Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
-            
+
             // update the tabs for the layout drawings
             PopulateMaterialTabs();
 
             // pack the solution before drawing the grids
-            if(Setting.AutoRepack=="true") PackSolution();
+            if (Setting.AutoRepack == "true") PackSolution();
 
             // bind the materials grid
             BindMaterialsGrid();
@@ -501,7 +562,7 @@ namespace CuttingPlanMaker
             }
 
             isPackingRequired = false;
-                       
+
             pbLayout.Invalidate();
         }
 
@@ -538,7 +599,7 @@ namespace CuttingPlanMaker
 
             if (Setting.AutoRepack == "true")
             {
-                //PackSolution();
+                PackSolution();
             }
             else
             {
@@ -712,21 +773,21 @@ namespace CuttingPlanMaker
         private void MaterialsGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             // If the user removed the row - set the file saved flag
-            if (HasUserRemovedRow())
+            if (HasUserRemovedRow() && MaterialsGridView.SelectedRows.Count == 0)
                 onGridDataChangeByUser(sender, e);
         }
 
         private void StockGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             // the user changed the file data - set the file saved flag
-            if (HasUserRemovedRow())
+            if (HasUserRemovedRow() && StockGridView.SelectedRows.Count == 0)
                 onGridDataChangeByUser(sender, e);
         }
 
         private void PartsDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             // the user changed the file data - set the file saved flag
-            if (HasUserRemovedRow())
+            if (HasUserRemovedRow() && PartsGridView.SelectedRows.Count == 0)
                 onGridDataChangeByUser(sender, e);
         }
 
@@ -761,56 +822,10 @@ namespace CuttingPlanMaker
 
         private void mniDuplicateRows_Click(object sender, EventArgs e)
         {
-            if (tcInputs.SelectedTab == tpMaterials)
-            {
-                foreach (DataGridViewRow item in MaterialsGridView.SelectedRows)
-                {
-                    Material oldItem = (Material)item.DataBoundItem;
-                    Material newItem = new Material()
-                    {
-                        Name = oldItem.Name,
-                        Length = oldItem.Length,
-                        Width = oldItem.Width,
-                        Thickness = oldItem.Thickness,
-                        Cost = oldItem.Cost
-                    };
-                    Materials.Add(newItem);
-                    IsFileSaved = false;
-                }
-            }
-            if (tcInputs.SelectedTab == tpParts)
-            {
-                foreach (DataGridViewRow item in PartsGridView.SelectedRows)
-                {
-                    Part oldItem = (Part)item.DataBoundItem;
-                    Part newItem = new Part()
-                    {
-                        Name = oldItem.Name,
-                        Length = oldItem.Length,
-                        Width = oldItem.Width,
-                        Material = oldItem.Material,
-                    };
-                    Parts.Add(newItem);
-                    IsFileSaved = false;
-                }
-            }
-            if (tcInputs.SelectedTab == tpStock)
-            {
-                foreach (DataGridViewRow item in StockGridView.SelectedRows)
-                {
-                    StockItem oldItem = (StockItem)item.DataBoundItem;
-                    StockItem newItem = new StockItem()
-                    {
-                        Name = oldItem.Name,
-                        Length = oldItem.Length,
-                        Width = oldItem.Width,
-                        Material = oldItem.Material,
-                    };
-                    Stock.Add(newItem);
-                    IsFileSaved = false;
-                }
-            }
+            DuplicateGridRows();
         }
+
+
 
         private void MaterialsGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -860,15 +875,6 @@ namespace CuttingPlanMaker
                     IsFileSaved = false;
                 }
                 MaterialsGridView.ResumeLayout();
-                if (Setting.AutoRepack == "true")
-                {
-                    PackSolution();
-                }
-                else
-                {
-                    isPackingRequired = true;
-                    pbLayout.Invalidate();
-                }
             }
             if (tcInputs.SelectedTab == tpParts)
             {
@@ -879,15 +885,6 @@ namespace CuttingPlanMaker
                     IsFileSaved = false;
                 }
                 PartsGridView.ResumeLayout();
-                if (Setting.AutoRepack == "true")
-                {
-                    PackSolution();
-                }
-                else
-                {
-                    isPackingRequired = true;
-                    pbLayout.Invalidate();
-                }
             }
             if (tcInputs.SelectedTab == tpStock)
             {
@@ -898,15 +895,6 @@ namespace CuttingPlanMaker
                     IsFileSaved = false;
                 }
                 StockGridView.ResumeLayout();
-                if (Setting.AutoRepack == "true")
-                {
-                    PackSolution();
-                }
-                else
-                {
-                    isPackingRequired = true;
-                    pbLayout.Invalidate();
-                }
             }
         }
 
@@ -930,18 +918,42 @@ namespace CuttingPlanMaker
 
         private void mniReportPartsList_Click(object sender, EventArgs e)
         {
-            new PartListReport()
-                .Generate(Setting, Materials, Stock, Parts)
-                .Save("PartsReport.pdf");
-            Process.Start("PartsReport.pdf");
+            var t = new PartListReport()
+                .Generate(Setting, Materials, Stock, Parts);
+
+            string filename = "";
+            for (int c = 0; c < 1000; c++)
+                try
+                {
+                    filename = $"PartsReport{(c == 0 ? "" : c.ToString())}.pdf";
+                    t.Save(filename);
+                    break;
+                }
+                catch
+                {
+                }
+            if (File.Exists(filename))
+                Process.Start(filename);
         }
 
         private void mniReportStockList_Click(object sender, EventArgs e)
         {
-            new StockReport()
-                .Generate(Setting, Materials, Stock, Parts)
-                .Save("StockReport.pdf");
-            Process.Start("StockReport.pdf");
+            var t = new StockReport()
+                .Generate(Setting, Materials, Stock, Parts);
+
+            string filename = "";
+            for (int c = 0; c < 1000; c++)
+                try
+                {
+                    filename = $"StockReport{(c == 0 ? "" : c.ToString())}.pdf";
+                    t.Save(filename);
+                    break;
+                }
+                catch
+                {
+                }
+            if (File.Exists(filename))
+                Process.Start(filename);
         }
 
         private void mniReportLayout_Click(object sender, EventArgs e)
@@ -957,22 +969,28 @@ namespace CuttingPlanMaker
                 }
             }
 
-            new LayoutReport()
-                .Generate(Setting, Materials, Stock, Parts)
-                .Save("LayoutReport.pdf");
+            var t = new LayoutReport()
+                .Generate(Setting, Materials, Stock, Parts);
 
-            Process.Start("LayoutReport.pdf");
+            string filename = "";
+            for (int c = 0; c < 1000; c++)
+                try
+                {
+                    filename = $"LayoutReport{(c == 0 ? "" : c.ToString())}.pdf";
+                    t.Save(filename);
+                    break;
+                }
+                catch
+                {
+                }
+            if (File.Exists(filename))
+                Process.Start(filename);
         }
 
         private void mniToolsPack_Click(object sender, EventArgs e)
         {
             PackSolution();
         }
-
-
-
-
-
 
         private void tcMaterials_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -988,16 +1006,6 @@ namespace CuttingPlanMaker
             else
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
         }
-        #endregion
-
-        // zoom & panning for layout image
-        float userZoomFactor = 1.0f;  // a zoom factor of 1 will fill the picturbox with the image
-        PointF userOffset = new PointF(0, 0); //the offset with which the image has been panned, (0,0) would centre the image in the PB
-        Bitmap LayoutBitmap = null;
-        float unityScaleFactor;
-        PointF OrigMouseDownPoint;
-        PointF OrigUserOffset;
-
 
         private RectangleF ImageToPbSpace(float X, float Y, float width, float height, SizeF pbSize, PointF imgCentre, float userZoom, float fillScale)
         {
@@ -1008,17 +1016,17 @@ namespace CuttingPlanMaker
                 height * fillScale * userZoom
                 );
         }
-        
+
         private RectangleF PbToImageSpace(float X, float Y, float width, float height, SizeF pbSize, PointF imgCentre, float userZoom, float fillScale)
         {
             return new RectangleF(
                -(X - pbSize.Width * 0.5f) / (fillScale * userZoom) + imgCentre.X,
-               -(Y - pbSize.Height * 0.5f) / (fillScale * userZoom) + imgCentre.Y ,
+               -(Y - pbSize.Height * 0.5f) / (fillScale * userZoom) + imgCentre.Y,
                width / (fillScale * userZoom),
                height / (fillScale * userZoom)
                );
         }
-        
+
         private void PbLayout_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -1096,7 +1104,7 @@ namespace CuttingPlanMaker
 
         private void pbLayout_MouseMove(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 //convert the mouse movement relative to its original mouse down position to image space movement
                 //add the image space movemnt to the original user offset
@@ -1114,12 +1122,56 @@ namespace CuttingPlanMaker
 
         private void mniReportLayoutLabels_Click(object sender, EventArgs e)
         {
-            new CuttingLabelReport()
-               .Generate(Setting, Materials, Stock, Parts)
-               .Save("CuttingLabelsReport.pdf");
+            var t = new CuttingLabelReport()
+               .Generate(Setting, Materials, Stock, Parts);
 
-            Process.Start("CuttingLabelsReport.pdf");
+            string filename = "";
+            for (int c = 0; c < 1000; c++)
+                try
+                {
+                    filename = $"CuttingLabelsReport{(c == 0 ? "" : c.ToString())}.pdf";
+                    t.Save(filename);
+                    break;
+                }
+                catch
+                {
+                }
+            if (File.Exists(filename))
+                Process.Start(filename);
+
         }
+        #endregion
 
+        private void mniCentreItem_Click(object sender, EventArgs e)
+        {
+            if (tcInputs.SelectedTab == tpParts && PartsGridView.SelectedCells.Count == 1)
+            {
+                // retrieve the selected part
+                Part p = (Part)PartsGridView.SelectedCells[0].OwningRow.DataBoundItem;
+
+                // find the board's offset that contains the part
+                double yOffset = yMargin;
+                StockItem si = null;
+                for (int i = 0; i < Stock.Count; i++)
+                {
+                    si = Stock[i];
+                    if (si.PackedParts.Contains(p)) break;
+                    if(si.PackedPartsCount > 0 || Setting.DrawUnusedStock == "true")
+                        yOffset += si.Width + boardSpacing;
+                }
+                int partindex = 0;
+                while (si.PackedParts[partindex] != p) partindex++;
+
+                double dLength = si.PackedPartdLengths[partindex];
+                double dWidth = si.PackedPartdWidths[partindex];
+                double cx = xMargin + dLength + p.Length / 2;
+                double cy = yOffset + dWidth + p.Width / 2;
+                double dx = LayoutBitmap.Width / 2 - cx;
+                double dy = LayoutBitmap.Height / 2 - cy;
+
+                userOffset = new PointF((float)(dx), (float)(dy));
+                pbLayout.Invalidate();
+            }
+        }
     }
 }

@@ -119,6 +119,7 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
+            this.mniCentreItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -284,28 +285,28 @@
             // mniReportPartsList
             // 
             this.mniReportPartsList.Name = "mniReportPartsList";
-            this.mniReportPartsList.Size = new System.Drawing.Size(143, 22);
+            this.mniReportPartsList.Size = new System.Drawing.Size(180, 22);
             this.mniReportPartsList.Text = "Parts list";
             this.mniReportPartsList.Click += new System.EventHandler(this.mniReportPartsList_Click);
             // 
             // mniReportStockList
             // 
             this.mniReportStockList.Name = "mniReportStockList";
-            this.mniReportStockList.Size = new System.Drawing.Size(143, 22);
+            this.mniReportStockList.Size = new System.Drawing.Size(180, 22);
             this.mniReportStockList.Text = "Stock list";
             this.mniReportStockList.Click += new System.EventHandler(this.mniReportStockList_Click);
             // 
             // mniReportLayout
             // 
             this.mniReportLayout.Name = "mniReportLayout";
-            this.mniReportLayout.Size = new System.Drawing.Size(143, 22);
+            this.mniReportLayout.Size = new System.Drawing.Size(180, 22);
             this.mniReportLayout.Text = "Layout";
             this.mniReportLayout.Click += new System.EventHandler(this.mniReportLayout_Click);
             // 
             // mniReportLayoutLabels
             // 
             this.mniReportLayoutLabels.Name = "mniReportLayoutLabels";
-            this.mniReportLayoutLabels.Size = new System.Drawing.Size(143, 22);
+            this.mniReportLayoutLabels.Size = new System.Drawing.Size(180, 22);
             this.mniReportLayoutLabels.Text = "Layout labels";
             this.mniReportLayoutLabels.Click += new System.EventHandler(this.mniReportLayoutLabels_Click);
             // 
@@ -618,9 +619,10 @@
             // 
             this.mnuGridContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniDuplicateRows,
-            this.mniRemoveRows});
+            this.mniRemoveRows,
+            this.mniCentreItem});
             this.mnuGridContextMenu.Name = "mnuGridContextMenu";
-            this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 48);
+            this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 92);
             // 
             // mniDuplicateRows
             // 
@@ -993,6 +995,13 @@
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
             // 
+            // mniCentreItem
+            // 
+            this.mniCentreItem.Name = "mniCentreItem";
+            this.mniCentreItem.Size = new System.Drawing.Size(206, 22);
+            this.mniCentreItem.Text = "Centre selected item";
+            this.mniCentreItem.Click += new System.EventHandler(this.mniCentreItem_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1114,6 +1123,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ToolStripMenuItem mniReportLayoutLabels;
+        private System.Windows.Forms.ToolStripMenuItem mniCentreItem;
     }
 }
 
