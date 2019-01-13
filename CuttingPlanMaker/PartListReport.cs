@@ -94,7 +94,36 @@ namespace CuttingPlanMaker
             iRow[6].AddParagraph().AddFormattedText(totVol.ToString("0.000"), TextFormat.Bold);
             iRow[7].Borders.Top.Width = 2;
             iRow[7].AddParagraph().AddFormattedText(totCost.ToString("0.00"), TextFormat.Bold);
-            
+
+            mainSection.AddParagraph("Boards required (calculated at 20% waste and 25mm thickness)");
+            table = mainSection.AddTable();
+            table.Rows.LeftIndent = 10;
+            for (int i = 0; i < 8; i++) table.AddColumn().Width = Unit.FromCentimeter(1.5);
+            for (int i = 0; i < 10; i++) table.AddRow().Shading.Color = i%2==0 ? Colors.WhiteSmoke : Colors.Transparent;
+
+            table.Format.Alignment = ParagraphAlignment.Center;
+            table.Rows[0].Format.Font.Bold = true;
+            table.Rows[0].Shading.Color = Colors.LightGray;
+            table.Columns[0].Format.Font.Bold = true;
+            table.Columns[0].Shading.Color = Colors.LightGray;
+            table.Columns[0].Width = Unit.FromCentimeter(3.5);
+            table.Columns[0].Format.Alignment = ParagraphAlignment.Right;
+
+
+            double[] lengths_m = new double[] { 1800, 2000, 2100, 2200, 2500, 3000, 3500 };
+            double[] widths_mm = new double[] { 80, 100, 120, 150, 180, 200, 220, 230, 250 };
+
+            table[0, 0].AddParagraph("AVG Width\\Length");
+            for (int i = 0; i < lengths_m.Length; i++) table[0, i + 1].AddParagraph($"{lengths_m[i] / 1000:0.0}");
+            for (int i = 0; i < widths_mm.Length; i++) table[i + 1, 0].AddParagraph($"{widths_mm[i]:0}");
+            for (int i = 0; i < lengths_m.Length; i++)
+            {
+                for (int j = 0; j < widths_mm.Length; j++)
+                {
+                    double val = Math.Ceiling( totVol * (1.2) / 0.025 / (lengths_m[i]/1000) / (widths_mm[j] / 1000) );
+                    table[j+1, i+1].AddParagraph($"{val:0}");
+                }
+            }
             #endregion
             return RenderPdf();
         }

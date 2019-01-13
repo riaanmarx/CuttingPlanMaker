@@ -18,6 +18,16 @@ namespace CuttingPlanMaker
     /// </summary>
     public partial class frmMain : Form
     {
+        //TODO: Add board column on parts grid to see what board the part was placed on
+        //TODO: DEL keyboard button not causing auto-repack
+        //TODO: review events for grids - not making sense yet
+        //TODO: create interface for packers and allow user to pick pick a packer algorithm
+        //TODO: create import/export functionality
+        //TODO: on points algorithm, see if we can allign parts to improve sawing 
+        //TODO: add stock required table on parts report
+
+
+
         #region // Fields & Properties ...
 
         // flag to keep track if the current file is saved

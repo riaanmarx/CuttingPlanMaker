@@ -12,14 +12,19 @@ namespace CuttingPlanMaker
 {
     class LayoutReport : ReportBase
     {
-
-        private string DrawBoard_base64(StockItem board)
+        private class Base64Image
+        {
+            public string image;
+            public int Height;
+            public int Width;
+        }
+        private Base64Image DrawBoard_base64(StockItem board)
         {
             double xMargin = 0;
             double yMargin = 20;
             double imageHeight = board.Width + 2 * yMargin;
             double imageWidth = board.Length + 2 * xMargin;
-            
+
             // create bitmap
             System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap((int)imageWidth, (int)imageHeight);
             System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bitmap);
@@ -64,7 +69,12 @@ namespace CuttingPlanMaker
             byte[] byteImage = ms.ToArray();
             var base64img = Convert.ToBase64String(byteImage);
 
-            return base64img;
+            return new Base64Image()
+            {
+                image = base64img,
+                Height = bitmap.Height,
+                Width = bitmap.Width
+            };
         }
 
         public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts)
@@ -72,20 +82,20 @@ namespace CuttingPlanMaker
             #region // populate header text ...
             document.Info.Title = "Layout Report";
             headerTable[1, 0].AddParagraph("Project:");
-            headerTable[1, 1].AddParagraph(Settings.ProjectName??"");
+            headerTable[1, 1].AddParagraph(Settings.ProjectName ?? "");
             headerTable[1, 2].AddParagraph("Job ref:");
-            headerTable[1, 3].AddParagraph(Settings.JobID??"");
+            headerTable[1, 3].AddParagraph(Settings.JobID ?? "");
 
             headerTable[2, 0].AddParagraph("Client:");
-            headerTable[2, 1].AddParagraph(Settings.ClientName??"");
+            headerTable[2, 1].AddParagraph(Settings.ClientName ?? "");
 
             headerTable[3, 0].AddParagraph("Tel nr.:");
-            headerTable[3, 1].AddParagraph(Settings.ClientTelNr??"");
+            headerTable[3, 1].AddParagraph(Settings.ClientTelNr ?? "");
             headerTable[3, 2].AddParagraph("Kerf:");
-            headerTable[3, 3].AddParagraph(Settings.BladeKerf??"");
+            headerTable[3, 3].AddParagraph(Settings.BladeKerf ?? "");
 
             headerTable[4, 0].AddParagraph("Address:");
-            headerTable[4, 1].AddParagraph(Settings.ClientAddr??"");
+            headerTable[4, 1].AddParagraph(Settings.ClientAddr ?? "");
             headerTable[4, 2].AddParagraph("Part-padding:");
             headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports == "true" ? "included" : "not included")})");
             headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
@@ -122,7 +132,7 @@ namespace CuttingPlanMaker
                 var iMaterial = Materials.First(t => t.Name == Stock[i].Material);
 
                 iRow = table.AddRow();
-                iRow.KeepWith = iStock.PackedPartsCount==0 ? 1 : iStock.PackedPartsCount + 2;
+                iRow.KeepWith = iStock.PackedPartsCount == 0 ? 1 : iStock.PackedPartsCount + 2;
                 iRow.Shading.Color = Colors.LightGray;
                 iRow.Format.Font.Bold = true;
                 iRow[0].MergeRight = 1;
@@ -155,12 +165,22 @@ namespace CuttingPlanMaker
                 {
                     iRow = table.AddRow();
                     iRow[0].MergeRight = 6;
-                    var img = iRow[0].AddImage("base64:" + DrawBoard_base64(iStock));
-                    img.Width = mainSection.PageSetup.PageWidth - LeftMargin - RightMargin - Unit.FromCentimeter(1);
+                    var bitmap = DrawBoard_base64(iStock);
+                    var img = iRow[0].AddImage("base64:" + bitmap.image);
                     img.LockAspectRatio = true;
 
+                    double maximgwidth = mainSection.PageSetup.PageWidth - LeftMargin - RightMargin - Unit.FromCentimeter(1);
+                    double maximgheight = Unit.FromCentimeter(2.5);
+                    double xscale = bitmap.Width / maximgwidth;
+                    double yscale = bitmap.Height / maximgheight;
+
+                    if (xscale > yscale)
+                        img.Width = mainSection.PageSetup.PageWidth - LeftMargin - RightMargin - Unit.FromCentimeter(1);
+                    else
+                        img.Height = Unit.FromCentimeter(3);
+
                     if (Settings.IncludePaddingInReports == "true")
-                        iStock.PackedParts.ToList().ForEach(t=>t.Inflate(-double.Parse(Settings.PartPaddingWidth),-double.Parse(Settings.PartPaddingLength)));
+                        iStock.PackedParts.ToList().ForEach(t => t.Inflate(-double.Parse(Settings.PartPaddingWidth), -double.Parse(Settings.PartPaddingLength)));
                 }
                 else
                 {
@@ -173,7 +193,7 @@ namespace CuttingPlanMaker
             }
 
             Part[] unpackedParts = Parts.Where(t => t.isPacked == false).ToArray();
-            if(unpackedParts.Length > 0)
+            if (unpackedParts.Length > 0)
             {
                 iRow = table.AddRow();
                 iRow.Shading.Color = Colors.DarkRed;
@@ -210,7 +230,7 @@ namespace CuttingPlanMaker
             table.AddColumn("0.3cm").Format.Alignment = ParagraphAlignment.Right;
             table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
             table.AddColumn("1.0cm").Format.Alignment = ParagraphAlignment.Left;
-            table.AddRow()[0].MergeRight=6;
+            table.AddRow()[0].MergeRight = 6;
             table.AddRow();
             table.AddRow().Shading.Color = Colors.WhiteSmoke;
             table.AddRow();
@@ -218,7 +238,7 @@ namespace CuttingPlanMaker
             table.AddRow();
             table.AddRow().Shading.Color = Colors.WhiteSmoke;
 
-            heading = table[0,0].AddParagraph("Solution Summary");
+            heading = table[0, 0].AddParagraph("Solution Summary");
             heading.Format.Font.Bold = true;
             heading.Format.Font.Size = 10;
             heading.Format.Font.Underline = Underline.Single;
@@ -231,13 +251,13 @@ namespace CuttingPlanMaker
             table[5, 0].AddParagraph("Waste");
             table[6, 0].AddParagraph("Coverage");
 
-            double UsedStockArea = Stock.Where(q => q.PackedPartsCount>0).Sum(t => t.Area) / 1e6;
+            double UsedStockArea = Stock.Where(q => q.PackedPartsCount > 0).Sum(t => t.Area) / 1e6;
             double PlacedPartsArea = Parts.Where(q => q.isPacked).Sum(t => t.Area) / 1e6;
 
             table[1, 2].AddParagraph(Stock.Count.ToString());
             table[1, 5].AddParagraph((Stock.Sum(t => t.Area) / 1e6).ToString("0.000"));
 
-            table[2, 2].AddParagraph(Stock.Count(t => t.PackedPartsCount>0).ToString());
+            table[2, 2].AddParagraph(Stock.Count(t => t.PackedPartsCount > 0).ToString());
             table[2, 5].AddParagraph(UsedStockArea.ToString("0.000"));
 
             table[3, 2].AddParagraph(Parts.Count.ToString());
