@@ -41,6 +41,19 @@ namespace CuttingPlanMaker
 
         static public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
+            //clear current packing
+            parts.ToList().ForEach(t => t.isPacked = false);
+            boards.ToList().ForEach(t =>
+            {
+                t.isComplete = false;
+                t.PackedPartdLengths = null;
+                t.PackedPartdWidths = null;
+                t.PackedParts = null;
+                t.PackedPartsCount = 0;
+                t.PackedPartsTotalArea = 0;
+            });
+
+
             // order the parts by Area, Ascending
             int boardsCount = boards.Length;
             int packedPartsCount = 0;

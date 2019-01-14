@@ -102,7 +102,7 @@
     <Compile Include="IReport.cs" />
     <Compile Include="LayoutReport.cs" />
     <Compile Include="Material.cs" />
-    <Compile Include="Packer.cs" />
+    <None Include="Packer.cs" />
     <Compile Include="Packer_points.cs" />
     <Compile Include="Part.cs" />
     <Compile Include="PartListReport.cs" />

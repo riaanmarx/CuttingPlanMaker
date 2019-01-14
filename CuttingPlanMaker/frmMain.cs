@@ -27,7 +27,7 @@ namespace CuttingPlanMaker
         //TODO: handle writing reports to file thats locked
         //TODO: review stock and part classes to remove dead wood
         //TODO: refactor stock class to have a placedpart class with offset and part all in one instance
-
+        //          notes: problem here is that we want to send the placements back while not making change to the part while packing (part accessed by multiple threads)
         #region // Fields & Properties ...
 
         /// <summary>
@@ -617,22 +617,6 @@ namespace CuttingPlanMaker
         /// </summary>
         private void PackSolution()
         {
-            //clear current packing
-            Parts.ToList().ForEach(t => t.isPacked = false);
-            Stock.ToList().ForEach(t =>
-            {
-                t.AssociatedBoard = null;
-                t.dLength = 0;
-                t.dWidth = 0;
-                t.isComplete = false;
-                t.isInUse = false;
-                t.PackedPartdLengths = null;
-                t.PackedPartdWidths = null;
-                t.PackedParts = null;
-                t.PackedPartsCount = 0;
-                t.PackedPartsTotalArea = 0;
-            });
-
             // filter the parts and stock for te current material and pack them
             string sMaterialsName = tcMaterials.SelectedTab.Name;
             Material iMaterial = Materials.First(t => t.Name == sMaterialsName);
