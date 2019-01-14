@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker
 {
-    public class Packer
+    public class Packer:IPacker
     {
         public static Bitmap Drawboard_debug(StockItem board, StockItem[] segments, int segcount, Part[] parts, double[] dLengths, double[] dWidths, int partcount, double partsArea)
         {
@@ -68,7 +68,7 @@ namespace CuttingPlanMaker
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
         /// <returns></returns>
-        static public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             // order the parts and boards by Area, Ascending
             int partsCount = parts.Length;

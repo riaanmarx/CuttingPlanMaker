@@ -39,7 +39,7 @@ namespace CuttingPlanMaker
             }
         }
 
-        static public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             //clear current packing
             parts.ToList().ForEach(t => t.IsPacked = false);

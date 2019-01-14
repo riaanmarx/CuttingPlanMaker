@@ -621,7 +621,8 @@ namespace CuttingPlanMaker
             StockItem[] iStock = Stock.Where(t => t.Material == iMaterial.Name).ToArray();
             try
             {
-                Packer_points.Pack(iParts
+                IPacker packer = new Packer_points();
+                packer.Pack(iParts
                         , iStock
                         , Setting.BladeKerf
                         , Setting.PartPaddingLength
