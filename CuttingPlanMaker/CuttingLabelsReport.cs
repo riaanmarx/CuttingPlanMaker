@@ -74,11 +74,11 @@ namespace CuttingPlanMaker
                     Cell c = labelTable[0, 0];  // reference the label content table's top cell
                     c.Format.Font.Bold = true;
                     c.Format.Font.Size = 15;
-                    c.AddParagraph(iPart.Name);
+                    c.AddParagraph(iPart.Part.Name);
 
                     c = labelTable[1, 0];       // reference the second row
                     c.Format.Font.Size = 12;
-                    c.AddParagraph($"[{iPart.Length:0.0} x {iPart.Width:0.0}]");
+                    c.AddParagraph($"[{iPart.Part.Length:0.0} x {iPart.Part.Width:0.0}]");
 
                     c = labelTable[2, 0];       // populate third row
                     c.Format.Font.Size = 8;
@@ -89,7 +89,7 @@ namespace CuttingPlanMaker
 
                     c = labelTable[4, 0];
                     c.Format.Font.Size = 8;
-                    c.AddParagraph($"@ ({iStock.PackedPartdLengths[j]:0.0}, {iStock.PackedPartdWidths[j]:0.0})");
+                    c.AddParagraph($"@ ({iPart.dLength:0.0}, {iPart.dWidth:0.0})");
 
                     cntr++;
                 }

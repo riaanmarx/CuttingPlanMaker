@@ -39,28 +39,27 @@ namespace CuttingPlanMaker
             // loop through all the parts and draw the ones on the current board
             for (int i = 0; i < board.PackedPartsCount; i++)
             {
-                Part iPlacement = board.PackedParts[i];
+                Placement iPlacement = board.PackedParts[i];
 
                 // draw the part
                 g.FillRectangle(System.Drawing.Brushes.Green,
-                    (float)(xMargin + board.PackedPartdLengths[i]),
-                    (float)(yMargin + board.PackedPartdWidths[i]),
-                    (float)iPlacement.Length,
-                    (float)iPlacement.Width);
+                    (float)(xMargin + iPlacement.dLength),
+                    (float)(yMargin + iPlacement.dWidth),
+                    (float)iPlacement.Part.Length,
+                    (float)iPlacement.Part.Width);
 
                 // print the part text
-                string text1 = $"{iPlacement.Name} [{iPlacement.Length} x {iPlacement.Width}]";
+                string text1 = $"{iPlacement.Part.Name} [{iPlacement.Part.Length} x {iPlacement.Part.Width}]";
 
                 System.Drawing.Font partFont = new System.Drawing.Font(new System.Drawing.FontFamily("Consolas"), 15);
                 System.Drawing.SizeF textSize = g.MeasureString(text1, partFont);
 
-                if (textSize.Width > iPlacement.Length) text1 = iPlacement.Name;
+                if (textSize.Width > iPlacement.Part.Length) text1 = iPlacement.Part.Name;
                 textSize = g.MeasureString(text1, partFont);
 
                 g.DrawString(text1, partFont, System.Drawing.Brushes.White,
-                    (int)(xMargin + board.PackedPartdLengths[i] + iPlacement.Length / 2.0 - textSize.Width / 2.0),
-                    (int)(yMargin + board.PackedPartdWidths[i] + iPlacement.Width / 2.0 - textSize.Height / 2.0));
-
+                    (int)(xMargin + iPlacement.dLength + iPlacement.Part.Length / 2.0 - textSize.Width / 2.0),
+                    (int)(yMargin + iPlacement.dWidth + iPlacement.Part.Width / 2.0 - textSize.Height / 2.0));
             }
 
             g.Flush();
@@ -98,7 +97,7 @@ namespace CuttingPlanMaker
             headerTable[4, 0].AddParagraph("Address:");
             headerTable[4, 1].AddParagraph(Settings.ClientAddr ?? "");
             headerTable[4, 2].AddParagraph("Part-padding:");
-            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports? "included" : "not included")})");
+            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports ? "included" : "not included")})");
             headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
             #endregion
 
@@ -146,20 +145,20 @@ namespace CuttingPlanMaker
 
                 for (int j = 0; j < iStock.PackedPartsCount; j++)
                 {
-                    var iPart = iStock.PackedParts[j];
+                    var iPlacement = iStock.PackedParts[j];
                     if (Settings.IncludePaddingInReports)
-                        iPart.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
+                        iPlacement.Part.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
                     iRow = table.AddRow();
                     iRow.Format.Font.Size = 8;
                     if (j % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
                     iRow[0].MergeRight = 1;
                     iRow[0].Format.Alignment = ParagraphAlignment.Right;
-                    iRow[0].AddParagraph(iPart.Name);
-                    iRow[2].AddParagraph(iPart.Length.ToString("0.0"));
-                    iRow[3].AddParagraph(iPart.Width.ToString("0.0"));
+                    iRow[0].AddParagraph(iPlacement.Part.Name);
+                    iRow[2].AddParagraph(iPlacement.Part.Length.ToString("0.0"));
+                    iRow[3].AddParagraph(iPlacement.Part.Width.ToString("0.0"));
                     iRow[4].AddParagraph("@");
-                    iRow[5].AddParagraph(iStock.PackedPartdLengths[j].ToString("0.0"));
-                    iRow[6].AddParagraph(iStock.PackedPartdWidths[j].ToString("0.0"));
+                    iRow[5].AddParagraph(iPlacement.dLength.ToString("0.0"));
+                    iRow[6].AddParagraph(iPlacement.dWidth.ToString("0.0"));
                 }
 
                 if (iStock.PackedPartsCount > 0)
@@ -181,7 +180,7 @@ namespace CuttingPlanMaker
                         img.Height = maximgheight;
 
                     if (Settings.IncludePaddingInReports)
-                        iStock.PackedParts.ToList().ForEach(t => t.Inflate(-Settings.PartPaddingWidth, -Settings.PartPaddingLength));
+                        iStock.PackedParts.ToList().ForEach(t => t.Part.Inflate(-Settings.PartPaddingWidth, -Settings.PartPaddingLength));
                 }
                 else
                 {
@@ -193,7 +192,7 @@ namespace CuttingPlanMaker
                 table.AddRow();
             }
 
-            Part[] unpackedParts = Parts.Where(t => t.isPacked == false).ToArray();
+            Part[] unpackedParts = Parts.Where(t => t.IsPacked == false).ToArray();
             if (unpackedParts.Length > 0)
             {
                 iRow = table.AddRow();
@@ -253,7 +252,7 @@ namespace CuttingPlanMaker
             table[6, 0].AddParagraph("Coverage");
 
             double UsedStockArea = Stock.Where(q => q.PackedPartsCount > 0).Sum(t => t.Area) / 1e6;
-            double PlacedPartsArea = Parts.Where(q => q.isPacked).Sum(t => t.Area) / 1e6;
+            double PlacedPartsArea = Parts.Where(q => q.IsPacked).Sum(t => t.Area) / 1e6;
 
             table[1, 2].AddParagraph(Stock.Count.ToString());
             table[1, 5].AddParagraph((Stock.Sum(t => t.Area) / 1e6).ToString("0.000"));
@@ -264,7 +263,7 @@ namespace CuttingPlanMaker
             table[3, 2].AddParagraph(Parts.Count.ToString());
             table[3, 5].AddParagraph((Parts.Sum(t => t.Area) / 1e6).ToString("0.000"));
 
-            table[4, 2].AddParagraph(Parts.Count(t => t.isPacked).ToString());
+            table[4, 2].AddParagraph(Parts.Count(t => t.IsPacked).ToString());
             table[4, 5].AddParagraph(PlacedPartsArea.ToString("0.000"));
 
             table[5, 2].Format.Font.Bold = true;

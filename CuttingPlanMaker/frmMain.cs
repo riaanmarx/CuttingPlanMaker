@@ -24,10 +24,7 @@ namespace CuttingPlanMaker
         //TODO: on points algorithm, see if we can allign parts to improve sawing 
         //TODO: undo function....
         //TODO: splash screen
-        //TODO: handle writing reports to file thats locked
-        //TODO: review stock and part classes to remove dead wood
-        //TODO: refactor stock class to have a placedpart class with offset and part all in one instance
-        //          notes: problem here is that we want to send the placements back while not making change to the part while packing (part accessed by multiple threads)
+
         #region // Fields & Properties ...
 
         /// <summary>
@@ -263,17 +260,17 @@ namespace CuttingPlanMaker
                 //string overflowtext = "";
                 for (int i = 0; i < iBoard.PackedPartsCount; i++)
                 {
-                    Part iPlacement = iBoard.PackedParts[i];
-                    double dLength = iBoard.PackedPartdLengths[i];
-                    double dWidth = iBoard.PackedPartdWidths[i];
-                    double Length = iPlacement.Length + (Setting.IncludePaddingInDisplay ? Setting.PartPaddingLength : 0f);
-                    double Width = iPlacement.Width + (Setting.IncludePaddingInDisplay  ? Setting.PartPaddingWidth : 0f);
+                    var iPlacement = iBoard.PackedParts[i];
+                    double dLength = iPlacement.dLength;
+                    double dWidth = iPlacement.dWidth;
+                    double Length = iPlacement.Part.Length + (Setting.IncludePaddingInDisplay ? Setting.PartPaddingLength : 0f);
+                    double Width = iPlacement.Part.Width + (Setting.IncludePaddingInDisplay ? Setting.PartPaddingWidth : 0f);
 
                     // draw the part
                     g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
 
                     // print the part text
-                    string partLabel = $"{iPlacement.Name} [{Length} x {iPlacement.Width}]";
+                    string partLabel = $"{iPlacement.Part.Name} [{Length} x {iPlacement.Part.Width}]";
 
                     int sz = 16;
                     Font partFont;
@@ -282,9 +279,9 @@ namespace CuttingPlanMaker
                     {
                         partFont = new Font(new FontFamily("Microsoft Sans Serif"), sz);
                         textSize = g.MeasureString(partLabel, partFont);
-                        if (textSize.Width < iPlacement.Length && textSize.Height < iPlacement.Width)
+                        if (textSize.Width < iPlacement.Part.Length && textSize.Height < iPlacement.Part.Width)
                         {
-                            g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Width - 0.5 * textSize.Height));
+                            g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Part.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Part.Width - 0.5 * textSize.Height));
                             break;
                         }
                         else sz--;
@@ -292,9 +289,9 @@ namespace CuttingPlanMaker
                     } while (sz > 8);
                     if (sz <= 8)
                     {
-                        partLabel = $"{iPlacement.Name}";
+                        partLabel = $"{iPlacement.Part.Name}";
                         textSize = g.MeasureString(partLabel, partFont);
-                        g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Width - 0.5 * textSize.Height));
+                        g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Part.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Part.Width - 0.5 * textSize.Height));
 
                     }
                 }
@@ -836,7 +833,7 @@ namespace CuttingPlanMaker
                 ctrSplitContainer.BringToFront();
             }
         }
-        
+
         private void MaterialsGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             // If the user removed the row - set the file saved flag
@@ -1067,7 +1064,7 @@ namespace CuttingPlanMaker
 
         private void PartsGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.RowIndex < Parts.Count && Parts[e.RowIndex].Area > 0 && !Parts[e.RowIndex].isPacked)
+            if (e.RowIndex < Parts.Count && Parts[e.RowIndex].Area > 0 && !Parts[e.RowIndex].IsPacked)
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Red;
             else
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
@@ -1137,9 +1134,9 @@ namespace CuttingPlanMaker
             int partscount = Parts.Count(q => q.Material == SelectedMaterial);
             lblPartsCount.Text = partscount.ToString();
             lblPartsArea.Text = (Parts.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6f).ToString("0.000");
-            int placedpartcount = Parts.Count(t => t.Material == SelectedMaterial && t.isPacked);
+            int placedpartcount = Parts.Count(t => t.Material == SelectedMaterial && t.IsPacked);
             lblUsedPartsCount.Text = placedpartcount.ToString();
-            double UsedPartsArea = (Parts.Where(q => q.Material == SelectedMaterial && q.isPacked).Sum(t => t.Area) / 1e6f);
+            double UsedPartsArea = (Parts.Where(q => q.Material == SelectedMaterial && q.IsPacked).Sum(t => t.Area) / 1e6f);
             lblUsedPartsArea.Text = UsedPartsArea.ToString("0.000");
             if (placedpartcount < partscount)
             {
@@ -1232,15 +1229,15 @@ namespace CuttingPlanMaker
                 for (int i = 0; i < Stock.Count; i++)
                 {
                     si = Stock[i];
-                    if (si.PackedParts.Contains(p)) break;
+                    if (si.PackedParts.Any(t => t.Part == p)) break;
                     if (si.PackedPartsCount > 0 || Setting.DrawUnusedStock)
                         yOffset += si.Width + boardSpacing;
                 }
                 int partindex = 0;
-                while (si.PackedParts[partindex] != p) partindex++;
-
-                double dLength = si.PackedPartdLengths[partindex];
-                double dWidth = si.PackedPartdWidths[partindex];
+                while (si.PackedParts[partindex].Part != p) partindex++;
+                Placement iPlacement = si.PackedParts[partindex];
+                double dLength = iPlacement.dLength;
+                double dWidth = iPlacement.dWidth;
                 double cx = xMargin + dLength + p.Length / 2;
                 double cy = yOffset + dWidth + p.Width / 2;
                 double dx = LayoutBitmap.Width / 2 - cx;

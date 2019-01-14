@@ -13,15 +13,15 @@ namespace CuttingPlanMaker
         public string Name { get; set; }
 
         [CsvColumn(Name = "Length", FieldIndex = 2)]
-        public float Length { get; set; }
+        public double Length { get; set; }
 
         [CsvColumn(Name = "Width", FieldIndex = 3)]
-        public float Width { get; set; }
+        public double Width { get; set; }
 
         [CsvColumn(Name = "Thickness", FieldIndex = 4)]
-        public float Thickness { get; set; }
+        public double Thickness { get; set; }
 
         [CsvColumn(Name = "Cost", FieldIndex = 5)]
-        public float Cost { get; set; }
+        public double Cost { get; set; }
     }
 }

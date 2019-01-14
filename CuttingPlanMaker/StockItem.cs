@@ -23,12 +23,13 @@ namespace CuttingPlanMaker
 
         public double Area => Length * Width;
 
-        public Part[] PackedParts;
-        public double[] PackedPartdLengths { get; set; }
-        public double[] PackedPartdWidths { get; set; }
+        public Placement[] PackedParts;
+
         public double PackedPartsTotalArea { get; set; }
+
         public int PackedPartsCount { get; set; }
-        public bool isComplete { get; set; }
+
+        public bool IsComplete { get; set; }
         
         public override string ToString()
         {

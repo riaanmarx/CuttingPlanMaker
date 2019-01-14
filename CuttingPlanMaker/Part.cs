@@ -23,10 +23,7 @@ namespace CuttingPlanMaker
 
         public double Area => Length * Width;
 
-        public bool isPacked { get; set; }
-
-        public Part()
-        {}
+        public bool IsPacked { get; set; }
 
         public override string ToString()
         {
