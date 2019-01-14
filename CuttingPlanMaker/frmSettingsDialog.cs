@@ -27,7 +27,6 @@ namespace CuttingPlanMaker
             tbPartPaddingWidth.Text = _settings.PartPaddingWidth.ToString();
             cbAutoRecalc.Checked = _settings.AutoRepack;
             cbDrawUnused.Checked = _settings.DrawUnusedStock;
-            ddlOrientation.Text = _settings.ResultOrientation;
             tbProjectName.Text = _settings.ProjectName;
             tbJobId.Text = _settings.JobID;
             tbClientName.Text = _settings.ClientName;
@@ -36,6 +35,13 @@ namespace CuttingPlanMaker
             dtpTargetDate.Value = DateTime.Parse(_settings.TargetDate ?? DateTime.Now.ToLongDateString());
             cbIncludePaddingOnReports.Checked = _settings.IncludePaddingInReports ;
             cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay ;
+
+            // populate items for algorithms
+            ddlPacker.Items.Add("Diagonal Points");
+
+            if (_settings.Algorithm == "") ddlPacker.SelectedIndex = 0;
+            else ddlPacker.SelectedText = _settings.Algorithm;
+
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -46,7 +52,7 @@ namespace CuttingPlanMaker
             _settings.PartPaddingWidth = double.Parse(tbPartPaddingWidth.Text);
             _settings.AutoRepack = cbAutoRecalc.Checked;
             _settings.DrawUnusedStock = cbDrawUnused.Checked;
-            _settings.ResultOrientation = ddlOrientation.Text;
+            _settings.ResultOrientation = ddlPacker.Text;
             _settings.IncludePaddingInReports = cbIncludePaddingOnReports.Checked ;
             _settings.IncludePaddingInDisplay = cbIncludePaddingOnDisplay.Checked ;
 
@@ -56,11 +62,8 @@ namespace CuttingPlanMaker
             _settings.ClientTelNr = tbClientNr.Text;
             _settings.ClientAddr = tbClientAddr.Text;
             _settings.TargetDate = dtpTargetDate.Value.ToLongDateString();
+            _settings.Algorithm = ddlPacker.SelectedText;
         }
 
-        private void frmSettingsDialog_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }

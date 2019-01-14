@@ -24,6 +24,8 @@ namespace CuttingPlanMaker
     /// </summary>
     class Packer_points : IPacker
     {
+        public string Name => "Diagonal Points";
+
         private class PointD
         {
             public double dWidth;
@@ -236,7 +238,6 @@ namespace CuttingPlanMaker
             }
 
         }
-
 
     }
 }

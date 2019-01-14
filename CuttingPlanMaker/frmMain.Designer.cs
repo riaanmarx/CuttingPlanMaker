@@ -48,6 +48,7 @@
             this.mniFileRevert = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSaveCopyAs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFileImport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileImportSketchupCSV = new System.Windows.Forms.ToolStripMenuItem();
@@ -120,7 +121,6 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
-            this.mniSaveCopyAs = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -212,6 +212,15 @@
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // mniSaveCopyAs
+            // 
+            this.mniSaveCopyAs.Name = "mniSaveCopyAs";
+            this.mniSaveCopyAs.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.S)));
+            this.mniSaveCopyAs.Size = new System.Drawing.Size(206, 22);
+            this.mniSaveCopyAs.Text = "Save &Copy as";
+            this.mniSaveCopyAs.Click += new System.EventHandler(this.mniSaveCopyAs_Click);
             // 
             // toolStripSeparator1
             // 
@@ -626,7 +635,8 @@
             this.mniRemoveRows,
             this.mniCentreItem});
             this.mnuGridContextMenu.Name = "mnuGridContextMenu";
-            this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 70);
+            this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 92);
+            this.mnuGridContextMenu.Opened += new System.EventHandler(this.mnuGridContextMenu_Opened);
             // 
             // mniDuplicateRows
             // 
@@ -1005,15 +1015,6 @@
             this.btnCollapseExpandTab.TabIndex = 4;
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
-            // 
-            // mniSaveCopyAs
-            // 
-            this.mniSaveCopyAs.Name = "mniSaveCopyAs";
-            this.mniSaveCopyAs.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.S)));
-            this.mniSaveCopyAs.Size = new System.Drawing.Size(206, 22);
-            this.mniSaveCopyAs.Text = "Save &Copy as";
-            this.mniSaveCopyAs.Click += new System.EventHandler(this.mniSaveCopyAs_Click);
             // 
             // FrmMain
             // 

@@ -50,5 +50,8 @@ namespace CuttingPlanMaker
 
         [CsvColumn(Name = "IncludePaddingInDisplay", FieldIndex = 14)]
         public bool IncludePaddingInDisplay { get; set; }
+
+        [CsvColumn(Name = "Algorithm", FieldIndex = 15)]
+        public string Algorithm { get; set; }
     }
 }

@@ -621,14 +621,17 @@ namespace CuttingPlanMaker
             StockItem[] iStock = Stock.Where(t => t.Material == iMaterial.Name).ToArray();
             try
             {
-                IPacker packer = new Packer_points();
+                IPacker packer = null;
+                if(Setting.Algorithm == "" || Setting.Algorithm == "Diagonal Points")
+                    packer = new Packer_points();
+
                 packer.Pack(iParts
                         , iStock
                         , Setting.BladeKerf
                         , Setting.PartPaddingLength
                         , Setting.PartPaddingWidth);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
             }
 
@@ -1227,12 +1230,23 @@ namespace CuttingPlanMaker
                 // find the board's offset that contains the part
                 double yOffset = yMargin;
                 StockItem si = null;
+                bool found = false;
                 for (int i = 0; i < Stock.Count; i++)
                 {
                     si = Stock[i];
-                    if (si.PackedParts.Any(t => t.Part == p)) break;
+                    if (si.PackedParts != null && si.PackedParts.Any(t => t?.Part == p))
+                    {
+                        found = true;
+                        break;
+                    }
                     if (si.PackedPartsCount > 0 || Setting.DrawUnusedStock)
                         yOffset += si.Width + boardSpacing;
+                }
+
+                if (!found)
+                {
+                    MessageBox.Show("Part not placed on any board.");
+                    return;
                 }
                 int partindex = 0;
                 while (si.PackedParts[partindex].Part != p) partindex++;
@@ -1262,5 +1276,9 @@ namespace CuttingPlanMaker
         }
         #endregion
 
+        private void mnuGridContextMenu_Opened(object sender, EventArgs e)
+        {
+            mniCentreItem.Enabled = (tcInputs.SelectedTab == tpParts);
+        }
     }
 }
