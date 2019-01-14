@@ -555,7 +555,7 @@ namespace CuttingPlanMaker
         private void LoadDefault()
         {
             // start from scratch
-            LoadFile("Default");
+            LoadFile("DefaultDataFiles\\Default");
             FilePath = "";
         }
 
