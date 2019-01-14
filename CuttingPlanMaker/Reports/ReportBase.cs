@@ -30,6 +30,9 @@ namespace CuttingPlanMaker
         internal Unit TitleBlockFontSize = Unit.FromCentimeter(0.3);
         internal Unit ColWidthLabels = Unit.FromCentimeter(2.0);
 
+        /// <summary>
+        /// Default constructor for reports to set up generic report structures and title block
+        /// </summary>
         public ReportBase()
         {
             #region // Set up report document and page setup ...
@@ -99,7 +102,6 @@ namespace CuttingPlanMaker
             
             #endregion
 
-
             #region // set up footer ...
             var FooterTable = mainSection.Footers.Primary.AddTable();
             FooterTable.Format.Font.Size = FooterFontSize;
@@ -112,10 +114,12 @@ namespace CuttingPlanMaker
             FooterTable[0, 1].AddParagraph().AddFormattedText("Generated using Cutting Plan Maker", TextFormat.Italic);
             FooterTable[0, 2].AddParagraph().AddFormattedText($"Printed {DateTime.Now.ToString("HH:mm, dd MMM yyyy")}", TextFormat.Italic);
             #endregion
-
-
         }
 
+        /// <summary>
+        /// Render the PDF file
+        /// </summary>
+        /// <returns></returns>
         public PdfSharp.Pdf.PdfDocument RenderPdf()
         {
             // Create a renderer for the MigraDoc document.

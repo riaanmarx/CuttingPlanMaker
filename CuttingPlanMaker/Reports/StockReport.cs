@@ -9,8 +9,19 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker
 {
+    /// <summary>
+    /// Report generating class for the stock list
+    /// </summary>
     class StockReport : ReportBase
     {
+        /// <summary>
+        /// Generate the report
+        /// </summary>
+        /// <param name="Settings"></param>
+        /// <param name="Materials"></param>
+        /// <param name="Stock"></param>
+        /// <param name="Parts"></param>
+        /// <returns></returns>
         public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts)
         {
             #region // populate header text ...
@@ -93,6 +104,7 @@ namespace CuttingPlanMaker
 
 
             #endregion
+
             return RenderPdf();
         }
     }

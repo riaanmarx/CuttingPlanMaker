@@ -10,19 +10,42 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker
 {
+    /// <summary>
+    /// PDF file generating report class for the layout report
+    /// </summary>
     class LayoutReport : ReportBase
     {
+        /// <summary>
+        /// internal class to host a base64 image
+        /// </summary>
         private class Base64Image
         {
+            /// <summary>
+            /// The base64 string containing the image
+            /// </summary>
             public string image;
+
+            /// <summary>
+            /// The height of the image contained in the base64 string
+            /// </summary>
             public int Height;
+
+            /// <summary>
+            /// The width of the image contained in the base64 string
+            /// </summary>
             public int Width;
         }
 
+        /// <summary>
+        /// Draw a board to an image and return the image as a base64 string
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns></returns>
         private Base64Image DrawBoard_base64(StockItem board)
         {
-            double xMargin = 0;
-            double yMargin = 20;
+            // constants used in drawing the image
+            const double xMargin = 0;
+            const double yMargin = 20;
             double imageHeight = board.Width + 2 * yMargin;
             double imageWidth = board.Length + 2 * xMargin;
 
@@ -30,7 +53,7 @@ namespace CuttingPlanMaker
             System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap((int)imageWidth, (int)imageHeight);
             System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bitmap);
 
-            // fill the background with black
+            // fill the background
             g.FillRectangle(System.Drawing.Brushes.White, 0, 0, (int)imageWidth, (int)imageHeight);
 
             // draw the board
@@ -50,25 +73,25 @@ namespace CuttingPlanMaker
 
                 // print the part text
                 string text1 = $"{iPlacement.Part.Name} [{iPlacement.Part.Length} x {iPlacement.Part.Width}]";
-
                 System.Drawing.Font partFont = new System.Drawing.Font(new System.Drawing.FontFamily("Consolas"), 15);
                 System.Drawing.SizeF textSize = g.MeasureString(text1, partFont);
-
                 if (textSize.Width > iPlacement.Part.Length) text1 = iPlacement.Part.Name;
                 textSize = g.MeasureString(text1, partFont);
-
                 g.DrawString(text1, partFont, System.Drawing.Brushes.White,
                     (int)(xMargin + iPlacement.dLength + iPlacement.Part.Length / 2.0 - textSize.Width / 2.0),
                     (int)(yMargin + iPlacement.dWidth + iPlacement.Part.Width / 2.0 - textSize.Height / 2.0));
             }
 
+            // make sure the cache is empty
             g.Flush();
 
+            // convert image to base64 image
             System.IO.MemoryStream ms = new MemoryStream();
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
             byte[] byteImage = ms.ToArray();
             var base64img = Convert.ToBase64String(byteImage);
 
+            // return the class for the image
             return new Base64Image()
             {
                 image = base64img,
@@ -77,6 +100,14 @@ namespace CuttingPlanMaker
             };
         }
 
+        /// <summary>
+        /// Generate the pdf report
+        /// </summary>
+        /// <param name="Settings"></param>
+        /// <param name="Materials"></param>
+        /// <param name="Stock"></param>
+        /// <param name="Parts"></param>
+        /// <returns></returns>
         public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts)
         {
             #region // populate header text ...
@@ -102,8 +133,6 @@ namespace CuttingPlanMaker
             #endregion
 
             #region // write content into document ...
-
-
             var heading = mainSection.AddParagraph("Solution Detail");
             heading.Format.Font.Bold = true;
             heading.Format.Font.Size = 10;

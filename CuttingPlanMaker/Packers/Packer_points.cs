@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 namespace CuttingPlanMaker
 {
     /// <summary>
+    /// An algorithm to pack parts into boards using diagonal points generated per board and per placement
+    /// </summary>
+    /// <remarks>
     /// Algorithm:
     /// This packer uses a collection of points as a means to place the parts
     /// Every board is packed using all the available parts, the best packed board and the parts used is then removed from the usable lists and the process is repeated using the new subset of boards and parts.
@@ -20,12 +23,17 @@ namespace CuttingPlanMaker
     ///     the point at which the part is placed is disabled.
     /// Some other special scenarios is also coverred
     /// When all the points are disabled, the board is complete
-    /// 
-    /// </summary>
+    /// </remarks>
     class Packer_points : IPacker
     {
+        /// <summary>
+        /// Name
+        /// </summary>
         public string Name => "Diagonal Points";
 
+        /// <summary>
+        /// An internal class for the points used to manage placements
+        /// </summary>
         private class PointD
         {
             public double dWidth;
@@ -41,6 +49,14 @@ namespace CuttingPlanMaker
             }
         }
 
+        /// <summary>
+        /// Pack the parts on the boards
+        /// </summary>
+        /// <param name="parts"></param>
+        /// <param name="boards"></param>
+        /// <param name="sawkerf"></param>
+        /// <param name="partLengthPadding"></param>
+        /// <param name="partWidthPadding"></param>
         public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             //clear current packing

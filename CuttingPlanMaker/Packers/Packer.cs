@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker
 {
+    /// <summary>
+    /// first(failed) attempt at a packer...takes too long when iterating through all possible combinations
+    /// replaced with another simpler, quicker algorithm
+    /// </summary>
     public class Packer:IPacker
     {
         public static Bitmap Drawboard_debug(StockItem board, StockItem[] segments, int segcount, Part[] parts, double[] dLengths, double[] dWidths, int partcount, double partsArea)

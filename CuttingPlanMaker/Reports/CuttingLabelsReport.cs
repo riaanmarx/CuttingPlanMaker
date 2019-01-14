@@ -9,12 +9,22 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker
 {
+    /// <summary>
+    /// A PDF file generating class to generate labels/stickers for the parts
+    /// </summary>
     class CuttingLabelReport : ReportBase
     {
+        /// <summary>
+        /// Generate the PDF report
+        /// </summary>
+        /// <param name="Settings"></param>
+        /// <param name="Materials"></param>
+        /// <param name="Stock"></param>
+        /// <param name="Parts"></param>
+        /// <returns></returns>
         public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts)
         {
             #region // Configuration settings ...
-
             int colCount = 4;                       // the number of labels per row
             int rowCount = 10;                      // the number of rows of labels per page
             LeftMargin = Unit.FromMillimeter(10);   // the left margin or lefte most edge of the left most label
@@ -71,23 +81,23 @@ namespace CuttingPlanMaker
                     labelTable.AddRow();
 
 
-                    Cell c = labelTable[0, 0];  // reference the label content table's top cell
+                    Cell c = labelTable[0, 0];  // top row := part's name
                     c.Format.Font.Bold = true;
                     c.Format.Font.Size = 15;
                     c.AddParagraph(iPart.Part.Name);
 
-                    c = labelTable[1, 0];       // reference the second row
+                    c = labelTable[1, 0];       // Second row := dimensions
                     c.Format.Font.Size = 12;
                     c.AddParagraph($"[{iPart.Part.Length:0.0} x {iPart.Part.Width:0.0}]");
 
-                    c = labelTable[2, 0];       // populate third row
+                    c = labelTable[2, 0];       // Third row := padding dimensions
                     c.Format.Font.Size = 8;
                     c.AddParagraph($" + [{(2 * Settings.PartPaddingLength):0.0} x {(2 * Settings.PartPaddingWidth):0.0}]");
 
-                    c = labelTable[3, 0];
+                    c = labelTable[3, 0];       // Fourth row := board name
                     c.AddParagraph().AddFormattedText("on ").AddFormattedText($"{iStock.Name}", TextFormat.Bold);
 
-                    c = labelTable[4, 0];
+                    c = labelTable[4, 0];       // Fifth row := placement offset
                     c.Format.Font.Size = 8;
                     c.AddParagraph($"@ ({iPart.dLength:0.0}, {iPart.dWidth:0.0})");
 
