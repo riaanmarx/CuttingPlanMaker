@@ -98,6 +98,7 @@
     <Compile Include="frmSettingsDialog.Designer.cs">
       <DependentUpon>frmSettingsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Packers\experimental.cs" />
     <Compile Include="Packers\IPacker.cs" />
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="Reports\LayoutReport.cs" />

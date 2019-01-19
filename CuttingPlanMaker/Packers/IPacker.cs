@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CuttingPlanMaker
+namespace CuttingPlanMaker.Packers
 {
     /// <summary>
     /// Interface required by all packer implementations

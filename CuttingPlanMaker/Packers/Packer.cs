@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CuttingPlanMaker
+namespace CuttingPlanMaker.Packers
 {
     /// <summary>
     /// first(failed) attempt at a packer...takes too long when iterating through all possible combinations

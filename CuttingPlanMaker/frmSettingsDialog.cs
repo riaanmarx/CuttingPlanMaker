@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CuttingPlanMaker.Packers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -37,10 +38,15 @@ namespace CuttingPlanMaker
             cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay ;
 
             // populate items for algorithms
-            ddlPacker.Items.Add("Diagonal Points");
+            var type = typeof(IPacker);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => type.IsAssignableFrom(p) && p.IsClass);
 
+            types.ToList().ForEach(t => ddlPacker.Items.Add(t.Name));
+            
             if (_settings.Algorithm == "") ddlPacker.SelectedIndex = 0;
-            else ddlPacker.SelectedText = _settings.Algorithm;
+            else ddlPacker.Text = _settings.Algorithm;
 
         }
 
@@ -62,7 +68,7 @@ namespace CuttingPlanMaker
             _settings.ClientTelNr = tbClientNr.Text;
             _settings.ClientAddr = tbClientAddr.Text;
             _settings.TargetDate = dtpTargetDate.Value.ToLongDateString();
-            _settings.Algorithm = ddlPacker.SelectedText;
+            _settings.Algorithm = ddlPacker.Text;
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿
+using CuttingPlanMaker.Packers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -614,22 +615,35 @@ namespace CuttingPlanMaker
         /// </summary>
         private void PackSolution()
         {
-            // filter the parts and stock for te current material and pack them
-            string sMaterialsName = tcMaterials.SelectedTab.Name;
-            Material iMaterial = Materials.First(t => t.Name == sMaterialsName);
-            Part[] iParts = Parts.Where(t => t.Material == iMaterial.Name).ToArray();
-            StockItem[] iStock = Stock.Where(t => t.Material == iMaterial.Name).ToArray();
+            
             try
             {
                 IPacker packer = null;
-                if(Setting.Algorithm == "" || Setting.Algorithm == "Diagonal Points")
-                    packer = new Packer_points();
+                var type = typeof(IPacker);
+                var packertypes = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(s => s.GetTypes())
+                    .Where(p => type.IsAssignableFrom(p) && p.IsClass);
 
-                packer.Pack(iParts
+                foreach (var iPackerType in packertypes)
+                {
+                    packer = (IPacker)Activator.CreateInstance(iPackerType);
+                    if (packer.Name == Setting.Algorithm) break;
+                }
+
+
+                // filter the parts and stock for te current material and pack them
+                foreach (string iMaterialsName in Materials.Select(t=>t.Name))
+                {
+                    Part[] iParts = Parts.Where(t => t.Material == iMaterialsName).ToArray();
+                    StockItem[] iStock = Stock.Where(t => t.Material == iMaterialsName).ToArray();
+
+                    packer.Pack(iParts
                         , iStock
                         , Setting.BladeKerf
                         , Setting.PartPaddingLength
                         , Setting.PartPaddingWidth);
+                }
+
             }
             catch (Exception ex)
             {

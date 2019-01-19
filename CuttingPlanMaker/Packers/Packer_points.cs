@@ -1,10 +1,13 @@
-﻿using System;
+﻿//#define drawdbgimages
+
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CuttingPlanMaker
+namespace CuttingPlanMaker.Packers
 {
     /// <summary>
     /// An algorithm to pack parts into boards using diagonal points generated per board and per placement
@@ -23,6 +26,7 @@ namespace CuttingPlanMaker
     ///     the point at which the part is placed is disabled.
     /// Some other special scenarios is also coverred
     /// When all the points are disabled, the board is complete
+    /// PROBLEM: It is a greedy algorithm. it will not attempt to use two smaller parts with higher total area, instead of one part with bigger area than one of them.
     /// </remarks>
     class Packer_points : IPacker
     {
@@ -101,7 +105,9 @@ namespace CuttingPlanMaker
                                points[1] = new PointD(iBoard.Width + sawkerf, iBoard.Length + sawkerf) { disabled = true };
                                int pointCount = 2;
                                int iPointIndex = -1;
-
+#if drawdbgimages
+                               int cntr = 0;
+#endif
                                // continuously iterate throught the points until we reach the end of the list of points (restart from first point if a part is placed)
                                while (++iPointIndex < pointCount)
                                {
@@ -181,7 +187,14 @@ namespace CuttingPlanMaker
                                                pointCount++;
                                            }
                                            #endregion
-
+#if drawdbgimages
+                                           Drawboard_debug(
+                                               iBoard,
+                                               points, pointCount,
+                                               iBoard.PackedParts, iBoard.PackedPartsCount,
+                                               iBoard.PackedPartsTotalArea,
+                                               new RectangleF((float)iPoint.dLength, (float)iPoint.dWidth, (float)maxLength, (float)maxWidth)).Save($"dbgimages\\{iBoard.Name}_{cntr++}.bmp");
+#endif
                                            partplaced = true;
                                            break;
                                        }
@@ -253,6 +266,61 @@ namespace CuttingPlanMaker
 
             }
 
+        }
+
+        private static Bitmap Drawboard_debug(StockItem board, PointD[] points, int pointcount, Placement[] parts, int placementcount, double partsArea, RectangleF lastarea)
+        {
+            double xMargin = 50;
+            double yMargin = 50;
+
+            double imageHeight = board.Width + 2 * yMargin;
+            double imageWidth = board.Length + 2 * xMargin;
+
+            // create bitmap
+            Bitmap bitmap = new Bitmap((int)imageWidth, (int)imageHeight);
+            Graphics g = Graphics.FromImage(bitmap);
+            // draw the board
+            g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
+
+
+
+            // draw the parts placed
+            for (int i = 0; i < placementcount; i++)
+            {
+                Placement iPlacement = parts[i];
+
+                // draw the part
+                g.FillRectangle(Brushes.Green, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth), (float)iPlacement.Part.Length, (float)iPlacement.Part.Width);
+
+                // print the part text
+                string partLabel = $"{iPlacement.Part.Name}";
+                Font partFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
+                g.DrawString(partLabel, partFont, Brushes.Black, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth));
+            }
+
+            // draw the last area where a part was placed
+            if (lastarea != RectangleF.Empty)
+            {
+                lastarea.Offset((float)xMargin, (float)yMargin);
+                g.FillRectangle(new SolidBrush(Color.FromArgb(140, Color.Yellow)), Rectangle.Round(lastarea));
+            }
+
+            //draw the placement points
+            for (int i = 0; i < pointcount; i++)
+            {
+                PointD iPoint = points[i];
+                if (iPoint.disabled)
+                    g.FillEllipse(new SolidBrush(Color.FromArgb(220, Color.Black)), (float)(xMargin + iPoint.dLength - 10), (float)(yMargin + iPoint.dWidth - 10), 20, 20);
+                else
+                    g.FillEllipse(new SolidBrush(Color.FromArgb(220, Color.Red)), (float)(xMargin + iPoint.dLength - 10), (float)(yMargin + iPoint.dWidth - 10), 20, 20);
+            }
+
+            Font aFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
+            g.DrawString((partsArea / board.Area * 100).ToString("0.0") + "%", aFont, Brushes.Black, (float)(xMargin), (float)(bitmap.Height - yMargin + 15));
+
+
+            g.Flush();
+            return bitmap;
         }
 
     }
