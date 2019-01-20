@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker.Packers
 {
-    class experimental : IPacker
+    class experimental : PackerBase
     {
-        public string Name => "Experimental";
+        new public static string AlgorithmName => "Experimental";
+
         /// <summary>
         /// An internal class for the points used to manage placements
         /// </summary>
@@ -37,20 +38,9 @@ namespace CuttingPlanMaker.Packers
         /// <param name="sawkerf"></param>
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
-        public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        public override void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             //Array.Resize<Part>(ref parts, 30);
-
-            #region // clear current packing ...
-            parts.ToList().ForEach(t => t.IsPacked = false);
-            boards.ToList().ForEach(t =>
-            {
-                t.IsComplete = false;
-                t.PackedParts = null;
-                t.PackedPartsCount = 0;
-                t.PackedPartsTotalArea = 0;
-            });
-            #endregion
 
             #region // Prepare variables and sort parts ...
             int boardsCount = boards.Length;
@@ -185,11 +175,7 @@ namespace CuttingPlanMaker.Packers
             }
             return topncombos;
         }
-
-
-
-
-
+        
         private static Bitmap Drawboard_debug(StockItem board, PointD[] points, int pointcount, Placement[] parts, int placementcount, double partsArea, RectangleF lastarea)
         {
             double xMargin = 50;

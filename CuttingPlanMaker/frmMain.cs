@@ -618,21 +618,30 @@ namespace CuttingPlanMaker
             
             try
             {
-                IPacker packer = null;
-                var type = typeof(IPacker);
+                //clear all packing info
+                Parts.ToList().ForEach(t => t.IsPacked = false);
+                Stock.ToList().ForEach(t =>
+                {
+                    t.IsComplete = false;
+                    t.PackedParts = null;
+                    t.PackedPartsCount = 0;
+                    t.PackedPartsTotalArea = 0;
+                });
+
+
+                PackerBase packer = null;
+                var type = typeof(PackerBase);
                 var packertypes = AppDomain.CurrentDomain.GetAssemblies()
                     .SelectMany(s => s.GetTypes())
-                    .Where(p => type.IsAssignableFrom(p) && p.IsClass);
+                    .Where(p => type.IsAssignableFrom(p) && p != type);
+                var selectedpackertype = packertypes.FirstOrDefault(q => q.GetProperty("AlgorithmName")?.GetValue(null) as string == Setting.Algorithm);
+                if (selectedpackertype == null) selectedpackertype = packertypes.First(t=>t.GetProperty("AlgorithmName")?.GetValue(null) as string != "BASE");
 
-                foreach (var iPackerType in packertypes)
-                {
-                    packer = (IPacker)Activator.CreateInstance(iPackerType);
-                    if (packer.Name == Setting.Algorithm) break;
-                }
+                packer = (PackerBase)Activator.CreateInstance(selectedpackertype);
 
 
                 // filter the parts and stock for te current material and pack them
-                foreach (string iMaterialsName in Materials.Select(t=>t.Name))
+                foreach (string iMaterialsName in Materials.Select(t=>t.Name).Where(q=>q!="DISABLED"))
                 {
                     Part[] iParts = Parts.Where(t => t.Material == iMaterialsName).ToArray();
                     StockItem[] iStock = Stock.Where(t => t.Material == iMaterialsName).ToArray();
@@ -665,8 +674,9 @@ namespace CuttingPlanMaker
             for (int i = 0; i < Materials.Count; i++)
             {
                 Material iMaterial = Materials[i];
-                if (!tcMaterials.TabPages.ContainsKey(iMaterial.Name))
-                    tcMaterials.TabPages.Add(iMaterial.Name, iMaterial.Name);
+                if(iMaterial.Name!="DISABLED")
+                    if (!tcMaterials.TabPages.ContainsKey(iMaterial.Name))
+                        tcMaterials.TabPages.Add(iMaterial.Name, iMaterial.Name);
             }
 
             // remove any materials that are listed on the tab pages, that no longer exist in the list of materials

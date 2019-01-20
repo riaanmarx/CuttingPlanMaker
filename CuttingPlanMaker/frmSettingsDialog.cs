@@ -38,12 +38,13 @@ namespace CuttingPlanMaker
             cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay ;
 
             // populate items for algorithms
-            var type = typeof(IPacker);
+            var type = typeof(PackerBase);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => type.IsAssignableFrom(p) && p.IsClass);
+                .Where(p => type.IsAssignableFrom(p) && p != type);
 
-            types.ToList().ForEach(t => ddlPacker.Items.Add(t.Name));
+
+            types.ToList().ForEach(t => ddlPacker.Items.Add(t.GetProperty("AlgorithmName").GetValue(null) as string));
             
             if (_settings.Algorithm == "") ddlPacker.SelectedIndex = 0;
             else ddlPacker.Text = _settings.Algorithm;

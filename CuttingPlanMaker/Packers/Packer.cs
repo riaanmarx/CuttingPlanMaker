@@ -12,9 +12,11 @@ namespace CuttingPlanMaker.Packers
     /// first(failed) attempt at a packer...takes too long when iterating through all possible combinations
     /// replaced with another simpler, quicker algorithm
     /// </summary>
-    public class Packer:IPacker
+    class Packer : PackerBase
     {
-        public static Bitmap Drawboard_debug(StockItem board, StockItem[] segments, int segcount, Part[] parts, double[] dLengths, double[] dWidths, int partcount, double partsArea)
+        new public static string AlgorithmName => "Maximal rectangles";
+
+        private Bitmap Drawboard_debug(StockItem board, OffsetStockItem[] segments, int segcount, Part[] parts, double[] dLengths, double[] dWidths, int partcount, double partsArea)
         {
             double xMargin = 50;
             double yMargin = 50;
@@ -31,8 +33,8 @@ namespace CuttingPlanMaker.Packers
             //draw the board segments
             for (int i = 0; i < segcount; i++)
             {
-                StockItem iseg = segments[i];
-                if (!iseg.isInUse)
+                OffsetStockItem iseg = segments[i];
+                if (!iseg.IsInUse)
                     g.FillRectangle(new SolidBrush(Color.FromArgb(30, Color.Red)), (float)(xMargin + iseg.dLength), (float)(yMargin + iseg.dWidth), (float)iseg.Length, (float)iseg.Width);
             }
 
@@ -60,6 +62,14 @@ namespace CuttingPlanMaker.Packers
             return bitmap;
         }
 
+        private class OffsetStockItem : StockItem
+        {
+            //public StockItem Board { get; set; }
+            public double dLength { get; set; }
+            public double dWidth { get; set; }
+            public bool IsInUse { get; set; }
+            public OffsetStockItem AssociatedBoard { get; set; }
+        }
 
         /// <summary>
         ///  do the internal preperation to pack a set of parts onto a set of boards with a collection of options
@@ -72,7 +82,7 @@ namespace CuttingPlanMaker.Packers
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
         /// <returns></returns>
-        public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        public override void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             // order the parts and boards by Area, Ascending
             int partsCount = parts.Length;
@@ -93,15 +103,14 @@ namespace CuttingPlanMaker.Packers
             while (packedPartsCount < partsCount && packedBoardsCount < boardsCount)
             {
                 iteration++;
-                Task[] threads = new Task[boardsCount];
+                List<Task> threads = new List<Task>();
                 for (int i = 0; i < boardsCount; i++)
                 {
-                    threads[i] = Task.Factory.StartNew((o) =>
+                    threads.Add(Task.Factory.StartNew((o) =>
                     {
                         // reference board[i]
                         StockItem iBoard = orderredBoards[(int)o];
-                        if (iBoard.isComplete) return;
-                        //if (iBoard.Name != "B") return;
+                        if (iBoard.IsComplete) return;
 
                         // init a packer object
                         Packer_internal iPacker = new Packer_internal()
@@ -110,14 +119,19 @@ namespace CuttingPlanMaker.Packers
                             Board = iBoard,
                             Parts = orderredParts,
                             PartsCount = partsCount,
-                            BoardSections = new StockItem[2 * partsCount + 2],
+                            BoardSections = new OffsetStockItem[2 * partsCount + 2],
                             BoardSectionsCount = 1,
-                            CurrentSolution = new Part[partsCount],
-                            CurrentSolutionDLengths = new double[partsCount],
-                            CurrentSolutionDWidths = new double[partsCount],
+                            CurrentSolution = new Placement[partsCount],
                             iteration = iteration
                         };
-                        iPacker.BoardSections[0] = new StockItem(iBoard.Name, iBoard.Length, iBoard.Width, iBoard.dLength, iBoard.dWidth);
+                        iPacker.BoardSections[0] = new OffsetStockItem()
+                        {
+                            Name = iBoard.Name,
+                            Length = iBoard.Length,
+                            Width = iBoard.Width,
+                            dLength = 0,
+                            dWidth = 0
+                        };
 
                         // pack the board recursively, starting at the first part and an empty solution
                         iPacker.StartPacking(0);
@@ -125,14 +139,14 @@ namespace CuttingPlanMaker.Packers
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine($"board packed: {iBoard} ({iBoard.PackedPartsTotalArea / iBoard.Area * 100:0.0}%)");
                         for (int j = 0; j < iBoard.PackedPartsCount; j++)
-                            sb.AppendLine($"   {iBoard.PackedParts[j]} @ ({iBoard.PackedPartdLengths[j]}, {iBoard.PackedPartdWidths[j]})");
+                            sb.AppendLine($"   {iBoard.PackedParts[j]} @ ({iBoard.PackedParts[j].dLength}, {iBoard.PackedParts[j].dWidth})");
                         Trace.WriteLine(sb.ToString());
-                    }, i);
+                    }, i));
                 }
-                Task.WaitAll(threads);
+                Task.WaitAll(threads.ToArray());
 
                 // Find the best packed board from this iteration
-                IEnumerable<StockItem> incompleteBoards = orderredBoards.Where(q => !q.isComplete);
+                IEnumerable<StockItem> incompleteBoards = orderredBoards.Where(q => !q.IsComplete);
                 StockItem[] PackedBestCoverredBoards = incompleteBoards.Where(q => q.PackedParts != null).OrderByDescending(t => t.PackedPartsTotalArea / t.Area).ToArray();
 
                 Trace.WriteLine($"---------------------------------------------");
@@ -146,24 +160,24 @@ namespace CuttingPlanMaker.Packers
                 {
                     StockItem iBestCoverredBoard = PackedBestCoverredBoards[iPacked];
                     // if non of te parts packed on the board have been packed on a previous board
-                    if (!iBestCoverredBoard.PackedParts.Any(t => t?.isPacked ?? false))
+                    if (!iBestCoverredBoard.PackedParts.Any(t => t?.Part?.IsPacked ?? false))
                     {
                         // use this packing
                         Trace.WriteLine($"{iBestCoverredBoard} ({iBestCoverredBoard.PackedPartsTotalArea / iBestCoverredBoard.Area * 100:0.0}%)");
                         for (int j = 0; j < iBestCoverredBoard.PackedPartsCount; j++)
-                            Trace.WriteLine($"   {iBestCoverredBoard.PackedParts[j]} @ ({iBestCoverredBoard.PackedPartdLengths[j]}, {iBestCoverredBoard.PackedPartdWidths[j]})");
+                            Trace.WriteLine($"   {iBestCoverredBoard.PackedParts[j]} @ ({iBestCoverredBoard.PackedParts[j].dLength}, {iBestCoverredBoard.PackedParts[j].dWidth})");
 
                         // set the complete flag for the board with the best coverage
-                        iBestCoverredBoard.isComplete = true;
+                        iBestCoverredBoard.IsComplete = true;
                         packedBoardsCount++;
 
                         if (iBestCoverredBoard.PackedParts != null)
                         {
                             //Compact the packed parts array of the board
-                            Array.Resize<Part>(ref iBestCoverredBoard.PackedParts, iBestCoverredBoard.PackedPartsCount);
+                            Array.Resize<Placement>(ref iBestCoverredBoard.PackedParts, iBestCoverredBoard.PackedPartsCount);
 
                             // set the packed flag for the packed parts
-                            iBestCoverredBoard.PackedParts.ToList().ForEach(t => t.isPacked = true);
+                            iBestCoverredBoard.PackedParts.ToList().ForEach(t => t.Part.IsPacked = true);
                         }
                         packedPartsCount += iBestCoverredBoard.PackedPartsCount;
                     }
@@ -171,8 +185,6 @@ namespace CuttingPlanMaker.Packers
                     {
                         // Clear the inferior packings
                         iBestCoverredBoard.PackedParts = null;
-                        iBestCoverredBoard.PackedPartdLengths = null;
-                        iBestCoverredBoard.PackedPartdWidths = null;
                         iBestCoverredBoard.PackedPartsCount = 0;
                         iBestCoverredBoard.PackedPartsTotalArea = 0;
                     }
@@ -190,12 +202,10 @@ namespace CuttingPlanMaker.Packers
             public Part[] Parts;
             public int PartsCount;
 
-            public StockItem[] BoardSections;
+            public OffsetStockItem[] BoardSections;
             public int BoardSectionsCount;
 
-            public Part[] CurrentSolution;
-            public double[] CurrentSolutionDLengths;
-            public double[] CurrentSolutionDWidths;
+            public Placement[] CurrentSolution;
             public int CurrentSolutionPartCount;
             public double CurrentSolutionTotalArea;
 
@@ -214,15 +224,15 @@ namespace CuttingPlanMaker.Packers
 
                     #region // check if the part is a viable candidate ...
                     // ignore parts already packed
-                    if (iPart.isPacked) continue;
+                    if (iPart.IsPacked) continue;
                     // ignore parts already temporarily packed
-                    if (CurrentSolution.Contains(iPart)) continue;
+                    if (CurrentSolution.Any(t=>t?.Part == iPart)) continue;
                     // ignore parts larger than the largest board section
                     if (iPart.Area > Board.Area) break;
                     // short-circuit repeat parts
                     if (iPart.Length == lastPartLength && iPart.Width == lastPartWidth) continue;
 
-                    
+
 
                     lastPartLength = iPart.Length;
                     lastPartWidth = iPart.Width;
@@ -232,35 +242,36 @@ namespace CuttingPlanMaker.Packers
                     // find first board that will accomodate the part
                     int j = 0;
                     //while (j < BoardSectionsCount && BoardSections[j].Area < iPart.Area) j++;
-                    while (j < BoardSectionsCount && (BoardSections[j].isInUse || iPart.Length > BoardSections[j].Length || iPart.Width > BoardSections[j].Width)) j++;
+                    while (j < BoardSectionsCount && (BoardSections[j].IsInUse || iPart.Length > BoardSections[j].Length || iPart.Width > BoardSections[j].Width)) j++;
 
                     // if no boards will accomodate the part, continue to next part
                     if (j >= BoardSectionsCount) continue;
-                    StockItem iBoardSection = BoardSections[j];
+                    OffsetStockItem iBoardSection = BoardSections[j];
                     #endregion
 
                     #region // place the part in the current bin ...
-                    CurrentSolutionDLengths[CurrentSolutionPartCount] = iBoardSection.dLength;
-                    CurrentSolutionDWidths[CurrentSolutionPartCount] = iBoardSection.dWidth;
-                    CurrentSolution[CurrentSolutionPartCount++] = iPart;
+                    CurrentSolution[CurrentSolutionPartCount++] = new Placement()
+                    {
+                        Part = iPart,
+                        dLength = iBoardSection.dLength,
+                        dWidth = iBoardSection.dWidth
+                    };
                     CurrentSolutionTotalArea += iPart.Area;
-                    iBoardSection.isInUse = true;
+                    iBoardSection.IsInUse = true;
                     #endregion
 
                     #region // store best solution ...
                     //if this is a better solution than the current best one ... replace the current best one
                     if (CurrentSolutionTotalArea > Board.PackedPartsTotalArea)
                     {
-                        Board.PackedParts = CurrentSolution.Clone() as Part[];
-                        Board.PackedPartdLengths = CurrentSolutionDLengths.Clone() as double[];
-                        Board.PackedPartdWidths = CurrentSolutionDWidths.Clone() as double[];
+                        Board.PackedParts = CurrentSolution.Clone() as Placement[];
                         Board.PackedPartsCount = CurrentSolutionPartCount;
                         Board.PackedPartsTotalArea = CurrentSolutionTotalArea;
                     }
                     #endregion
 
                     #region // Break association and adjust associated boards if a board is used that is associated with another to prevent overlapping placements ...
-                    StockItem iAssocBoardSection = iBoardSection.AssociatedBoard;
+                    OffsetStockItem iAssocBoardSection = iBoardSection.AssociatedBoard;
                     double oAssocLength = 0,
                         oAssocWidth = 0,
                         oiBoardLength = 0,
@@ -307,8 +318,22 @@ namespace CuttingPlanMaker.Packers
 
                     #region // replace the used board with 2 overlapping remainder pieces after subtracting the part ...
                     // create new sections
-                    StockItem boardSection1 = new StockItem(iBoardSection.Name, iBoardSection.Length - iPart.Length - sawkerf, iBoardSection.Width, iBoardSection.dLength + iPart.Length + sawkerf, iBoardSection.dWidth);
-                    StockItem boardSection2 = new StockItem(iBoardSection.Name, iBoardSection.Length, iBoardSection.Width - iPart.Width - sawkerf, iBoardSection.dLength, iBoardSection.dWidth + iPart.Width + sawkerf);
+                    OffsetStockItem boardSection1 = new OffsetStockItem()
+                    {
+                        Name = iBoardSection.Name,
+                        Length = iBoardSection.Length - iPart.Length - sawkerf,
+                        Width = iBoardSection.Width,
+                        dLength = iBoardSection.dLength + iPart.Length + sawkerf,
+                        dWidth = iBoardSection.dWidth
+                    };
+                    OffsetStockItem boardSection2 = new OffsetStockItem()
+                    {
+                        Name = iBoardSection.Name,
+                        Length = iBoardSection.Length,
+                        Width = iBoardSection.Width - iPart.Width - sawkerf,
+                        dLength = iBoardSection.dLength,
+                        dWidth = iBoardSection.dWidth + iPart.Width + sawkerf
+                    };
                     boardSection1.AssociatedBoard = boardSection2;
                     boardSection2.AssociatedBoard = boardSection1;
                     int boardSection1Index = 0;
@@ -330,7 +355,7 @@ namespace CuttingPlanMaker.Packers
                     else
                     {
                         boardSection1 = null;
-                        boardSection1Index = BoardSectionsCount+999;
+                        boardSection1Index = BoardSectionsCount + 999;
                         boardSection2.AssociatedBoard = null;
                     }
 
@@ -351,7 +376,7 @@ namespace CuttingPlanMaker.Packers
                     else
                     {
                         boardSection2 = null;
-                        boardSection2Index = BoardSectionsCount+999;
+                        boardSection2Index = BoardSectionsCount + 999;
                         if (boardSection1 != null) boardSection1.AssociatedBoard = null;
                     }
 
@@ -397,7 +422,7 @@ namespace CuttingPlanMaker.Packers
                     }
 
                     // place the board back in play
-                    iBoardSection.isInUse = false;
+                    iBoardSection.IsInUse = false;
 
                     // remove the part from the temporary solution
                     CurrentSolution[--CurrentSolutionPartCount] = null;

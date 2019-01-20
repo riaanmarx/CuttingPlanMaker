@@ -99,11 +99,11 @@
       <DependentUpon>frmSettingsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Packers\experimental.cs" />
-    <Compile Include="Packers\IPacker.cs" />
+    <Compile Include="Packers\PackerBase.cs" />
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="Reports\LayoutReport.cs" />
     <Compile Include="AppDataModels\Material.cs" />
-    <None Include="Packers\Packer.cs" />
+    <Compile Include="Packers\Packer.cs" />
     <Compile Include="Packers\Packer_points.cs" />
     <Compile Include="AppDataModels\Part.cs" />
     <Compile Include="Reports\PartListReport.cs" />

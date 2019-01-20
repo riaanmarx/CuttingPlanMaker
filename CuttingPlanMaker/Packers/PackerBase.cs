@@ -9,7 +9,7 @@ namespace CuttingPlanMaker.Packers
     /// <summary>
     /// Interface required by all packer implementations
     /// </summary>
-    interface IPacker
+    abstract class PackerBase
     {
         /// <summary>
         /// A public method to start the packing of parts onto boards
@@ -19,11 +19,11 @@ namespace CuttingPlanMaker.Packers
         /// <param name="sawkerf"></param>
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
-        void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0);
+        abstract public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0);
 
         /// <summary>
         /// A name for this algorithm implementation
         /// </summary>
-        string Name { get; }
+        public static string AlgorithmName => "BASE";
     }
 }

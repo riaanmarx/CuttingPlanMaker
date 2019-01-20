@@ -28,12 +28,12 @@ namespace CuttingPlanMaker.Packers
     /// When all the points are disabled, the board is complete
     /// PROBLEM: It is a greedy algorithm. it will not attempt to use two smaller parts with higher total area, instead of one part with bigger area than one of them.
     /// </remarks>
-    class Packer_points : IPacker
+    class Packer_points : PackerBase
     {
         /// <summary>
         /// Name
         /// </summary>
-        public string Name => "Diagonal Points";
+        new public static string AlgorithmName => "Diagonal Points";
 
         /// <summary>
         /// An internal class for the points used to manage placements
@@ -61,19 +61,9 @@ namespace CuttingPlanMaker.Packers
         /// <param name="sawkerf"></param>
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
-        public void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        public override void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
-            //clear current packing
-            parts.ToList().ForEach(t => t.IsPacked = false);
-            boards.ToList().ForEach(t =>
-            {
-                t.IsComplete = false;
-                t.PackedParts = null;
-                t.PackedPartsCount = 0;
-                t.PackedPartsTotalArea = 0;
-            });
-
-
+            
             // order the parts by Area, Ascending
             int boardsCount = boards.Length;
             int packedPartsCount = 0;
