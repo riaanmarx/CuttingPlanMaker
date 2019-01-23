@@ -14,7 +14,7 @@ namespace CuttingPlanMaker.Packers
     /// </summary>
     class Packer : PackerBase
     {
-        new public static string AlgorithmName => "Maximal rectangles";
+        new public static string AlgorithmName => "MAXRECT0-BL";
 
         private Bitmap Drawboard_debug(StockItem board, OffsetStockItem[] segments, int segcount, Part[] parts, double[] dLengths, double[] dWidths, int partcount, double partsArea)
         {
@@ -71,129 +71,36 @@ namespace CuttingPlanMaker.Packers
             public OffsetStockItem AssociatedBoard { get; set; }
         }
 
-        /// <summary>
-        ///  do the internal preperation to pack a set of parts onto a set of boards with a collection of options
-        /// </summary>
-        /// <param name="parts"></param>
-        /// <param name="boards"></param>
-        /// <param name="sawkerf"></param>
-        /// <param name="boardMarginLength"></param>
-        /// <param name="boardMarginWidth"></param>
-        /// <param name="partLengthPadding"></param>
-        /// <param name="partWidthPadding"></param>
-        /// <returns></returns>
-        public override void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+
+
+        protected override void PackBoard(Part[] parts, StockItem iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
-            // order the parts and boards by Area, Ascending
             int partsCount = parts.Length;
             Part[] orderredParts = parts.OrderBy(t => t.Area).ToArray();
-            int boardsCount = boards.Length;
-            StockItem[] orderredBoards = boards.OrderBy(t => t.Area).ToArray();
 
-            // add padding to all parts
-            if (partLengthPadding > 0 || partWidthPadding > 0)
-                orderredParts.ToList().ForEach(t => t.Inflate(partWidthPadding, partLengthPadding));
-
-            // keep count of the parts and boards used
-            int packedPartsCount = 0;
-            int packedBoardsCount = 0;
-
-            // repeat until all parts are placed, or all boards packed
-            int iteration = 0;
-            while (packedPartsCount < partsCount && packedBoardsCount < boardsCount)
+            // init a packer object
+            Packer_internal iPacker = new Packer_internal()
             {
-                iteration++;
-                List<Task> threads = new List<Task>();
-                for (int i = 0; i < boardsCount; i++)
-                {
-                    threads.Add(Task.Factory.StartNew((o) =>
-                    {
-                        // reference board[i]
-                        StockItem iBoard = orderredBoards[(int)o];
-                        if (iBoard.IsComplete) return;
+                sawkerf = sawkerf,
+                Board = iBoard,
+                Parts = orderredParts,
+                PartsCount = partsCount,
+                BoardSections = new OffsetStockItem[2 * partsCount + 2],
+                BoardSectionsCount = 1,
+                CurrentSolution = new Placement[partsCount]
+            };
 
-                        // init a packer object
-                        Packer_internal iPacker = new Packer_internal()
-                        {
-                            sawkerf = sawkerf,
-                            Board = iBoard,
-                            Parts = orderredParts,
-                            PartsCount = partsCount,
-                            BoardSections = new OffsetStockItem[2 * partsCount + 2],
-                            BoardSectionsCount = 1,
-                            CurrentSolution = new Placement[partsCount],
-                            iteration = iteration
-                        };
-                        iPacker.BoardSections[0] = new OffsetStockItem()
-                        {
-                            Name = iBoard.Name,
-                            Length = iBoard.Length,
-                            Width = iBoard.Width,
-                            dLength = 0,
-                            dWidth = 0
-                        };
+            iPacker.BoardSections[0] = new OffsetStockItem()
+            {
+                Name = iBoard.Name,
+                Length = iBoard.Length,
+                Width = iBoard.Width,
+                dLength = 0,
+                dWidth = 0
+            };
 
-                        // pack the board recursively, starting at the first part and an empty solution
-                        iPacker.StartPacking(0);
-
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendLine($"board packed: {iBoard} ({iBoard.PackedPartsTotalArea / iBoard.Area * 100:0.0}%)");
-                        for (int j = 0; j < iBoard.PackedPartsCount; j++)
-                            sb.AppendLine($"   {iBoard.PackedParts[j]} @ ({iBoard.PackedParts[j].dLength}, {iBoard.PackedParts[j].dWidth})");
-                        Trace.WriteLine(sb.ToString());
-                    }, i));
-                }
-                Task.WaitAll(threads.ToArray());
-
-                // Find the best packed board from this iteration
-                IEnumerable<StockItem> incompleteBoards = orderredBoards.Where(q => !q.IsComplete);
-                StockItem[] PackedBestCoverredBoards = incompleteBoards.Where(q => q.PackedParts != null).OrderByDescending(t => t.PackedPartsTotalArea / t.Area).ToArray();
-
-                Trace.WriteLine($"---------------------------------------------");
-                Trace.WriteLine($"best board(s) for iteration:");
-                // If no board could be packed, exit
-                if (PackedBestCoverredBoards.Length == 0)
-                    break;
-
-                // loop through boards
-                for (int iPacked = 0; iPacked < PackedBestCoverredBoards.Length; iPacked++)
-                {
-                    StockItem iBestCoverredBoard = PackedBestCoverredBoards[iPacked];
-                    // if non of te parts packed on the board have been packed on a previous board
-                    if (!iBestCoverredBoard.PackedParts.Any(t => t?.Part?.IsPacked ?? false))
-                    {
-                        // use this packing
-                        Trace.WriteLine($"{iBestCoverredBoard} ({iBestCoverredBoard.PackedPartsTotalArea / iBestCoverredBoard.Area * 100:0.0}%)");
-                        for (int j = 0; j < iBestCoverredBoard.PackedPartsCount; j++)
-                            Trace.WriteLine($"   {iBestCoverredBoard.PackedParts[j]} @ ({iBestCoverredBoard.PackedParts[j].dLength}, {iBestCoverredBoard.PackedParts[j].dWidth})");
-
-                        // set the complete flag for the board with the best coverage
-                        iBestCoverredBoard.IsComplete = true;
-                        packedBoardsCount++;
-
-                        if (iBestCoverredBoard.PackedParts != null)
-                        {
-                            //Compact the packed parts array of the board
-                            Array.Resize<Placement>(ref iBestCoverredBoard.PackedParts, iBestCoverredBoard.PackedPartsCount);
-
-                            // set the packed flag for the packed parts
-                            iBestCoverredBoard.PackedParts.ToList().ForEach(t => t.Part.IsPacked = true);
-                        }
-                        packedPartsCount += iBestCoverredBoard.PackedPartsCount;
-                    }
-                    else
-                    {
-                        // Clear the inferior packings
-                        iBestCoverredBoard.PackedParts = null;
-                        iBestCoverredBoard.PackedPartsCount = 0;
-                        iBestCoverredBoard.PackedPartsTotalArea = 0;
-                    }
-                }
-            }
-
-            // remove padding to all parts
-            if (partLengthPadding > 0 || partWidthPadding > 0)
-                orderredParts.ToList().ForEach(t => t.Inflate(-partWidthPadding, -partLengthPadding));
+            // pack the board recursively, starting at the first part and an empty solution
+            iPacker.StartPacking(0);
         }
 
         private class Packer_internal

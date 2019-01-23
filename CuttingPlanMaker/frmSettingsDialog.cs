@@ -41,7 +41,7 @@ namespace CuttingPlanMaker
             var type = typeof(PackerBase);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => type.IsAssignableFrom(p) && p != type);
+                .Where(p => type.IsAssignableFrom(p));
 
 
             types.ToList().ForEach(t => ddlPacker.Items.Add(t.GetProperty("AlgorithmName").GetValue(null) as string));

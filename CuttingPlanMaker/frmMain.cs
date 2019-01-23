@@ -633,9 +633,9 @@ namespace CuttingPlanMaker
                 var type = typeof(PackerBase);
                 var packertypes = AppDomain.CurrentDomain.GetAssemblies()
                     .SelectMany(s => s.GetTypes())
-                    .Where(p => type.IsAssignableFrom(p) && p != type);
+                    .Where(p => type.IsAssignableFrom(p));
                 var selectedpackertype = packertypes.FirstOrDefault(q => q.GetProperty("AlgorithmName")?.GetValue(null) as string == Setting.Algorithm);
-                if (selectedpackertype == null) selectedpackertype = packertypes.First(t=>t.GetProperty("AlgorithmName")?.GetValue(null) as string != "BASE");
+                if (selectedpackertype == null) selectedpackertype = packertypes.First();
 
                 packer = (PackerBase)Activator.CreateInstance(selectedpackertype);
 
