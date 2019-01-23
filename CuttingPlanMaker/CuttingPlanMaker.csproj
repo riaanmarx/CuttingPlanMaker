@@ -99,6 +99,7 @@
       <DependentUpon>frmSettingsDialog.cs</DependentUpon>
     </Compile>
     <None Include="Packers\experimental.cs" />
+    <Compile Include="Packers\Packer_Macrect_LSBF.cs" />
     <Compile Include="Packers\PackerBase.cs" />
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="Reports\LayoutReport.cs" />
