@@ -56,11 +56,13 @@ namespace CuttingPlanMaker
         /// </summary>
         public int PackedPartsCount { get; set; }
 
+        public double PackingCoverage => PackedPartsTotalArea / Area;
+
         /// <summary>
         /// Flag indicating if this board has been packed already
         /// </summary>
         public bool IsComplete { get; set; }
-        
+
         /// <summary>
         /// String repressentation of the board
         /// </summary>
