@@ -116,6 +116,7 @@
             this.ddlPacker.Location = new System.Drawing.Point(127, 105);
             this.ddlPacker.Name = "ddlPacker";
             this.ddlPacker.Size = new System.Drawing.Size(255, 21);
+            this.ddlPacker.Sorted = true;
             this.ddlPacker.TabIndex = 13;
             // 
             // cbAutoRecalc

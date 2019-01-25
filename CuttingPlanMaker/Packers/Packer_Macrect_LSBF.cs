@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define drawdbgimages
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -8,18 +9,136 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker.Packers
 {
-    /// <summary>
-    /// first(failed) attempt at a packer...takes too long when iterating through all possible combinations
-    /// replaced with another simpler, quicker algorithm
-    /// </summary>
-    class Packer_MAXRECT_LSBF : PackerBase
+
+    class MAXRECT_DESCA: MAXRECT_DESCL
     {
-        new public static string AlgorithmName => "MAXRECT_LSBF";
+        new public static string AlgorithmName => "MAXRECT_DESCA";
+        public MAXRECT_DESCA()
+        {
+            partsorder = "DESCA";
+        }
+    }
+
+    class MAXRECT_DESCW : MAXRECT_DESCL
+    {
+        new public static string AlgorithmName => "MAXRECT_DESCW";
+        public MAXRECT_DESCW()
+        {
+            partsorder = "DESCW";
+        }
+    }
+
+    class MAXRECT_ASCA : MAXRECT_DESCL
+    {
+        new public static string AlgorithmName => "MAXRECT_ASCA";
+        public MAXRECT_ASCA()
+        {
+            partsorder = "ASCA";
+        }
+    }
+
+    class MAXRECT_ASCW : MAXRECT_DESCL
+    {
+        new public static string AlgorithmName => "MAXRECT_ASCW";
+        public MAXRECT_ASCW()
+        {
+            partsorder = "ASCW";
+        }
+    }
+
+    class MAXRECT_ASCL : MAXRECT_DESCL
+    {
+        new public static string AlgorithmName => "MAXRECT_ASCL";
+        public MAXRECT_ASCL()
+        {
+            partsorder = "ASCL";
+        }
+    }
+
+    /// <summary>
+    /// </summary>
+    class MAXRECT_DESCL : PackerBase
+    {
+        new public static string AlgorithmName => "MAXRECT_DESCL";
+
+#if drawdbgimages
+        private Bitmap Drawboard_debug(StockItem board, RectangleF[] freerects, int len)
+        {
+            double xMargin = 50;
+            double yMargin = 50;
+
+            double imageHeight = board.Width + 2 * yMargin;
+            double imageWidth = board.Length + 2 * xMargin;
+
+            // create bitmap
+            Bitmap bitmap = new Bitmap((int)imageWidth, (int)imageHeight);
+            Graphics g = Graphics.FromImage(bitmap);
+            // draw the board
+            g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
+
+            //draw the board segments
+            for (int i = 0; i < len; i++)
+            {
+                Rectangle t = Rectangle.Round(freerects[i]);
+                t.Offset((int)xMargin, (int)yMargin);
+                //g.DrawRectangle(Pens.Red, t);
+                g.FillRectangle(new SolidBrush(Color.FromArgb(200,Color.Red)), t);
+
+            }
+
+            // draw the parts placed
+            for (int i = 0; i < board.PackedPartsCount; i++)
+            {
+                Placement iPlacement = board.PackedParts[i];
+
+                // draw the part
+                g.FillRectangle(Brushes.Green, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth), (float)iPlacement.Part.Length, (float)iPlacement.Part.Width);
+
+                // print the part text
+                string partLabel = $"{iPlacement.Part.Name}";
+                Font partFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
+                g.DrawString(partLabel, partFont, Brushes.Black, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth));
+            }
+            // draw the board
+            //g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
+            Font aFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
+            g.DrawString((board.PackingCoverage).ToString("0.00%"), aFont, Brushes.Black, (float)(xMargin), (float)(bitmap.Height - yMargin));
+
+            g.Flush();
+            return bitmap;
+        }
+#endif
+        protected string partsorder = "DESCL";
 
         protected override void PackBoard(Part[] parts, StockItem iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
+            Part[] orderredParts;
             // order parts by length
-            Part[] orderredParts = parts.OrderByDescending(o => o.Length).ToArray();
+            switch (partsorder)
+            {
+                case "DESCL":
+                    orderredParts = parts.OrderByDescending(o => o.Length).ToArray();
+                    break;
+                case "DESCA":
+                    orderredParts = parts.OrderByDescending(o => o.Area).ToArray();
+                    break;
+                case "DESCW":
+                    orderredParts = parts.OrderByDescending(o => o.Width).ToArray();
+                    break;
+                case "ASCL":
+                    orderredParts = parts.OrderBy(o => o.Length).ToArray();
+                    break;
+                case "ASCA":
+                    orderredParts = parts.OrderBy(o => o.Area).ToArray();
+                    break;
+                case "ASCW":
+                    orderredParts = parts.OrderBy(o => o.Width).ToArray();
+                    break;
+                default:
+                    orderredParts = parts;
+                    break;
+            }
+             
             iBoard.PackedParts = new Placement[orderredParts.Length];
 
             RectangleF[] F = new RectangleF[500];
@@ -38,7 +157,6 @@ namespace CuttingPlanMaker.Packers
                     dWidth = Fi.Top,
                     Part = iPart
                 };
-                iBoard.PackedPartsTotalArea += iPart.Area;
 
                 RectangleF B = new RectangleF(Fi.Left, Fi.Top, (float)iPart.Length, (float)iPart.Width);
 
@@ -70,9 +188,34 @@ namespace CuttingPlanMaker.Packers
                     }
                 }
 
+                // order by Left,Top descending
+                RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Left * iBoard.Length + o.Top).ToArray();
+                for (int j = 0; j < Forderred.Length - 1; j++)
+                {
+                    int k = j + 1;
+                    while (k < Forderred.Length && ContainedIn(Forderred[j], Forderred[k]))
+                    {
+                        int index = Array.IndexOf(F, Forderred[k]);
+                        if(index>=0) F[index] = RectangleF.Empty;
+                        k++;
+                    }
+                }
+
+#if drawdbgimages
+                Drawboard_debug(iBoard, F, F_len).Save($"{iBoard.Name}_{i}.bmp");  
+#endif
             }
 
         }
 
+        private bool ContainedIn(RectangleF outerR, RectangleF inner)
+        {
+            if (inner.Left < outerR.Left) return false;
+            if (inner.Right > outerR.Right) return false;
+            if (inner.Top < outerR.Top) return false;
+            if (inner.Bottom > outerR.Bottom) return false;
+
+            return true;
+        }
     }
 }

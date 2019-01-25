@@ -173,7 +173,7 @@ namespace CuttingPlanMaker.Packers
                     {
                         Board.PackedParts = CurrentSolution.Clone() as Placement[];
                         Board.PackedPartsCount = CurrentSolutionPartCount;
-                        Board.PackedPartsTotalArea = CurrentSolutionTotalArea;
+                        //Board.PackedPartsTotalArea = CurrentSolutionTotalArea;
                     }
                     #endregion
 

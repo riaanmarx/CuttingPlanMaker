@@ -247,6 +247,13 @@ namespace CuttingPlanMaker
             // fill the background with black
             g.FillRectangle(SystemBrushes.ButtonHighlight, g.ClipBounds);
 
+            // draw algorithm
+            Type algType = GetPackerType();
+            string algname = algType.GetProperty("AlgorithmName").GetValue(null) as string;
+            string algorithmstring = $"Algorithm: {algname}";
+            SizeF algsz = g.MeasureString(algorithmstring, boardFont);
+            g.DrawString(algorithmstring, boardFont, Brushes.Black, (float)imageWidth - algsz.Width, 0);// algsz.Height);
+
             // loop through all the boards to be drawn
             yOffset = yMargin;
             foreach (var iBoard in boardsToDraw)
@@ -610,12 +617,22 @@ namespace CuttingPlanMaker
                 return true;
         }
 
+        private Type GetPackerType()
+        {
+            var type = typeof(PackerBase);
+            var packertypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => type.IsAssignableFrom(p)).OrderBy(o => o.FullName);
+            var selectedpackertype = packertypes.FirstOrDefault(q => q.GetProperty("AlgorithmName")?.GetValue(null) as string == Setting.Algorithm);
+            if (selectedpackertype == null) selectedpackertype = packertypes.First();
+            return selectedpackertype;
+
+        }
         /// <summary>
         /// Place the parts on the available stock and refresh the display
         /// </summary>
         private void PackSolution()
         {
-            
             try
             {
                 //clear all packing info
@@ -625,20 +642,9 @@ namespace CuttingPlanMaker
                     t.IsComplete = false;
                     t.PackedParts = null;
                     t.PackedPartsCount = 0;
-                    t.PackedPartsTotalArea = 0;
                 });
 
-
-                PackerBase packer = null;
-                var type = typeof(PackerBase);
-                var packertypes = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(s => s.GetTypes())
-                    .Where(p => type.IsAssignableFrom(p));
-                var selectedpackertype = packertypes.FirstOrDefault(q => q.GetProperty("AlgorithmName")?.GetValue(null) as string == Setting.Algorithm);
-                if (selectedpackertype == null) selectedpackertype = packertypes.First();
-
-                packer = (PackerBase)Activator.CreateInstance(selectedpackertype);
-
+                PackerBase packer = (PackerBase)Activator.CreateInstance(GetPackerType());
 
                 // filter the parts and stock for te current material and pack them
                 foreach (string iMaterialsName in Materials.Select(t=>t.Name).Where(q=>q!="DISABLED"))

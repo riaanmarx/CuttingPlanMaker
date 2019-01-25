@@ -49,12 +49,27 @@ namespace CuttingPlanMaker
         /// <summary>
         /// Total area of the parts packed on this board
         /// </summary>
-        public double PackedPartsTotalArea { get; set; }
+        public double PackedPartsTotalArea => PackedParts == null ? 0 : PackedParts.Sum(s => s?.Part?.Area ?? 0);// { get; set; }
 
         /// <summary>
         /// Count of parts packed on this board
         /// </summary>
-        public int PackedPartsCount { get; set; }
+        public int PackedPartsCount
+        //{ get; set; }
+        {
+            get
+            {
+                //return cnt;
+                if (PackedParts == null) return 0;
+                for (int i = 0; i < PackedParts.Length; i++)
+                    if (PackedParts[i] == null) return i;
+                return PackedParts.Length;
+            }
+            set {
+                cnt = value;
+            }
+        }
+        private int cnt = 0;
 
         public double PackingCoverage => PackedPartsTotalArea / Area;
 

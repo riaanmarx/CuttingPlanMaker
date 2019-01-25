@@ -45,7 +45,7 @@ namespace CuttingPlanMaker
 
 
             types.ToList().ForEach(t => ddlPacker.Items.Add(t.GetProperty("AlgorithmName").GetValue(null) as string));
-            
+            ddlPacker.Items.Remove("BASE");
             if (_settings.Algorithm == "") ddlPacker.SelectedIndex = 0;
             else ddlPacker.Text = _settings.Algorithm;
 

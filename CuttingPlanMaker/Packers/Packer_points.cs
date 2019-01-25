@@ -62,103 +62,100 @@ namespace CuttingPlanMaker.Packers
 
         protected override void PackBoard(Part[] parts, StockItem iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
-            try
+            // order the parts ascending by area
+            Part[] orderredParts = parts.OrderBy(o => o.Area).ToArray();
+
+            // init the packed parts array and make sure other vals are 0
+            iBoard.PackedParts = new Placement[orderredParts.Length];
+            iBoard.PackedPartsCount = 0;
+            //iBoard.PackedPartsTotalArea = 0;
+
+            // create the two original points for the board
+            PointD[] points = new PointD[orderredParts.Length * 3 + 2];
+            points[0] = new PointD(0, 0);
+            points[1] = new PointD(iBoard.Width + sawkerf, iBoard.Length + sawkerf) { disabled = true };
+            int pointCount = 2;
+            int iPointIndex = -1;
+
+            // continuously iterate throught the points until we reach the end of the list of points (restart from first point if a part is placed)
+            while (++iPointIndex < pointCount)
             {
+                PointD iPoint = points[iPointIndex];
+                if (iPoint.disabled) continue; // ignore disabled points
 
-                // order the parts ascending by area
-                Part[] orderredParts = parts.OrderBy(o => o.Area).ToArray();
+                #region // determine hight and width of available area at the point...
+                IEnumerable<PointD> limitinpoints = points.Where(q => q?.dLength > iPoint.dLength && q?.dWidth >= iPoint.dWidth);
 
-                // init the packed parts array and make sure other vals are 0
-                iBoard.PackedParts = new Placement[orderredParts.Length];
-                iBoard.PackedPartsCount = 0;
-                iBoard.PackedPartsTotalArea = 0;
 
-                // create the two original points for the board
-                PointD[] points = new PointD[orderredParts.Length * 3 + 2];
-                points[0] = new PointD(0, 0);
-                points[1] = new PointD(iBoard.Width + sawkerf, iBoard.Length + sawkerf) { disabled = true };
-                int pointCount = 2;
-                int iPointIndex = -1;
+                PointD limitingPoint = points[pointCount - 1];
+                if (limitinpoints.Count() > 0) limitingPoint = limitinpoints.OrderBy(so => so.dWidth).First();
+                double maxx = limitingPoint.dWidth;
+                double maxy = iBoard.Length;
 
-                // continuously iterate throught the points until we reach the end of the list of points (restart from first point if a part is placed)
-                while (++iPointIndex < pointCount)
+                double maxWidth = maxx - sawkerf - iPoint.dWidth;
+                double maxLength = maxy - iPoint.dLength;// - sawkerf;
+                if (maxWidth <= 0 || maxLength <= 0)
                 {
-                    PointD iPoint = points[iPointIndex];
-                    if (iPoint.disabled) continue; // ignore disabled points
+                    iPoint.disabled = true;
+                    continue;
+                }
+                #endregion
 
-                    #region // determine hight and width of available area at the point...
-                    IEnumerable<PointD> limitinpoints = points.Where(q => q?.dLength > iPoint.dLength && q?.dWidth >= iPoint.dWidth);
+                #region // search for a part that will fit on the area on the board ...
+                // test each part for fit on the area for the point
+                bool partplaced = false;
+                for (int iPartIndex = orderredParts.Length - 1; iPartIndex >= 0; iPartIndex--)
+                {
+                    Part iPart = orderredParts[iPartIndex];
+                    // ignore parts already packed
+                    if (iPart.IsPacked || iBoard.PackedParts.Any(t => t?.Part == iPart)) continue;
 
-
-                    PointD limitingPoint = points[pointCount - 1];
-                    if (limitinpoints.Count() > 0) limitingPoint = limitinpoints.OrderBy(so => so.dWidth).First();
-                    double maxx = limitingPoint.dWidth;
-                    double maxy = iBoard.Length;
-
-                    double maxWidth = maxx - sawkerf - iPoint.dWidth;
-                    double maxLength = maxy - iPoint.dLength;// - sawkerf;
-                    if (maxWidth <= 0 || maxLength <= 0)
+                    // if the part will fit
+                    if (iPart.Length + partLengthPadding <= maxLength && iPart.Width + partWidthPadding <= maxWidth)
                     {
-                        iPoint.disabled = true;
-                        continue;
-                    }
-                    #endregion
-
-                    #region // search for a part that will fit on the area on the board ...
-                    // test each part for fit on the area for the point
-                    bool partplaced = false;
-                    for (int iPartIndex = orderredParts.Length - 1; iPartIndex >= 0; iPartIndex--)
-                    {
-                        Part iPart = orderredParts[iPartIndex];
-                        // ignore parts already packed
-                        if (iPart.IsPacked || iBoard.PackedParts.Any(t => t?.Part == iPart)) continue;
-
-                        // if the part will fit
-                        if (iPart.Length + partLengthPadding <= maxLength && iPart.Width + partWidthPadding <= maxWidth)
+                        #region // place the part onto the board at the point ...
+                        iBoard.PackedParts[iBoard.PackedPartsCount] = new Placement()
                         {
-                            #region // place the part onto the board at the point ...
-                            iBoard.PackedParts[iBoard.PackedPartsCount] = new Placement()
-                            {
-                                Part = iPart,
-                                dLength = iPoint.dLength,
-                                dWidth = iPoint.dWidth
-                            };
-                            iBoard.PackedPartsTotalArea += iPart.Area;
-                            iBoard.PackedPartsCount++;
-                            #endregion
+                            Part = iPart,
+                            dLength = iPoint.dLength,
+                            dWidth = iPoint.dWidth
+                        };
+                        //iBoard.PackedPartsTotalArea += iPart.Area;
+                        iBoard.PackedPartsCount++;
+                        #endregion
 
-                            #region // create new points for the top-right and bottom left corners of the part ...
-                            PointD newBL = new PointD(iPoint.dWidth, iPoint.dLength + iPart.Length + sawkerf + partLengthPadding);
-                            PointD newTR = new PointD(iPoint.dWidth + iPart.Width + sawkerf + partWidthPadding, iPoint.dLength);
-                            #endregion
+                        #region // create new points for the top-right and bottom left corners of the part ...
+                        PointD newBL = new PointD(iPoint.dWidth, iPoint.dLength + iPart.Length + sawkerf + partLengthPadding);
+                        PointD newTR = new PointD(iPoint.dWidth + iPart.Width + sawkerf + partWidthPadding, iPoint.dLength);
+                        #endregion
 
-                            #region // disable the existing points coverred by the new part
-                            for (int j = 0; j < pointCount; j++)
-                            {
-                                PointD jPoint = points[j];
-                                if (jPoint.dWidth >= iPoint.dWidth && jPoint.dWidth <= iPoint.dWidth + iPart.Width && jPoint.dLength >= iPoint.dLength) jPoint.disabled = true;
-                            }
-                            #endregion
+                        #region // disable the existing points coverred by the new part
+                        for (int j = 0; j < pointCount; j++)
+                        {
+                            PointD jPoint = points[j];
+                            if (jPoint.dWidth >= iPoint.dWidth && jPoint.dWidth <= iPoint.dWidth + iPart.Width && jPoint.dLength >= iPoint.dLength) jPoint.disabled = true;
+                        }
+                        #endregion
 
-                            #region // insert new points into orderred array ...
-                            int di = pointCount - 1;
-                            if (newBL != null)
-                            {
-                                while (points[di].dLength > newBL.dLength || points[di].dLength == newBL.dLength && points[di].dWidth > newBL.dWidth)
-                                    points[1 + di] = points[di--];
-                                points[1 + di] = newBL;
-                                pointCount++;
-                            }
+                        #region // insert new points into orderred array ...
+                        int di = pointCount - 1;
+                        if (newBL != null)
+                        {
+                            while (points[di].dLength > newBL.dLength || points[di].dLength == newBL.dLength && points[di].dWidth > newBL.dWidth)
+                                points[1 + di] = points[di--];
+                            points[1 + di] = newBL;
+                            pointCount++;
+                        }
 
-                            if (newTR != null)
-                            {
-                                di = pointCount - 1;
-                                while (points[di].dLength > newTR.dLength || points[di].dLength == newTR.dLength && points[di].dWidth > newTR.dWidth)
-                                    points[1 + di] = points[di--];
-                                points[1 + di] = newTR;
-                                pointCount++;
-                            }
-                            #endregion
+                        if (newTR != null)
+                        {
+                            di = pointCount - 1;
+                            while (points[di].dLength > newTR.dLength || points[di].dLength == newTR.dLength && points[di].dWidth > newTR.dWidth)
+                                points[1 + di] = points[di--];
+                            points[1 + di] = newTR;
+                            pointCount++;
+                        }
+                        #endregion
 #if drawdbgimages
                                            Drawboard_debug(
                                                iBoard,
@@ -167,44 +164,39 @@ namespace CuttingPlanMaker.Packers
                                                iBoard.PackedPartsTotalArea,
                                                new RectangleF((float)iPoint.dLength, (float)iPoint.dWidth, (float)maxLength, (float)maxWidth)).Save($"dbgimages\\{iBoard.Name}_{cntr++}.bmp");
 #endif
-                            partplaced = true;
-                            break;
-                        }
+                        partplaced = true;
+                        break;
                     }
-                    #endregion
-
-                    // if no parts fit this point's area
-                    if (!partplaced)
-                    {
-                        // disable this point
-                        iPoint.disabled = true;
-
-                        // if this part's area was not limited by the board's edge
-                        if (limitingPoint.dLength < iBoard.Length + sawkerf)
-                        {
-                            // create a new point at the same dLength value as the one that limited the width - maybe the extra width will allow a part to be placed there
-                            PointD newPoint = new PointD(iPoint.dWidth, limitingPoint.dLength);
-                            // insert the new point into the orderred array
-                            int di = pointCount - 1;
-                            while (points[di].dLength > newPoint.dLength || points[di].dLength == newPoint.dLength && points[di].dWidth > newPoint.dWidth)
-                                points[1 + di] = points[di--];
-
-                            points[1 + di] = newPoint;
-                            pointCount++;
-                        }
-                    }
-                    else
-                        // we placed a part - traverse all the points again
-                        iPointIndex = -1;
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debugger.Break();
+                #endregion
 
-                throw;
+                // if no parts fit this point's area
+                if (!partplaced)
+                {
+                    // disable this point
+                    iPoint.disabled = true;
+
+                    // if this part's area was not limited by the board's edge
+                    if (limitingPoint.dLength < iBoard.Length + sawkerf)
+                    {
+                        // create a new point at the same dLength value as the one that limited the width - maybe the extra width will allow a part to be placed there
+                        PointD newPoint = new PointD(iPoint.dWidth, limitingPoint.dLength);
+                        // insert the new point into the orderred array
+                        int di = pointCount - 1;
+                        while (points[di].dLength > newPoint.dLength || points[di].dLength == newPoint.dLength && points[di].dWidth > newPoint.dWidth)
+                            points[1 + di] = points[di--];
+
+                        points[1 + di] = newPoint;
+                        pointCount++;
+                    }
+                }
+                else
+                    // we placed a part - traverse all the points again
+                    iPointIndex = -1;
             }
         }
+
+#if drawdbgimages
 
         private static Bitmap Drawboard_debug(StockItem board, PointD[] points, int pointcount, Placement[] parts, int placementcount, double partsArea, RectangleF lastarea)
         {
@@ -261,6 +253,7 @@ namespace CuttingPlanMaker.Packers
             return bitmap;
         }
 
+#endif
     }
 }
 
