@@ -1,4 +1,4 @@
-﻿//#define drawdbgimages
+﻿#define drawdbgimages
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,33 +25,6 @@ namespace CuttingPlanMaker.Packers
         public MAXRECT_DESCW()
         {
             partsorder = "DESCW";
-        }
-    }
-
-    class MAXRECT_ASCA : MAXRECT_DESCL
-    {
-        new public static string AlgorithmName => "MAXRECT_ASCA";
-        public MAXRECT_ASCA()
-        {
-            partsorder = "ASCA";
-        }
-    }
-
-    class MAXRECT_ASCW : MAXRECT_DESCL
-    {
-        new public static string AlgorithmName => "MAXRECT_ASCW";
-        public MAXRECT_ASCW()
-        {
-            partsorder = "ASCW";
-        }
-    }
-
-    class MAXRECT_ASCL : MAXRECT_DESCL
-    {
-        new public static string AlgorithmName => "MAXRECT_ASCL";
-        public MAXRECT_ASCL()
-        {
-            partsorder = "ASCL";
         }
     }
 
@@ -125,15 +98,6 @@ namespace CuttingPlanMaker.Packers
                 case "DESCW":
                     orderredParts = parts.OrderByDescending(o => o.Width).ToArray();
                     break;
-                case "ASCL":
-                    orderredParts = parts.OrderBy(o => o.Length).ToArray();
-                    break;
-                case "ASCA":
-                    orderredParts = parts.OrderBy(o => o.Area).ToArray();
-                    break;
-                case "ASCW":
-                    orderredParts = parts.OrderBy(o => o.Width).ToArray();
-                    break;
                 default:
                     orderredParts = parts;
                     break;
@@ -148,7 +112,7 @@ namespace CuttingPlanMaker.Packers
             for (int i = 0; i < orderredParts.Length; i++)
             {
                 var iPart = orderredParts[i];
-                RectangleF Fi = F.OrderBy(o=>o.Width).FirstOrDefault(q => q.Width >= iPart.Length && q.Height >= iPart.Width);
+                RectangleF Fi = F.OrderBy(o=>o.Width*o.Height).FirstOrDefault(q => q.Width >= iPart.Length && q.Height >= iPart.Width);
                 
                 if (Fi == RectangleF.Empty) continue;
 
@@ -160,11 +124,9 @@ namespace CuttingPlanMaker.Packers
 
                 RectangleF B = new RectangleF(Fi.Left, Fi.Top, (float)iPart.Length, (float)iPart.Width);
 
-                RectangleF Fp1 = new RectangleF(B.Right+(float)sawkerf,Fi.Top,Fi.Right-B.Right-(float)sawkerf,Fi.Height);
-                RectangleF Fp2 = new RectangleF(Fi.Left,B.Bottom+(float)sawkerf,Fi.Width,Fi.Bottom-B.Bottom-(float)sawkerf);
-                F[F_len++] = Fp1;
-                F[F_len++] = Fp2;
-                
+                F[F_len++] = new RectangleF(B.Right + (float)sawkerf, Fi.Top, Fi.Right - B.Right - (float)sawkerf, Fi.Height);
+                F[F_len++] = new RectangleF(Fi.Left, B.Bottom + (float)sawkerf, Fi.Width, Fi.Bottom - B.Bottom - (float)sawkerf);
+
                 int Fi_index = Array.IndexOf(F, Fi);
                 F[Fi_index] = RectangleF.Empty;
 
@@ -189,7 +151,8 @@ namespace CuttingPlanMaker.Packers
                 }
 
                 // order by Left,Top descending
-                RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Left * iBoard.Length + o.Top).ToArray();
+                //RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Width*o.Height).ToArray();
+                RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Left * iBoard.Width + o.Top).ToArray();
                 for (int j = 0; j < Forderred.Length - 1; j++)
                 {
                     int k = j + 1;
