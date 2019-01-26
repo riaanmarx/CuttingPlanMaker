@@ -9,7 +9,14 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker.Packers
 {
-
+    class MAXRECT_DECPERIM : MAXRECT_DESCL
+    {
+        new public static string AlgorithmName => "MAXRECT_DESCPERIM";
+        public MAXRECT_DECPERIM()
+        {
+            partsorder = "DESPERIM";
+        }
+    }
     class MAXRECT_DESCA: MAXRECT_DESCL
     {
         new public static string AlgorithmName => "MAXRECT_DESCA";
@@ -97,6 +104,9 @@ namespace CuttingPlanMaker.Packers
                     break;
                 case "DESCW":
                     orderredParts = parts.OrderByDescending(o => o.Width).ToArray();
+                    break;
+                case "DESPERIM":
+                    orderredParts = parts.OrderByDescending(o => o.Width + o.Length).ToArray();
                     break;
                 default:
                     orderredParts = parts;

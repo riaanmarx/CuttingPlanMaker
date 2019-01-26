@@ -1332,13 +1332,22 @@ namespace CuttingPlanMaker
                 // retrieve the selected part
                 Part p = (Part)PartsGridView.SelectedCells[0].OwningRow.DataBoundItem;
 
-                // find the board's offset that contains the part
+                // find material for part
+                string MaterialName = p.Material;
+
+                // select the correct layout tab control page
+                tcMaterials.SelectedTab = tcMaterials.TabPages[MaterialName];
+
+                // filter the stock per the selected material
+                StockItem[] filterredStock = Stock.Where(q => q.Material == MaterialName && (q.PackedPartsCount>0 || Setting.DrawUnusedStock)).ToArray();
+
+                // find the y-offset for the board that contains the part
                 double yOffset = yMargin;
                 StockItem si = null;
                 bool found = false;
-                for (int i = 0; i < Stock.Count; i++)
+                for (int i = 0; i < filterredStock.Length; i++)
                 {
-                    si = Stock[i];
+                    si = filterredStock[i];
                     if (si.PackedParts != null && si.PackedParts.Any(t => t?.Part == p))
                     {
                         found = true;
@@ -1360,8 +1369,19 @@ namespace CuttingPlanMaker
                 double dWidth = iPlacement.dWidth;
                 double cx = xMargin + dLength + p.Length / 2;
                 double cy = yOffset + dWidth + p.Width / 2;
-                double dx = LayoutBitmap.Width / 2 - cx;
-                double dy = LayoutBitmap.Height / 2 - cy;
+                // because the part may be on a tab that is not displayed, we cannot use the cached image's dimensions.
+                // we need to calculate the new image on the new tab's dimensions:
+                double imageHeight = 2 * yMargin;
+                double imageWidth = 0;
+                foreach (var iBoard in filterredStock)
+                {
+                    if (iBoard.Length > imageWidth) imageWidth = iBoard.Length;
+                    imageHeight += iBoard.Width + boardSpacing;
+                }
+                imageWidth += 2 * xMargin;
+
+                double dx = imageWidth / 2 - cx;
+                double dy = imageHeight / 2 - cy;
 
                 userOffset = new PointF((float)(dx), (float)(dy));
                 pbLayout.Invalidate();
