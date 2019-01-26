@@ -247,6 +247,13 @@ namespace CuttingPlanMaker
             // fill the background with black
             g.FillRectangle(SystemBrushes.ButtonHighlight, g.ClipBounds);
 
+
+            if(boardsToDraw.Count() == 0)
+            {
+                g.Flush();
+                return bitmap;
+            }
+
             // draw algorithm
             Type algType = GetPackerType();
             string algname = algType.GetProperty("AlgorithmName").GetValue(null) as string;
@@ -499,6 +506,18 @@ namespace CuttingPlanMaker
             MaterialsGridView.DataSource = Materials;
         }
 
+        private string[] GetAlgorthmsList()
+        {
+            var type = typeof(PackerBase);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => type.IsAssignableFrom(p));
+            var algnames = types.Select(s => s.GetProperty("AlgorithmName").GetValue(null) as string);
+
+            return algnames.ToArray();
+        }
+
+
         /// <summary>
         /// Load a file into the application
         /// </summary>
@@ -513,6 +532,13 @@ namespace CuttingPlanMaker
             Materials = CSVFile.Read<Material>($"{FilePath}.Materials.CSV");
             Stock = CSVFile.Read<StockItem>($"{FilePath}.Stock.CSV");
             Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
+
+
+            Type algType = GetPackerType();
+            string algname = algType.GetProperty("AlgorithmName").GetValue(null) as string;
+            foreach (ToolStripMenuItem item in mniAlgorithm.DropDownItems)
+                item.Checked = (item.Text == algname);
+            
 
             // update the tabs for the layout drawings
             PopulateMaterialTabs();
@@ -658,6 +684,8 @@ namespace CuttingPlanMaker
                               , Setting.PartPaddingLength
                               , Setting.PartPaddingWidth);
                       });
+                StockGridView.Invalidate();
+                PartsGridView.Invalidate();
 
             }
             catch (Exception ex)
@@ -772,8 +800,33 @@ namespace CuttingPlanMaker
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            // load algorithm list
+            mniAlgorithm.DropDownItems.AddRange(
+                GetAlgorthmsList().Where(t => t != "BASE").Select(x=>
+                {
+                    var t = new ToolStripMenuItem(x) { CheckOnClick = true };
+                    t.Click += mniAlgorithm_Click;
+                    return t;
+                }).ToArray());
+
             // load the default file as the default
             LoadDefault();
+        }
+
+        
+
+        private void mniAlgorithm_Click(object sender, EventArgs e)
+        {
+            // clear all the other checks
+            foreach (var item in mniAlgorithm.DropDownItems)
+            {
+                if (item != sender)
+                    ((ToolStripMenuItem)item).Checked = false;
+            }
+
+            Setting.Algorithm = ((ToolStripMenuItem)sender).Text;
+            PackSolution();
+
         }
 
         private void mniFileNew_Click(object sender, EventArgs e)
@@ -1393,5 +1446,6 @@ namespace CuttingPlanMaker
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
         }
         #endregion
+
     }
 }

@@ -104,7 +104,7 @@
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="Reports\LayoutReport.cs" />
     <Compile Include="Models\Material.cs" />
-    <Compile Include="Packers\Packer.cs" />
+    <None Include="Packers\Packer.cs" />
     <Compile Include="Packers\Packer_points.cs" />
     <Compile Include="Models\Part.cs" />
     <Compile Include="Reports\PartListReport.cs" />

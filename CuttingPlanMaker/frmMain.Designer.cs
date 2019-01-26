@@ -122,6 +122,7 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
+            this.mniAlgorithm = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -145,6 +146,7 @@
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniFile,
             this.mniTools,
+            this.mniAlgorithm,
             this.mniReport,
             this.mniHelp});
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
@@ -1027,6 +1029,12 @@
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
             // 
+            // mniAlgorithm
+            // 
+            this.mniAlgorithm.Name = "mniAlgorithm";
+            this.mniAlgorithm.Size = new System.Drawing.Size(82, 20);
+            this.mniAlgorithm.Text = "Algorithm...";
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1151,6 +1159,7 @@
         private System.Windows.Forms.ToolStripMenuItem mniCentreItem;
         private System.Windows.Forms.ToolStripMenuItem mniSaveCopyAs;
         private System.Windows.Forms.ToolStripMenuItem mniIsolateMaterial;
+        private System.Windows.Forms.ToolStripMenuItem mniAlgorithm;
     }
 }
 
