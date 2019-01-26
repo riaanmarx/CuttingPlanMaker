@@ -38,6 +38,8 @@ namespace CuttingPlanMaker
             mainSection = document.AddSection();
 
             // set up the new section
+            mainSection.PageSetup.PageHeight = document.DefaultPageSetup.PageHeight;
+            mainSection.PageSetup.PageWidth = document.DefaultPageSetup.PageWidth;
             mainSection.PageSetup.LeftMargin = LeftMargin;
             mainSection.PageSetup.RightMargin = RightMargin;
             mainSection.PageSetup.TopMargin = TopMargin;
@@ -47,8 +49,10 @@ namespace CuttingPlanMaker
             #region // write content into document ...
             // Create a table spanning whole page
             Table table = mainSection.AddTable();
-            Unit colWidth = (document.DefaultPageSetup.PageWidth - LeftMargin - RightMargin)/ colCount;
-            Unit rowHeight = (document.DefaultPageSetup.PageHeight - TopMargin - BottomMargin) / rowCount;
+            table.Borders.Color = Colors.WhiteSmoke;
+            table.Borders.Width = Unit.FromMillimeter(0.1);
+            Unit colWidth = (mainSection.PageSetup.PageWidth - LeftMargin - RightMargin)/ colCount;
+            Unit rowHeight = (mainSection.PageSetup.PageHeight - TopMargin - BottomMargin ) / rowCount - table.Borders.Width * 2;
             for (int i = 0; i < colCount; i++)
                 table.AddColumn(colWidth);
             for (int i = 0; i * colCount < Parts.Count; i++)

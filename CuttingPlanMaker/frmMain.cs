@@ -1155,8 +1155,6 @@ namespace CuttingPlanMaker
             pbLayout.Invalidate();
         }
 
-        private DateTime dt;
-
         private void pbLayout_Paint(object sender, PaintEventArgs e)
         {
             // filter stock for chosen material
@@ -1328,7 +1326,6 @@ namespace CuttingPlanMaker
             // restore old path
             FilePath = currentfilepath;
         }
-        #endregion
 
         private void mnuGridContextMenu_Opened(object sender, EventArgs e)
         {
@@ -1395,5 +1392,6 @@ namespace CuttingPlanMaker
             else
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
         }
+        #endregion
     }
 }

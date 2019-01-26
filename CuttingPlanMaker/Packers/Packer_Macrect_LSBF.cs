@@ -150,7 +150,7 @@ namespace CuttingPlanMaker.Packers
                     }
                 }
 
-                // order by Left,Top descending
+                // order by Left,Top ascending
                 RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Left * iBoard.Width + o.Top).ToArray();
                 for (int j = 0; j < Forderred.Length - 1; j++)
                 {
