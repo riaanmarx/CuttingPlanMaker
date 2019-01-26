@@ -1363,6 +1363,8 @@ namespace CuttingPlanMaker
             if (selectedStockItem.PackedParts != null)
                 selectedStockItem.PackedParts.ToList().ForEach(p => p.Part.Material = newmaterialname);
 
+            StockGridView.Invalidate();
+
             PopulateMaterialTabs();
 
             // repack
@@ -1384,6 +1386,14 @@ namespace CuttingPlanMaker
             }
             else
                 oldMaterialName = "";
+        }
+
+        private void StockGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < Stock.Count && Stock[e.RowIndex].PackedPartsCount == 0)
+                StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DarkGray;
+            else
+                StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
         }
     }
 }

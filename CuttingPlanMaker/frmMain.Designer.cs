@@ -801,6 +801,7 @@
             this.StockGridView.RowHeadersWidth = 25;
             this.StockGridView.Size = new System.Drawing.Size(274, 456);
             this.StockGridView.TabIndex = 1;
+            this.StockGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.StockGridView_CellFormatting);
             this.StockGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.StockGridView_CellValueChanged);
             this.StockGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.StockGridView_ColumnHeaderMouseClick);
             this.StockGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.StockGridView_DataError);
