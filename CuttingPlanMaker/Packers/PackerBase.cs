@@ -103,6 +103,7 @@ namespace CuttingPlanMaker.Packers
                 #endregion
             } while (true);
             sw.Stop();
+#if DEBUG
 
             if (parts.Any(t => !t.IsPacked))
                 Trace.WriteLine("Processing completed with WARNING: All parts could not be placed!\r\n");
@@ -147,7 +148,8 @@ namespace CuttingPlanMaker.Packers
             Trace.WriteLine($"   Placed parts   : {TotalPackedPartsCount,5:0}    ({UsedPartsArea / 1000000,6:0.000} m\u00b2)");
             Trace.WriteLine($"   Waste          : {(UsedStockArea - UsedPartsArea) / UsedStockArea,7:0.0 %}  ({(UsedStockArea - UsedPartsArea) / 1000000,6:0.000} m\u00b2)");
             Trace.WriteLine($"   Coverage       : {UsedPartsArea / UsedStockArea,7:0.0 %}  ({UsedPartsArea / 1000000,6:0.000} m\u00b2)");
-            Trace.WriteLine($"Packing completed in {sw.ElapsedMilliseconds} ms");
+            Trace.WriteLine($"Packing completed in {sw.ElapsedMilliseconds} ms"); 
+#endif
             //Trace.WriteLine()
         }
 

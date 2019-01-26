@@ -95,6 +95,7 @@
             this.mniDuplicateRows = new System.Windows.Forms.ToolStripMenuItem();
             this.mniRemoveRows = new System.Windows.Forms.ToolStripMenuItem();
             this.mniCentreItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniIsolateMaterial = new System.Windows.Forms.ToolStripMenuItem();
             this.tpMaterials = new System.Windows.Forms.TabPage();
             this.MaterialsGridView = new System.Windows.Forms.DataGridView();
             this.MaterialNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -633,7 +634,8 @@
             this.mnuGridContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniDuplicateRows,
             this.mniRemoveRows,
-            this.mniCentreItem});
+            this.mniCentreItem,
+            this.mniIsolateMaterial});
             this.mnuGridContextMenu.Name = "mnuGridContextMenu";
             this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 92);
             this.mnuGridContextMenu.Opened += new System.EventHandler(this.mnuGridContextMenu_Opened);
@@ -658,6 +660,13 @@
             this.mniCentreItem.Size = new System.Drawing.Size(206, 22);
             this.mniCentreItem.Text = "Centre selected item";
             this.mniCentreItem.Click += new System.EventHandler(this.mniCentreItem_Click);
+            // 
+            // mniIsolateMaterial
+            // 
+            this.mniIsolateMaterial.Name = "mniIsolateMaterial";
+            this.mniIsolateMaterial.Size = new System.Drawing.Size(206, 22);
+            this.mniIsolateMaterial.Text = "Isolate material";
+            this.mniIsolateMaterial.Click += new System.EventHandler(this.mniIsolateMaterial_Click);
             // 
             // tpMaterials
             // 
@@ -697,6 +706,7 @@
             this.MaterialsGridView.RowHeadersWidth = 25;
             this.MaterialsGridView.Size = new System.Drawing.Size(274, 456);
             this.MaterialsGridView.TabIndex = 2;
+            this.MaterialsGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.MaterialsGridView_CellValidating);
             this.MaterialsGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsGridView_CellValueChanged);
             this.MaterialsGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MaterialsGridView_ColumnHeaderMouseClick);
             this.MaterialsGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.MaterialsGridView_DataError);
@@ -1139,6 +1149,7 @@
         private System.Windows.Forms.ToolStripMenuItem mniReportLayoutLabels;
         private System.Windows.Forms.ToolStripMenuItem mniCentreItem;
         private System.Windows.Forms.ToolStripMenuItem mniSaveCopyAs;
+        private System.Windows.Forms.ToolStripMenuItem mniIsolateMaterial;
     }
 }
 

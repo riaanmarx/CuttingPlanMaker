@@ -647,17 +647,17 @@ namespace CuttingPlanMaker
                 PackerBase packer = (PackerBase)Activator.CreateInstance(GetPackerType());
 
                 // filter the parts and stock for te current material and pack them
-                foreach (string iMaterialsName in Materials.Select(t=>t.Name).Where(q=>q!="DISABLED"))
-                {
-                    Part[] iParts = Parts.Where(t => t.Material == iMaterialsName).ToArray();
-                    StockItem[] iStock = Stock.Where(t => t.Material == iMaterialsName).ToArray();
+                Materials.Select(t => t.Name).Where(q => q != "DISABLED").AsParallel().ForAll(iMaterialsName =>
+                      {
+                          Part[] iParts = Parts.Where(t => t.Material == iMaterialsName).ToArray();
+                          StockItem[] iStock = Stock.Where(t => t.Material == iMaterialsName).ToArray();
 
-                    packer.Pack(iParts
-                        , iStock
-                        , Setting.BladeKerf
-                        , Setting.PartPaddingLength
-                        , Setting.PartPaddingWidth);
-                }
+                          packer.Pack(iParts
+                              , iStock
+                              , Setting.BladeKerf
+                              , Setting.PartPaddingLength
+                              , Setting.PartPaddingWidth);
+                      });
 
             }
             catch (Exception ex)
@@ -680,7 +680,7 @@ namespace CuttingPlanMaker
             for (int i = 0; i < Materials.Count; i++)
             {
                 Material iMaterial = Materials[i];
-                if(iMaterial.Name!="DISABLED")
+                if (iMaterial.Name != "DISABLED")
                     if (!tcMaterials.TabPages.ContainsKey(iMaterial.Name))
                         tcMaterials.TabPages.Add(iMaterial.Name, iMaterial.Name);
             }
@@ -721,7 +721,29 @@ namespace CuttingPlanMaker
         private void onGridDataChangeByUser(object sender, DataGridViewCellEventArgs e)
         {
             if (sender == MaterialsGridView)
+            {
+                // if a material's name was changed
+                if (e.ColumnIndex == 0 && oldMaterialName!="")
+                {
+                    Parts.Where(q => q.Material == oldMaterialName).AsParallel().ForAll(p => p.Material = newMaterialName);
+                    Stock.Where(q => q.Material == oldMaterialName).AsParallel().ForAll(p => p.Material = newMaterialName);
+                }
+
                 PopulateMaterialTabs();
+            }
+            // if a stock item's material was changed
+            if (sender == StockGridView && e.ColumnIndex == 3)
+            {
+                //retrieve the selected stock
+                var selectedStockItem = (StockItem)StockGridView.Rows[e.RowIndex].DataBoundItem;
+                if (selectedStockItem.PackedPartsCount > 0)
+                    // ask if all parts should be changed
+                    if (MessageBox.Show("Move packed parts to the new material too?", "Move parts", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        //move the parts packed on the board
+                        selectedStockItem.PackedParts.ToList().ForEach(p => p.Part.Material = selectedStockItem.Material);
+                    }
+            }
 
             IsFileSaved = false;
 
@@ -1133,6 +1155,8 @@ namespace CuttingPlanMaker
             pbLayout.Invalidate();
         }
 
+        private DateTime dt;
+
         private void pbLayout_Paint(object sender, PaintEventArgs e)
         {
             // filter stock for chosen material
@@ -1309,6 +1333,57 @@ namespace CuttingPlanMaker
         private void mnuGridContextMenu_Opened(object sender, EventArgs e)
         {
             mniCentreItem.Enabled = (tcInputs.SelectedTab == tpParts);
+            mniIsolateMaterial.Enabled = (tcInputs.SelectedTab == tpStock);
+        }
+
+        private void mniIsolateMaterial_Click(object sender, EventArgs e)
+        {
+            if (StockGridView.SelectedCells == null || StockGridView.SelectedCells.Count == 0) return;
+
+            //retrieve the selected stock
+            var selectedStockItem = (StockItem)StockGridView.SelectedCells[0].OwningRow.DataBoundItem;
+
+            //create a new material
+            Material oldMaterial = Materials.FirstOrDefault(q => q.Name == selectedStockItem.Material);
+
+            string newmaterialname = $"{selectedStockItem.Material}[{selectedStockItem.Name}]";
+            Materials.Add(new Material()
+            {
+                Name = newmaterialname,
+                Cost = oldMaterial?.Cost ?? 0,
+                Length = selectedStockItem.Length,
+                Width = selectedStockItem.Width,
+                Thickness = oldMaterial?.Thickness ?? 25
+            });
+
+            //move the selected stock to the new material
+            selectedStockItem.Material = newmaterialname;
+
+            //move all packed parts to the new material
+            if (selectedStockItem.PackedParts != null)
+                selectedStockItem.PackedParts.ToList().ForEach(p => p.Part.Material = newmaterialname);
+
+            PopulateMaterialTabs();
+
+            // repack
+            PackSolution();
+        }
+
+        string oldMaterialName = "";
+        string newMaterialName = "";
+        private void MaterialsGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (!MaterialsGridView.Rows[e.RowIndex].IsNewRow)
+            {
+                // if the material's name is edited
+                if (e.ColumnIndex == 0)
+                {
+                    oldMaterialName = MaterialsGridView[e.ColumnIndex, e.RowIndex].Value as string;
+                    newMaterialName = e.FormattedValue as string;
+                }
+            }
+            else
+                oldMaterialName = "";
         }
     }
 }

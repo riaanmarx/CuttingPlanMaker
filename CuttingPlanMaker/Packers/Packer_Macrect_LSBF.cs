@@ -1,4 +1,4 @@
-﻿#define drawdbgimages
+﻿//#define drawdbgimages
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -105,7 +105,7 @@ namespace CuttingPlanMaker.Packers
              
             iBoard.PackedParts = new Placement[orderredParts.Length];
 
-            RectangleF[] F = new RectangleF[500];
+            RectangleF[] F = new RectangleF[5 * parts.Length];
             F[0] = new RectangleF(0,0,(float)iBoard.Length,(float)iBoard.Width);
             int F_len = 1;
 
@@ -124,11 +124,11 @@ namespace CuttingPlanMaker.Packers
 
                 RectangleF B = new RectangleF(Fi.Left, Fi.Top, (float)iPart.Length, (float)iPart.Width);
 
-                F[F_len++] = new RectangleF(B.Right + (float)sawkerf, Fi.Top, Fi.Right - B.Right - (float)sawkerf, Fi.Height);
-                F[F_len++] = new RectangleF(Fi.Left, B.Bottom + (float)sawkerf, Fi.Width, Fi.Bottom - B.Bottom - (float)sawkerf);
+                //F[F_len++] = new RectangleF(B.Right + (float)sawkerf, Fi.Top, Fi.Right - B.Right - (float)sawkerf, Fi.Height);
+                //F[F_len++] = new RectangleF(Fi.Left, B.Bottom + (float)sawkerf, Fi.Width, Fi.Bottom - B.Bottom - (float)sawkerf);
 
-                int Fi_index = Array.IndexOf(F, Fi);
-                F[Fi_index] = RectangleF.Empty;
+                //int Fi_index = Array.IndexOf(F, Fi);
+                //F[Fi_index] = RectangleF.Empty;
 
                 for (int findex = 0; findex < F_len; findex++)
                 {
@@ -151,7 +151,6 @@ namespace CuttingPlanMaker.Packers
                 }
 
                 // order by Left,Top descending
-                //RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Width*o.Height).ToArray();
                 RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Left * iBoard.Width + o.Top).ToArray();
                 for (int j = 0; j < Forderred.Length - 1; j++)
                 {
