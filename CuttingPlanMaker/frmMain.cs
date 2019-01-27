@@ -248,7 +248,7 @@ namespace CuttingPlanMaker
             g.FillRectangle(SystemBrushes.ButtonHighlight, g.ClipBounds);
 
 
-            if(boardsToDraw.Count() == 0)
+            if (boardsToDraw.Count() == 0)
             {
                 g.Flush();
                 return bitmap;
@@ -538,7 +538,7 @@ namespace CuttingPlanMaker
             string algname = algType.GetProperty("AlgorithmName").GetValue(null) as string;
             foreach (ToolStripMenuItem item in mniAlgorithm.DropDownItems)
                 item.Checked = (item.Text == algname);
-            
+
 
             // update the tabs for the layout drawings
             PopulateMaterialTabs();
@@ -662,9 +662,16 @@ namespace CuttingPlanMaker
             try
             {
                 //clear all packing info
-                Parts.ToList().ForEach(t => t.IsPacked = false);
+                Parts.ToList().ForEach(t =>
+                {
+                    //if part not packed onto a frozen board
+                    if (!t.IsFrozen)
+                        t.IsPacked = false;
+                });
                 Stock.ToList().ForEach(t =>
                 {
+                    if (t.IsFrozen) return;
+
                     t.IsComplete = false;
                     t.PackedParts = null;
                     t.PackedPartsCount = 0;
@@ -675,8 +682,8 @@ namespace CuttingPlanMaker
                 // filter the parts and stock for te current material and pack them
                 Materials.Select(t => t.Name).Where(q => q != "DISABLED").AsParallel().ForAll(iMaterialsName =>
                       {
-                          Part[] iParts = Parts.Where(t => t.Material == iMaterialsName).ToArray();
-                          StockItem[] iStock = Stock.Where(t => t.Material == iMaterialsName).ToArray();
+                          Part[] iParts = Parts.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
+                          StockItem[] iStock = Stock.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
 
                           packer.Pack(iParts
                               , iStock
@@ -684,8 +691,7 @@ namespace CuttingPlanMaker
                               , Setting.PartPaddingLength
                               , Setting.PartPaddingWidth);
                       });
-                StockGridView.Invalidate();
-                PartsGridView.Invalidate();
+                
 
             }
             catch (Exception ex)
@@ -697,6 +703,8 @@ namespace CuttingPlanMaker
 
             // repaint the layout picture box
             pbLayout.Invalidate();
+            StockGridView.Invalidate();
+            PartsGridView.Invalidate();
         }
 
         /// <summary>
@@ -751,7 +759,7 @@ namespace CuttingPlanMaker
             if (sender == MaterialsGridView)
             {
                 // if a material's name was changed
-                if (e.ColumnIndex == 0 && oldMaterialName!="")
+                if (e.ColumnIndex == 0 && oldMaterialName != "")
                 {
                     Parts.Where(q => q.Material == oldMaterialName).AsParallel().ForAll(p => p.Material = newMaterialName);
                     Stock.Where(q => q.Material == oldMaterialName).AsParallel().ForAll(p => p.Material = newMaterialName);
@@ -802,7 +810,7 @@ namespace CuttingPlanMaker
         {
             // load algorithm list
             mniAlgorithm.DropDownItems.AddRange(
-                GetAlgorthmsList().Where(t => t != "BASE").Select(x=>
+                GetAlgorthmsList().Where(t => t != "BASE").Select(x =>
                 {
                     var t = new ToolStripMenuItem(x) { CheckOnClick = true };
                     t.Click += mniAlgorithm_Click;
@@ -813,7 +821,7 @@ namespace CuttingPlanMaker
             LoadDefault();
         }
 
-        
+
 
         private void mniAlgorithm_Click(object sender, EventArgs e)
         {
@@ -1173,7 +1181,13 @@ namespace CuttingPlanMaker
 
         private void PartsGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.RowIndex < Parts.Count && Parts[e.RowIndex].Area > 0 && !Parts[e.RowIndex].IsPacked)
+            if (e.RowIndex >= Parts.Count) return;
+
+            var t = Parts[e.RowIndex];
+
+            if (t.IsFrozen)
+                PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DeepSkyBlue;
+            else if (!t.IsPacked)
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Red;
             else
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
@@ -1339,7 +1353,7 @@ namespace CuttingPlanMaker
                 tcMaterials.SelectedTab = tcMaterials.TabPages[MaterialName];
 
                 // filter the stock per the selected material
-                StockItem[] filterredStock = Stock.Where(q => q.Material == MaterialName && (q.PackedPartsCount>0 || Setting.DrawUnusedStock)).ToArray();
+                StockItem[] filterredStock = Stock.Where(q => q.Material == MaterialName && (q.PackedPartsCount > 0 || Setting.DrawUnusedStock)).ToArray();
 
                 // find the y-offset for the board that contains the part
                 double yOffset = yMargin;
@@ -1404,6 +1418,7 @@ namespace CuttingPlanMaker
         {
             mniCentreItem.Enabled = (tcInputs.SelectedTab == tpParts);
             mniIsolateMaterial.Enabled = (tcInputs.SelectedTab == tpStock);
+            mniToggleFreeze.Enabled = (tcInputs.SelectedTab == tpStock);// || tcInputs.SelectedTab == tpParts);
         }
 
         private void mniIsolateMaterial_Click(object sender, EventArgs e)
@@ -1460,12 +1475,50 @@ namespace CuttingPlanMaker
 
         private void StockGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.RowIndex < Stock.Count && Stock[e.RowIndex].PackedPartsCount == 0)
+            if (e.RowIndex >= Stock.Count) return;
+
+            var t = Stock[e.RowIndex];
+            if (t.IsFrozen)
+                StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DeepSkyBlue;
+            else if (t.PackedPartsCount == 0)
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DarkGray;
             else
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
         }
         #endregion
 
+        private void mniToggleFreeze_Click(object sender, EventArgs e)
+        {
+            if (tcInputs.SelectedTab == tpStock)
+            {
+                if (StockGridView.SelectedCells == null || StockGridView.SelectedCells.Count == 0) return;
+
+                List<StockItem> stockprocessed = new List<StockItem>();
+                //retrieve the selected stock
+                foreach (DataGridViewCell selectedCell in StockGridView.SelectedCells)
+                {
+                    StockItem selectedStockItem = selectedCell.OwningRow.DataBoundItem as StockItem;
+                    if (stockprocessed.Contains(selectedStockItem)) continue;
+                    stockprocessed.Add(selectedStockItem);
+
+                    selectedStockItem.IsFrozen = !selectedStockItem.IsFrozen;
+                    selectedStockItem.PackedParts.ToList().ForEach(t => t.Part.IsFrozen = selectedStockItem.IsFrozen);
+                }
+            }
+            //else if (tcInputs.SelectedTab == tpParts)
+            //{
+            //    if (PartsGridView.SelectedCells == null || PartsGridView.SelectedCells.Count == 0) return;
+
+            //    //retrieve the selected stock
+            //    foreach (DataGridViewCell selectedCell in PartsGridView.SelectedCells)
+            //    {
+            //        Part selectedPart = (Part)selectedCell.OwningRow.DataBoundItem;
+            //        selectedPart.IsFrozen = !selectedPart.IsFrozen;
+            //    }
+            //}
+
+            PackSolution();
+
+        }
     }
 }

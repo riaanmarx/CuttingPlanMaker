@@ -79,6 +79,12 @@ namespace CuttingPlanMaker
         public bool IsComplete { get; set; }
 
         /// <summary>
+        /// Indication of weather this board shoulf be repacked by the packer algorithm
+        /// </summary>
+        public bool IsFrozen { get; set; }
+
+
+        /// <summary>
         /// String repressentation of the board
         /// </summary>
         /// <returns></returns>

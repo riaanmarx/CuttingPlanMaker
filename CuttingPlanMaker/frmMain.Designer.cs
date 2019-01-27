@@ -58,6 +58,7 @@
             this.mniTools = new System.Windows.Forms.ToolStripMenuItem();
             this.mniToolsOptions = new System.Windows.Forms.ToolStripMenuItem();
             this.mniToolsPack = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniAlgorithm = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportPartsList = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportStockList = new System.Windows.Forms.ToolStripMenuItem();
@@ -122,7 +123,7 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
-            this.mniAlgorithm = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniToggleFreeze = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -276,16 +277,22 @@
             // mniToolsOptions
             // 
             this.mniToolsOptions.Name = "mniToolsOptions";
-            this.mniToolsOptions.Size = new System.Drawing.Size(180, 22);
+            this.mniToolsOptions.Size = new System.Drawing.Size(128, 22);
             this.mniToolsOptions.Text = "&Options";
             this.mniToolsOptions.Click += new System.EventHandler(this.mniToolsOptions_Click);
             // 
             // mniToolsPack
             // 
             this.mniToolsPack.Name = "mniToolsPack";
-            this.mniToolsPack.Size = new System.Drawing.Size(180, 22);
+            this.mniToolsPack.Size = new System.Drawing.Size(128, 22);
             this.mniToolsPack.Text = "Pack parts";
             this.mniToolsPack.Click += new System.EventHandler(this.mniToolsPack_Click);
+            // 
+            // mniAlgorithm
+            // 
+            this.mniAlgorithm.Name = "mniAlgorithm";
+            this.mniAlgorithm.Size = new System.Drawing.Size(82, 20);
+            this.mniAlgorithm.Text = "Algorithm...";
             // 
             // mniReport
             // 
@@ -301,28 +308,28 @@
             // mniReportPartsList
             // 
             this.mniReportPartsList.Name = "mniReportPartsList";
-            this.mniReportPartsList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportPartsList.Size = new System.Drawing.Size(143, 22);
             this.mniReportPartsList.Text = "Parts list";
             this.mniReportPartsList.Click += new System.EventHandler(this.mniReportPartsList_Click);
             // 
             // mniReportStockList
             // 
             this.mniReportStockList.Name = "mniReportStockList";
-            this.mniReportStockList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportStockList.Size = new System.Drawing.Size(143, 22);
             this.mniReportStockList.Text = "Stock list";
             this.mniReportStockList.Click += new System.EventHandler(this.mniReportStockList_Click);
             // 
             // mniReportLayout
             // 
             this.mniReportLayout.Name = "mniReportLayout";
-            this.mniReportLayout.Size = new System.Drawing.Size(180, 22);
+            this.mniReportLayout.Size = new System.Drawing.Size(143, 22);
             this.mniReportLayout.Text = "Layout";
             this.mniReportLayout.Click += new System.EventHandler(this.mniReportLayout_Click);
             // 
             // mniReportLayoutLabels
             // 
             this.mniReportLayoutLabels.Name = "mniReportLayoutLabels";
-            this.mniReportLayoutLabels.Size = new System.Drawing.Size(180, 22);
+            this.mniReportLayoutLabels.Size = new System.Drawing.Size(143, 22);
             this.mniReportLayoutLabels.Text = "Layout labels";
             this.mniReportLayoutLabels.Click += new System.EventHandler(this.mniReportLayoutLabels_Click);
             // 
@@ -337,7 +344,7 @@
             // mniHelpAbout
             // 
             this.mniHelpAbout.Name = "mniHelpAbout";
-            this.mniHelpAbout.Size = new System.Drawing.Size(180, 22);
+            this.mniHelpAbout.Size = new System.Drawing.Size(107, 22);
             this.mniHelpAbout.Text = "&About";
             // 
             // saveFileDialog
@@ -637,9 +644,10 @@
             this.mniDuplicateRows,
             this.mniRemoveRows,
             this.mniCentreItem,
-            this.mniIsolateMaterial});
+            this.mniIsolateMaterial,
+            this.mniToggleFreeze});
             this.mnuGridContextMenu.Name = "mnuGridContextMenu";
-            this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 114);
+            this.mnuGridContextMenu.Size = new System.Drawing.Size(207, 136);
             this.mnuGridContextMenu.Opened += new System.EventHandler(this.mnuGridContextMenu_Opened);
             // 
             // mniDuplicateRows
@@ -1029,11 +1037,12 @@
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
             // 
-            // mniAlgorithm
+            // mniToggleFreeze
             // 
-            this.mniAlgorithm.Name = "mniAlgorithm";
-            this.mniAlgorithm.Size = new System.Drawing.Size(82, 20);
-            this.mniAlgorithm.Text = "Algorithm...";
+            this.mniToggleFreeze.Name = "mniToggleFreeze";
+            this.mniToggleFreeze.Size = new System.Drawing.Size(206, 22);
+            this.mniToggleFreeze.Text = "(Un)Freeze board";
+            this.mniToggleFreeze.Click += new System.EventHandler(this.mniToggleFreeze_Click);
             // 
             // FrmMain
             // 
@@ -1160,6 +1169,7 @@
         private System.Windows.Forms.ToolStripMenuItem mniSaveCopyAs;
         private System.Windows.Forms.ToolStripMenuItem mniIsolateMaterial;
         private System.Windows.Forms.ToolStripMenuItem mniAlgorithm;
+        private System.Windows.Forms.ToolStripMenuItem mniToggleFreeze;
     }
 }
 
