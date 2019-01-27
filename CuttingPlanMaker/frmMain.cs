@@ -1502,9 +1502,11 @@ namespace CuttingPlanMaker
                     stockprocessed.Add(selectedStockItem);
 
                     selectedStockItem.IsFrozen = !selectedStockItem.IsFrozen;
+                    selectedStockItem.PackedParts.ToList().ForEach(t => t.Part.IsFrozen = selectedStockItem.IsFrozen);
                 }
             }
             
+
             PackSolution();
 
         }

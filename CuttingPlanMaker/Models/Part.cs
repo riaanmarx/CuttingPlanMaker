@@ -45,7 +45,7 @@ namespace CuttingPlanMaker
         /// Flag to indicate if this part has been placed on a board already
         /// </summary>
         public bool IsPacked { get; set; }
-
+        public bool IsFrozen { get; set; }
         /// <summary>
         /// string repressentation of the part
         /// </summary>
