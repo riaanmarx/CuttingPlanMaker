@@ -132,7 +132,7 @@ namespace CuttingPlanMaker.Packers
                     Part = iPart
                 };
 
-                RectangleF B = new RectangleF(Fi.Left, Fi.Top, (float)iPart.Length, (float)iPart.Width);
+                RectangleF B = new RectangleF(Fi.Left, Fi.Top, (float)iPart.Length + (float)sawkerf, (float)iPart.Width + (float)sawkerf);
 
                 //F[F_len++] = new RectangleF(B.Right + (float)sawkerf, Fi.Top, Fi.Right - B.Right - (float)sawkerf, Fi.Height);
                 //F[F_len++] = new RectangleF(Fi.Left, B.Bottom + (float)sawkerf, Fi.Width, Fi.Bottom - B.Bottom - (float)sawkerf);
@@ -147,16 +147,15 @@ namespace CuttingPlanMaker.Packers
                     {
                         //compute Fi \ B, subdivided into rectangles G1..G4
                         if (B.Right < Fi.Right)
-                            F[F_len++] = new RectangleF(B.Right+(float)sawkerf,Fi.Top,Fi.Right-B.Right -(float)sawkerf,Fi.Height);
+                            F[F_len++] = new RectangleF(B.Right,Fi.Top,Fi.Right-B.Right ,Fi.Height);
                         if (B.Left > Fi.Left)
-                            F[F_len++] = new RectangleF(Fi.Left, Fi.Top, B.Left - Fi.Left - (float)sawkerf, Fi.Height);
+                            F[F_len++] = new RectangleF(Fi.Left, Fi.Top, B.Left - Fi.Left , Fi.Height);
                         if (B.Top > Fi.Top)
-                            F[F_len++] = new RectangleF(Fi.Left, Fi.Top, Fi.Width, B.Top - Fi.Top - (float)sawkerf);
+                            F[F_len++] = new RectangleF(Fi.Left, Fi.Top, Fi.Width, B.Top - Fi.Top );
                         if (B.Bottom < Fi.Bottom)
-                            F[F_len++] = new RectangleF(Fi.Left, B.Bottom + (float)sawkerf, Fi.Width, Fi.Bottom-B.Bottom - (float)sawkerf);
+                            F[F_len++] = new RectangleF(Fi.Left, B.Bottom , Fi.Width, Fi.Bottom - B.Bottom );
 
                         F[findex] = RectangleF.Empty;
-
                     }
                 }
 
