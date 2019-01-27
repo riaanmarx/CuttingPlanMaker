@@ -1502,21 +1502,9 @@ namespace CuttingPlanMaker
                     stockprocessed.Add(selectedStockItem);
 
                     selectedStockItem.IsFrozen = !selectedStockItem.IsFrozen;
-                    selectedStockItem.PackedParts.ToList().ForEach(t => t.Part.IsFrozen = selectedStockItem.IsFrozen);
                 }
             }
-            //else if (tcInputs.SelectedTab == tpParts)
-            //{
-            //    if (PartsGridView.SelectedCells == null || PartsGridView.SelectedCells.Count == 0) return;
-
-            //    //retrieve the selected stock
-            //    foreach (DataGridViewCell selectedCell in PartsGridView.SelectedCells)
-            //    {
-            //        Part selectedPart = (Part)selectedCell.OwningRow.DataBoundItem;
-            //        selectedPart.IsFrozen = !selectedPart.IsFrozen;
-            //    }
-            //}
-
+            
             PackSolution();
 
         }

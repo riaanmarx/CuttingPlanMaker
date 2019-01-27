@@ -46,7 +46,6 @@ namespace CuttingPlanMaker
         /// </summary>
         public bool IsPacked { get; set; }
 
-        public bool IsFrozen { get; set; }
         /// <summary>
         /// string repressentation of the part
         /// </summary>
