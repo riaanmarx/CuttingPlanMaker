@@ -1277,6 +1277,7 @@ namespace CuttingPlanMaker
 
         private void pbLayout_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            if (DateTime.Now.Subtract(FormResizedAt).TotalMilliseconds < 500) return;
             if (e.Button == MouseButtons.Left)
             {
                 userOffset = PbToImageSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor).Location;
@@ -1302,6 +1303,7 @@ namespace CuttingPlanMaker
 
         private void pbLayout_MouseMove(object sender, MouseEventArgs e)
         {
+            if (DateTime.Now.Subtract(FormResizedAt).TotalMilliseconds < 500) return;
             if (e.Button == MouseButtons.Left)
             {
                 //convert the mouse movement relative to its original mouse down position to image space movement
@@ -1419,6 +1421,10 @@ namespace CuttingPlanMaker
             mniCentreItem.Enabled = (tcInputs.SelectedTab == tpParts);
             mniIsolateMaterial.Enabled = (tcInputs.SelectedTab == tpStock);
             mniToggleFreeze.Enabled = (tcInputs.SelectedTab == tpStock);// || tcInputs.SelectedTab == tpParts);
+            mniRemoveRows.Enabled = tcInputs.SelectedTab == tpParts && PartsGridView.SelectedRows.Count > 0
+                                    || tcInputs.SelectedTab == tpStock && StockGridView.SelectedRows.Count > 0
+                                    || tcInputs.SelectedTab == tpMaterials && MaterialsGridView.SelectedRows.Count > 0;
+            mniDuplicateRows.Enabled = mniRemoveRows.Enabled;
         }
 
         private void mniIsolateMaterial_Click(object sender, EventArgs e)
@@ -1509,6 +1515,12 @@ namespace CuttingPlanMaker
 
             PackSolution();
 
+        }
+        DateTime FormResizedAt;
+
+        private void FrmMain_Resize(object sender, EventArgs e)
+        {
+            FormResizedAt = DateTime.Now;
         }
     }
 }
