@@ -19,18 +19,6 @@ namespace CuttingPlanMaker
         public string Name { get; set; }
 
         /// <summary>
-        /// Length of standard boards of this material - not used yet
-        /// </summary>
-        [CsvColumn(Name = "Length", FieldIndex = 2)]
-        public double Length { get; set; }
-
-        /// <summary>
-        /// Width of standard boards of this material - not used yet
-        /// </summary>
-        [CsvColumn(Name = "Width", FieldIndex = 3)]
-        public double Width { get; set; }
-
-        /// <summary>
         /// Thickness of boards of this material
         /// </summary>
         [CsvColumn(Name = "Thickness", FieldIndex = 4)]

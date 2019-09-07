@@ -1,5 +1,6 @@
 ﻿
 using CuttingPlanMaker.Packers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -74,15 +75,7 @@ namespace CuttingPlanMaker
         /// <summary>
         /// Settings collection for the currently loaded project
         /// </summary>
-        BindingList<Settings> Settings { get; set; }
-
-        /// <summary>
-        /// A setting reference to the first record in the settings collection. This publishes all the settings for the project in a typed property.
-        /// </summary>
-        Settings Setting
-        {
-            get { return Settings.FirstOrDefault(); }
-        }
+        Settings Settings { get; set; }
 
         /// <summary>
         /// List of material types that the project is using. The standard board sizes is not used anywhere, except for the thickness and cost, which are used in the reports
@@ -167,8 +160,6 @@ namespace CuttingPlanMaker
                     Material newItem = new Material()
                     {
                         Name = oldItem.Name,
-                        Length = oldItem.Length,
-                        Width = oldItem.Width,
                         Thickness = oldItem.Thickness,
                         Cost = oldItem.Cost
                     };
@@ -278,8 +269,8 @@ namespace CuttingPlanMaker
                     var iPlacement = iBoard.PackedParts[i];
                     double dLength = iPlacement.dLength;
                     double dWidth = iPlacement.dWidth;
-                    double Length = iPlacement.Part.Length + (Setting.IncludePaddingInDisplay ? Setting.PartPaddingLength : 0f);
-                    double Width = iPlacement.Part.Width + (Setting.IncludePaddingInDisplay ? Setting.PartPaddingWidth : 0f);
+                    double Length = iPlacement.Part.Length + (Settings.IncludePaddingInDisplay ? Settings.PartPaddingLength : 0f);
+                    double Width = iPlacement.Part.Width + (Settings.IncludePaddingInDisplay ? Settings.PartPaddingWidth : 0f);
 
                     // draw the part
                     g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
@@ -425,18 +416,6 @@ namespace CuttingPlanMaker
                 case "Name DESC":
                     Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Name).ToList());
                     break;
-                case "Length ASC":
-                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Length).ToList());
-                    break;
-                case "Length DESC":
-                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Length).ToList());
-                    break;
-                case "Width ASC":
-                    Materials = new BindingList<Material>(Materials.OrderBy(t => t.Width).ToList());
-                    break;
-                case "Width DESC":
-                    Materials = new BindingList<Material>(Materials.OrderByDescending(t => t.Width).ToList());
-                    break;
                 case "Thickness ASC":
                     Materials = new BindingList<Material>(Materials.OrderBy(t => t.Thickness).ToList());
                     break;
@@ -464,11 +443,10 @@ namespace CuttingPlanMaker
         private void SaveFile()
         {
             // write the file data to the csv files
-            CSVFile.Write(Materials, $"{FilePath}.Materials.csv");
-            CSVFile.Write(Stock, $"{FilePath}.Stock.csv");
-            CSVFile.Write(Parts, $"{FilePath}.Parts.csv");
-            CSVFile.Write(Settings, $"{FilePath}.Settings.csv");
-
+            File.WriteAllText($"{FilePath}.Materials.json", JsonConvert.SerializeObject(Materials));
+            File.WriteAllText($"{FilePath}.Stock.json", JsonConvert.SerializeObject(Stock));
+            File.WriteAllText($"{FilePath}.Parts.json", JsonConvert.SerializeObject(Parts));
+            File.WriteAllText($"{FilePath}.Settings.json", JsonConvert.SerializeObject(Settings));
             // update the saved flag
             IsFileSaved = true;
         }
@@ -478,7 +456,7 @@ namespace CuttingPlanMaker
         /// </summary>
         private void SaveConfig()
         {
-            CSVFile.Write(Settings, $"{FilePath}.Settings.CSV");
+            File.WriteAllText($"{FilePath}.Settings.json", JsonConvert.SerializeObject(Settings));
         }
 
         /// <summary>
@@ -528,11 +506,12 @@ namespace CuttingPlanMaker
             FilePath = path;
 
             // Load the file into data structures
-            Settings = CSVFile.Read<Settings>($"{FilePath}.Settings.CSV");
-            Materials = CSVFile.Read<Material>($"{FilePath}.Materials.CSV");
-            Stock = CSVFile.Read<StockItem>($"{FilePath}.Stock.CSV");
-            Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
-
+            Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText($"{FilePath}.Settings.json"));
+            Materials = new BindingList<Material>(JsonConvert.DeserializeObject<List<Material>>(File.ReadAllText($"{FilePath}.Materials.json")));
+            Stock = new BindingList<StockItem>(JsonConvert.DeserializeObject<List<StockItem>>(File.ReadAllText($"{FilePath}.Stock.json")));
+            //CSVFile.Read<StockItem>($"{FilePath}.Stock.CSV");
+            //Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
+            Parts = new BindingList<Part>(JsonConvert.DeserializeObject<List<Part>>(File.ReadAllText($"{FilePath}.Parts.json")));
 
             Type algType = GetPackerType();
             string algname = algType.GetProperty("AlgorithmName").GetValue(null) as string;
@@ -544,7 +523,7 @@ namespace CuttingPlanMaker
             PopulateMaterialTabs();
 
             // pack the solution before drawing the grids
-            if (Setting.AutoRepack) PackSolution();
+            if (Settings.AutoRepack) PackSolution();
 
             // bind the materials grid
             BindMaterialsGrid();
@@ -649,7 +628,7 @@ namespace CuttingPlanMaker
             var packertypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p)).OrderBy(o => o.FullName);
-            var selectedpackertype = packertypes.FirstOrDefault(q => q.GetProperty("AlgorithmName")?.GetValue(null) as string == Setting.Algorithm);
+            var selectedpackertype = packertypes.FirstOrDefault(q => q.GetProperty("AlgorithmName")?.GetValue(null) as string == Settings.Algorithm);
             if (selectedpackertype == null) selectedpackertype = packertypes.First();
             return selectedpackertype;
 
@@ -680,17 +659,17 @@ namespace CuttingPlanMaker
                 PackerBase packer = (PackerBase)Activator.CreateInstance(GetPackerType());
 
                 // filter the parts and stock for te current material and pack them
-                Materials.Select(t => t.Name).Where(q => q != "DISABLED").AsParallel().ForAll(iMaterialsName =>
+                Materials.Select(t => t.Name).Where(q => q != "DISABLED").AsParallel().ForAll((Action<string>)(iMaterialsName =>
                       {
                           Part[] iParts = Parts.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
                           StockItem[] iStock = Stock.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
 
                           packer.Pack(iParts
                               , iStock
-                              , Setting.BladeKerf
-                              , Setting.PartPaddingLength
-                              , Setting.PartPaddingWidth);
-                      });
+                              , (double)this.Settings.BladeKerf
+                              , (double)this.Settings.PartPaddingLength
+                              , (double)this.Settings.PartPaddingWidth);
+                      }));
                 
 
             }
@@ -743,7 +722,7 @@ namespace CuttingPlanMaker
 
             IsFileSaved = false;
 
-            if (Setting.AutoRepack)
+            if (Settings.AutoRepack)
             {
                 PackSolution();
             }
@@ -783,7 +762,7 @@ namespace CuttingPlanMaker
 
             IsFileSaved = false;
 
-            if (Setting.AutoRepack)
+            if (Settings.AutoRepack)
             {
                 PackSolution();
             }
@@ -832,7 +811,7 @@ namespace CuttingPlanMaker
                     ((ToolStripMenuItem)item).Checked = false;
             }
 
-            Setting.Algorithm = ((ToolStripMenuItem)sender).Text;
+            Settings.Algorithm = ((ToolStripMenuItem)sender).Text;
             PackSolution();
 
         }
@@ -874,10 +853,10 @@ namespace CuttingPlanMaker
         private void mniToolsOptions_Click(object sender, EventArgs e)
         {
             // show settings dialog, if close with save, save the config
-            if (new frmSettingsDialog(Setting).ShowDialog() == DialogResult.OK)
+            if (new frmSettingsDialog(Settings).ShowDialog() == DialogResult.OK)
             {
                 if (FilePath != "") SaveConfig();
-                if (Setting.AutoRepack)
+                if (Settings.AutoRepack)
                     PackSolution();
                 else
                 {
@@ -1099,7 +1078,7 @@ namespace CuttingPlanMaker
         private void mniReportPartsList_Click(object sender, EventArgs e)
         {
             var t = new PartListReport()
-                .Generate(Setting, Materials, Stock, Parts);
+                .Generate(Settings, Materials, Stock, Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1119,7 +1098,7 @@ namespace CuttingPlanMaker
         private void mniReportStockList_Click(object sender, EventArgs e)
         {
             var t = new StockReport()
-                .Generate(Setting, Materials, Stock, Parts);
+                .Generate(Settings, Materials, Stock, Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1138,7 +1117,7 @@ namespace CuttingPlanMaker
 
         private void mniReportLayout_Click(object sender, EventArgs e)
         {
-            if (Setting.AutoRepack)
+            if (Settings.AutoRepack)
                 PackSolution();
             else
             {
@@ -1150,7 +1129,7 @@ namespace CuttingPlanMaker
             }
 
             var t = new LayoutReport()
-                .Generate(Setting, Materials, Stock, Parts);
+                .Generate(Settings, Materials, Stock, Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1229,7 +1208,7 @@ namespace CuttingPlanMaker
             StockItem[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
             // draw the layout for filterred stock
             if (LayoutBitmap != null) LayoutBitmap.Dispose();
-            LayoutBitmap = Draw(stockItems, Setting.DrawUnusedStock);
+            LayoutBitmap = Draw(stockItems, Settings.DrawUnusedStock);
 
             // draw the image to the screen
             Graphics gfx = e.Graphics;
@@ -1323,7 +1302,7 @@ namespace CuttingPlanMaker
         private void mniReportLayoutLabels_Click(object sender, EventArgs e)
         {
             var t = new CuttingLabelReport()
-               .Generate(Setting, Materials, Stock, Parts);
+               .Generate(Settings, Materials, Stock, Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1355,7 +1334,7 @@ namespace CuttingPlanMaker
                 tcMaterials.SelectedTab = tcMaterials.TabPages[MaterialName];
 
                 // filter the stock per the selected material
-                StockItem[] filterredStock = Stock.Where(q => q.Material == MaterialName && (q.PackedPartsCount > 0 || Setting.DrawUnusedStock)).ToArray();
+                StockItem[] filterredStock = Stock.Where(q => q.Material == MaterialName && (q.PackedPartsCount > 0 || Settings.DrawUnusedStock)).ToArray();
 
                 // find the y-offset for the board that contains the part
                 double yOffset = yMargin;
@@ -1369,7 +1348,7 @@ namespace CuttingPlanMaker
                         found = true;
                         break;
                     }
-                    if (si.PackedPartsCount > 0 || Setting.DrawUnusedStock)
+                    if (si.PackedPartsCount > 0 || Settings.DrawUnusedStock)
                         yOffset += si.Width + boardSpacing;
                 }
 
@@ -1442,8 +1421,6 @@ namespace CuttingPlanMaker
             {
                 Name = newmaterialname,
                 Cost = oldMaterial?.Cost ?? 0,
-                Length = selectedStockItem.Length,
-                Width = selectedStockItem.Width,
                 Thickness = oldMaterial?.Thickness ?? 25
             });
 
@@ -1498,20 +1475,21 @@ namespace CuttingPlanMaker
             if (tcInputs.SelectedTab == tpStock)
             {
                 if (StockGridView.SelectedCells == null || StockGridView.SelectedCells.Count == 0) return;
-
                 List<StockItem> stockprocessed = new List<StockItem>();
                 //retrieve the selected stock
                 foreach (DataGridViewCell selectedCell in StockGridView.SelectedCells)
                 {
                     StockItem selectedStockItem = selectedCell.OwningRow.DataBoundItem as StockItem;
+                    if (selectedStockItem == null) continue;
+
                     if (stockprocessed.Contains(selectedStockItem)) continue;
                     stockprocessed.Add(selectedStockItem);
 
                     selectedStockItem.IsFrozen = !selectedStockItem.IsFrozen;
+                    if(selectedStockItem.PackedParts != null)
                     selectedStockItem.PackedParts.ToList().ForEach(t => t.Part.IsFrozen = selectedStockItem.IsFrozen);
                 }
             }
-            
 
             PackSolution();
 

@@ -12,190 +12,58 @@ namespace CuttingPlanMaker.Packers
     {
         new public static string AlgorithmName => "Experimental";
 
-        /// <summary>
-        /// An internal class for the points used to manage placements
-        /// </summary>
-        private class PointD
+
+        StockItem[] GetStockItemsFitting(Part part, StockItem[] boards)
         {
-            public double dWidth;
-            public double dLength;
-            public bool disabled;
-
-            public PointD(double dwidth, double dlength)
-            { this.dWidth = dwidth; this.dLength = dlength; }
-
-            public override string ToString()
+            List<StockItem> tmp = new List<StockItem>();
+            for (int i = 0; i < boards.Length; i++)
             {
-                return $"{(disabled ? "!" : "")}{dLength},{dWidth}";
-            }
-        }
+                StockItem iBoard = boards[i];
 
-        /// <summary>
-        /// Pack the parts on the boards
-        /// </summary>
-        /// <param name="parts"></param>
-        /// <param name="boards"></param>
-        /// <param name="sawkerf"></param>
-        /// <param name="partLengthPadding"></param>
-        /// <param name="partWidthPadding"></param>
-        public override void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
-        {
-            //Array.Resize<Part>(ref parts, 30);
-
-            #region // Prepare variables and sort parts ...
-            int boardsCount = boards.Length;
-            int packedPartsCount = 0;
-            int packedBoardsCount = 0;
-            int partsCount = parts.Length;
-
-            // order the parts by Area, Ascending
-            Part[] orderredParts = parts.OrderBy(t => t.Area).ToArray(); 
-            #endregion
-
-            // loop until no parts were packed or all parts packed or all boards used 
-            while (packedPartsCount < partsCount && packedBoardsCount < boardsCount)
-            {
-                #region // launch a thread per board to pack it ...
-                List<Task> threads = new List<Task>();
-                for (int i = 0; i < boardsCount; i++)
-                    if (!boards[i].IsComplete)
-                        threads.Add(Task.Factory.StartNew((o) =>
-                        {
-                            // reference board[i]
-                            StockItem iBoard = boards[(int)o];
-
-                            // for the board at hand, generate the top 10 combinations that will fit the board per area
-                            int n = 0;
-                            partcombo[] topncombos = new partcombo[5];
-                            for (int j = 0; j < topncombos.Length; j++)
-                                topncombos[j] = new partcombo()
-                                {
-                                    parts = null,
-                                    totalArea = 0,
-                                };
-
-                            var topnCombos = GenerateTopNCombos(orderredParts, iBoard.Area,0, new Part[partsCount],0,0, topncombos);
-
-                        }, i));
-
-                // wait until all boards are packed
-                Task.WaitAll(threads.ToArray()); 
-                #endregion
-
-                #region // Find the best packed board from this iteration ...
-                StockItem[] incompleteBoards = boards.Where(q => !q.IsComplete).ToArray();
-                StockItem[] newlypackedBoards = incompleteBoards.Where(q => q.PackedPartsCount > 0).ToArray();
-                StockItem iBestCoverredBoard = newlypackedBoards.OrderByDescending(t => t.PackedPartsTotalArea / t.Area)
-                    .FirstOrDefault();
-
-                if (iBestCoverredBoard == null) return;
-                #endregion
-
-                #region // Keep the solution for the best packed board ...
-                // set the complete flag for the board with the best coverage
-                iBestCoverredBoard.IsComplete = true;
-                packedBoardsCount++;
-
-                //Compact the packed parts array of the board
-                Array.Resize<Placement>(ref iBestCoverredBoard.PackedParts, iBestCoverredBoard.PackedPartsCount);
-
-                // set the packed flag for the packed parts
-                iBestCoverredBoard.PackedParts.ToList().ForEach(t => t.Part.IsPacked = true);
-                packedPartsCount += iBestCoverredBoard.PackedPartsCount;
-
-
-                // clear the packing for all the unsuccessfull boards
-                for (int iPacked = 0; iPacked < boardsCount; iPacked++)
-                {
-                    StockItem iBoard = boards[iPacked];
-                    // if non of te parts packed on the board have been packed on a previous board
-                    if (!iBoard.IsComplete)
-                    {
-                        iBoard.PackedParts = null;
-                        iBoard.PackedPartsCount = 0;
-                        iBoard.PackedPartsTotalArea = 0;
-                        iBoard.IsComplete = false;
-                    }
-                } 
-                #endregion
+                if (iBoard.Length < part.Length) continue;
+                if (iBoard.Width < part.Width) continue;
+                tmp.Add(iBoard);
             }
 
+            return tmp.ToArray();
         }
 
-
-        UInt64 cntr = 0;
-
-        class partcombo
+        class PartWithSources
         {
-            public Part[] parts;
-            public double totalArea;
+            public Part part { get; set; }
+
+            public StockItem[] Sources { get; set; }
+
         }
-        private partcombo[] GenerateTopNCombos(Part[] parts, double maximumArea, int starti, Part[] currentcombo, int currentlen, double currentarea, partcombo[] topncombos)
-        {
-            double prevarea = -1;
-            for (int i = starti; i < parts.Length; i++)
-            {
-                if (parts[i].Area == prevarea) continue;
-                prevarea = parts[i].Area;
 
-                double newarea = currentarea + parts[i].Area;
-
-                if (newarea >= maximumArea) break;
-
-                currentcombo[currentlen] = parts[i];
-                cntr++;
-                //if (currentlen == 6)
-                //{
-                //    Part[] t = new Part[7];
-                //    Array.Copy(currentcombo, t, 7);
-                //    if (t.ToList().Any(q => q.Name == "001")
-                //    && t.ToList().Exists(q => q.Name == "003")
-                //    && t.ToList().Exists(q => q.Name == "015")
-                //    && t.ToList().Exists(q => q.Name == "016")
-                //    && t.ToList().Exists(q => q.Name == "028")
-                //    && t.ToList().Exists(q => q.Name == "029")
-                //    && t.ToList().Exists(q => q.Name == "038")
-                //    )
-                //        Debugger.Break();
-                //}
-
-                //var orderredtopn = topncombos.OrderBy(o => o.totalArea);
-                //var smallest = orderredtopn.First();
-                //if (smallest.totalArea < newarea)
-                //{
-                //    smallest.totalArea = newarea;
-                //    smallest.parts = new Part[currentlen + 1];
-                //    Array.Copy(currentcombo, smallest.parts, currentlen + 1);
-                //}
-
-
-                GenerateTopNCombos(parts, maximumArea, i + 1, currentcombo, currentlen + 1, newarea, topncombos);
-
-                currentcombo[currentlen + 1] = null;
-            }
-            return topncombos;
-        }
-        
-        private static Bitmap Drawboard_debug(StockItem board, PointD[] points, int pointcount, Placement[] parts, int placementcount, double partsArea, RectangleF lastarea)
+#if drawdbgimages
+        private Bitmap Drawboard_debug(StockItemWithParent board, StockItemWithParent[] freerects, int len)
         {
             double xMargin = 50;
             double yMargin = 50;
 
-            double imageHeight = board.Width + 2 * yMargin;
-            double imageWidth = board.Length + 2 * xMargin;
+            double imageHeight = board.Board.Width + 2 * yMargin;
+            double imageWidth = board.Board.Length + 2 * xMargin;
 
             // create bitmap
             Bitmap bitmap = new Bitmap((int)imageWidth, (int)imageHeight);
             Graphics g = Graphics.FromImage(bitmap);
             // draw the board
-            g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
+            g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Board.Length, (float)board.Board.Width);
 
-
+            //draw the board segments
+            for (int i = 0; i < len; i++)
+            {
+                RectangleF tF = new RectangleF((float)freerects[i].dLength,(float)freerects[i].dWidth,(float)freerects[i].Board.Length,(float)freerects[i].Board.Width);
+                Rectangle t = Rectangle.Round(tF); 
+                t.Offset((int)xMargin, (int)yMargin);
+                g.FillRectangle(new SolidBrush(Color.FromArgb(120,Color.Red)), t);
+            }
 
             // draw the parts placed
-            for (int i = 0; i < placementcount; i++)
+            for (int i = 0; i < board.Board.PackedPartsCount; i++)
             {
-                Placement iPlacement = parts[i];
+                Placement iPlacement = board.Board.PackedParts[i];
 
                 // draw the part
                 g.FillRectangle(Brushes.Green, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth), (float)iPlacement.Part.Length, (float)iPlacement.Part.Width);
@@ -205,31 +73,146 @@ namespace CuttingPlanMaker.Packers
                 Font partFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
                 g.DrawString(partLabel, partFont, Brushes.Black, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth));
             }
-
-            // draw the last area where a part was placed
-            if (lastarea != RectangleF.Empty)
-            {
-                lastarea.Offset((float)xMargin, (float)yMargin);
-                g.FillRectangle(new SolidBrush(Color.FromArgb(140, Color.Yellow)), Rectangle.Round(lastarea));
-            }
-
-            //draw the placement points
-            for (int i = 0; i < pointcount; i++)
-            {
-                PointD iPoint = points[i];
-                if (iPoint.disabled)
-                    g.FillEllipse(new SolidBrush(Color.FromArgb(220, Color.Black)), (float)(xMargin + iPoint.dLength - 10), (float)(yMargin + iPoint.dWidth - 10), 20, 20);
-                else
-                    g.FillEllipse(new SolidBrush(Color.FromArgb(220, Color.Red)), (float)(xMargin + iPoint.dLength - 10), (float)(yMargin + iPoint.dWidth - 10), 20, 20);
-            }
-
+            // draw the board
+            //g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
             Font aFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
-            g.DrawString((partsArea / board.Area * 100).ToString("0.0") + "%", aFont, Brushes.Black, (float)(xMargin), (float)(bitmap.Height - yMargin + 15));
-
+            g.DrawString((board.Board.PackingCoverage).ToString("0.00%"), aFont, Brushes.Black, (float)(xMargin), (float)(bitmap.Height - yMargin));
 
             g.Flush();
             return bitmap;
         }
+#endif
+
+        public override void Pack(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        {
+            #region MyRegion
+
+
+
+
+            //sort the boards according to area (ASC)
+            //for each available board, 
+            //  for each unpacked part
+            //      if this board will accomodate this part    
+            //          append this board to the list of boards that will acommodate the part
+
+            //placepart:
+            //sort the list of unpacked parts on # accomodating boards (ASC)
+            //possibleflag = false
+            //loop through the accommodating boards for the first part
+            //   possibleflag = true
+            //   remove the part from the list of unplaced parts
+            //   remove the used board from all other parts' lists of accomodating boards
+            //   remove the used board from the list of available boards
+            //   for each of the remainder sub-boards of the board used
+            //       add the sub-board to the list of available boards, preserving sort order
+            //       for each uplaced part
+            //           if the remainder will accomodate the part
+            //               append this sub-board to the list of boards that will acommodate the part
+            //
+            //   recursedpossibleflag = placepart(rest of parts, available boards)
+            //   if recursedpossibleflag
+            //      save solution
+            //endloop
+            //return possibleflag
+
+            #endregion
+
+            var x = test1(parts.Where(t => Convert.ToInt16(t.Name) < 9).ToArray(), 
+                boards.OrderBy(t => t.Area).ToArray(), 
+                sawkerf, 
+                partLengthPadding, 
+                partWidthPadding);
+
+            foreach (var iboard in boards)
+                iboard.PackedParts = new Placement[0];
+            
+            foreach (var item in x)
+            {
+                var iboard = boards.First(t => t.Name == item.Sources[0].Name);
+                var lst = iboard.PackedParts.ToList();
+                lst.Add(
+                    new Placement()
+                    {
+                        dLength = 0,
+                        dWidth = 0,
+                        Part = item.part
+                    }
+                    );
+                iboard.PackedParts = lst.ToArray();
+            }
+
+
+        }
+
+
+        //sort the boards according to area (ASC)
+        //per part, list accomodating boards
+
+        //while count of unplaced parts > 0
+        //  sort the list of unpacked parts on # accomodating boards (ASC)
+        //  if the first part has 0 accomodating boards
+        //      exit with "no solution"
+        //
+        //  place the first part on first board that will accomodate it - this would be the smallest...
+        //  remove the part from the list of unplaced parts
+        //  remove the used board from all other parts' lists of accomodating boards
+        //  remove the used board from the list of available boards
+        //  for each of the remainder sub-boards of the board used
+        //      add the sub-board to the list of available boards, preserving sort order
+        //      for each uplaced part
+        //          if the remainder will accomodate the part
+        //              append this sub-board to the list of boards that will acommodate the part
+        //  
+
+        //two possible returns:
+        //  null : no solution down this branch
+        //  [] : solution reached for this branch
+
+        private PartWithSources[] test1(Part[] parts, StockItem[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        {
+            // convert the parts to the algorithm's extended version and check which boards will accommodate the parts
+            PartWithSources[] partsEx = parts.Select(t =>
+                new PartWithSources()
+                {
+                    part = t,
+                    Sources = boards.Where(q => q.Length > t.Length && q.Width > t.Width).ToArray()
+                }
+                ).OrderBy(o => o.Sources.Length).ToArray();
+
+            PartWithSources partToCut = partsEx[0];
+            
+            // if a part can not be placed, return null indicating there is no solution down this branch
+            if (partToCut.Sources.Length == 0) return null;
+
+            StockItem boardToCut = partToCut.Sources[0];
+
+            // place the part on the board
+            if (partToCut.Sources.Length > 1) partToCut.Sources = new StockItem[] { boardToCut };
+
+            // remove the part from the list of uncut parts
+            var remainingParts = parts.Where(t => t != partToCut.part).ToArray();
+            if (remainingParts.Length == 0) return new PartWithSources[] { partToCut };
+
+            // remove the board used from the list of available boards
+            var remainingBoards = boards.Where(t => t != boardToCut).ToList();
+            // add back the remainder 2 boards of the cut board
+            remainingBoards.Add
+                (new StockItem { Name = boardToCut.Name, Material = boardToCut.Material, Width = boardToCut.Width, Length = boardToCut.Length - partToCut.part.Length });
+            remainingBoards.Add
+                (new StockItem { Name = boardToCut.Name, Material = boardToCut.Material, Width = boardToCut.Width - partToCut.part.Width, Length = partToCut.part.Length });
+
+
+            // pack the rest of the parts
+            var remainderSolution = test1(remainingParts, remainingBoards.OrderBy(t=>t.Area).ToArray(), sawkerf, partLengthPadding, partWidthPadding);
+            if (remainderSolution == null) return null;
+
+            var lst = remainderSolution.ToList();
+            lst.Add(partToCut);
+            return lst.ToArray();
+        }
+
+
 
     }
 }

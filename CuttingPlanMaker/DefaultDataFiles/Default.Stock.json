@@ -1,0 +1,50 @@
+﻿[
+ {
+   "Name": "A",
+   "Material": "Kiaat(AB)-25mm",
+   "Length": 2100,
+   "Width": 193
+ },
+ {
+   "Name": "B",
+   "Material": "Kiaat(AB)-25mm",
+   "Length": 2100,
+   "Width": 150
+ },
+ {
+   "Name": "C",
+   "Material": "Kiaat(AB)-25mm",
+   "Length": 2100,
+   "Width": 143
+ },
+ {
+   "Name": "D",
+   "Material": "Kiaat(AB)-25mm",
+   "Length": 2100,
+   "Width": 170
+ },
+ {
+   "Name": "E",
+   "Material": "Kiaat(AB)-25mm",
+   "Length": 2100,
+   "Width": 185
+ },
+ {
+   "Name": "F",
+   "Material": "Kiaat(AB)-25mm",
+   "Length": 2100,
+   "Width": 210
+ },
+ {
+   "Name": "G",
+   "Material": "Kiaat(AB)-25mm",
+   "Length": 2100,
+   "Width": 135
+ },
+ {
+   "Name": "H",
+   "Material": "Kiaat(AB)-25mm",
+   "Length": 2100,
+   "Width": 225
+ }
+]
