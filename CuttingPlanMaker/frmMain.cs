@@ -85,7 +85,7 @@ namespace CuttingPlanMaker
         /// <summary>
         /// A list of all the stock items (boards) that are available to place the parts on
         /// </summary>
-        BindingList<StockItem> Stock { get; set; }
+        BindingList<Board> Stock { get; set; }
 
         /// <summary>
         /// A list of parts which will be placed on the boards
@@ -187,8 +187,8 @@ namespace CuttingPlanMaker
             {
                 foreach (DataGridViewRow item in StockGridView.SelectedRows)
                 {
-                    StockItem oldItem = (StockItem)item.DataBoundItem;
-                    StockItem newItem = new StockItem()
+                    Board oldItem = (Board)item.DataBoundItem;
+                    Board newItem = new Board()
                     {
                         Name = oldItem.Name,
                         Length = oldItem.Length,
@@ -208,7 +208,7 @@ namespace CuttingPlanMaker
         /// <param name="boards"></param>
         /// <param name="usedstockonly"></param>
         /// <returns></returns>
-        public Bitmap Draw(StockItem[] boards, bool drawunusedstock = true)
+        public Bitmap Draw(Board[] boards, Part[] parts, bool drawunusedstock = true)
         {
             double yOffset = yMargin;
             double imageHeight = 2 * yMargin;
@@ -216,9 +216,10 @@ namespace CuttingPlanMaker
             Font boardFont = new Font(new FontFamily("Microsoft Sans Serif"), 15.0f);
 
             // create list of boards to draw
-            List<StockItem> boardsToDraw = new List<StockItem>(boards);
+            List<Board> boardsToDraw = new List<Board>(boards);
             if (!drawunusedstock)
-                boardsToDraw = boards.Where(t => t.PackedPartsCount > 0).ToList();
+                boardsToDraw = parts.Where(t => t.Source != null).Select(p => p.Source).Distinct().OrderBy(o=>o.Name).ToList();
+            
 
             // calculate width & height required for the bitmap
             foreach (var iBoard in boardsToDraw)
@@ -256,27 +257,29 @@ namespace CuttingPlanMaker
             yOffset = yMargin;
             foreach (var iBoard in boardsToDraw)
             {
+                var packedParts = parts.Where(p => p.Source == iBoard);
+
+
                 // draw the board
                 g.FillRectangle(Brushes.DarkRed, (float)xMargin, (float)yOffset, (float)iBoard.Length, (float)iBoard.Width);
-                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}] ({iBoard.PackedPartsTotalArea / iBoard.Area * 100:0.0}%)";
+                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}] ({packedParts.Sum(p => p.Area) / iBoard.Area * 100:0.0}%)";
                 SizeF textSizeBoard = g.MeasureString(boardheader, boardFont);
                 g.DrawString(boardheader, boardFont, Brushes.Black, (float)(xMargin), (float)(yOffset - textSizeBoard.Height));
 
                 // loop through all the parts and draw the ones on the current board
                 //string overflowtext = "";
-                for (int i = 0; i < iBoard.PackedPartsCount; i++)
+                foreach (var iPart in packedParts)
                 {
-                    var iPlacement = iBoard.PackedParts[i];
-                    double dLength = iPlacement.dLength;
-                    double dWidth = iPlacement.dWidth;
-                    double Length = iPlacement.Part.Length + (Settings.IncludePaddingInDisplay ? Settings.PartPaddingLength : 0f);
-                    double Width = iPlacement.Part.Width + (Settings.IncludePaddingInDisplay ? Settings.PartPaddingWidth : 0f);
+                    double dLength = iPart.OffsetLength;
+                    double dWidth = iPart.OffsetWidth;
+                    double Length = iPart.Length + (Settings.IncludePaddingInDisplay ? Settings.PartPaddingLength : 0f);
+                    double Width = iPart.Width + (Settings.IncludePaddingInDisplay ? Settings.PartPaddingWidth : 0f);
 
                     // draw the part
                     g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
 
                     // print the part text
-                    string partLabel = $"{iPlacement.Part.Name} [{Length} x {iPlacement.Part.Width}]";
+                    string partLabel = $"{iPart.Name} [{Length} x {iPart.Width}]";
 
                     int sz = 16;
                     Font partFont;
@@ -285,9 +288,9 @@ namespace CuttingPlanMaker
                     {
                         partFont = new Font(new FontFamily("Microsoft Sans Serif"), sz);
                         textSize = g.MeasureString(partLabel, partFont);
-                        if (textSize.Width < iPlacement.Part.Length && textSize.Height < iPlacement.Part.Width)
+                        if (textSize.Width < iPart.Length && textSize.Height < iPart.Width)
                         {
-                            g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Part.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Part.Width - 0.5 * textSize.Height));
+                            g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPart.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPart.Width - 0.5 * textSize.Height));
                             break;
                         }
                         else sz--;
@@ -295,9 +298,9 @@ namespace CuttingPlanMaker
                     } while (sz > 8);
                     if (sz <= 8)
                     {
-                        partLabel = $"{iPlacement.Part.Name}";
+                        partLabel = $"{iPart.Name}";
                         textSize = g.MeasureString(partLabel, partFont);
-                        g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPlacement.Part.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPlacement.Part.Width - 0.5 * textSize.Height));
+                        g.DrawString(partLabel, partFont, Brushes.White, (float)(xMargin + dLength + 0.5 * iPart.Length - 0.5 * textSize.Width), (float)(yOffset + dWidth + 0.5 * iPart.Width - 0.5 * textSize.Height));
 
                     }
                 }
@@ -351,6 +354,12 @@ namespace CuttingPlanMaker
                 case "Thickness DESC":
                     Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Material).ToList());
                     break;
+                case "Source ASC":
+                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.Source.Name).ToList());
+                    break;
+                case "Source DESC":
+                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Source.Name).ToList());
+                    break;
 
                 default:
                     break;
@@ -369,28 +378,28 @@ namespace CuttingPlanMaker
             switch (StockGridSort)
             {
                 case "Name ASC":
-                    Stock = new BindingList<StockItem>(Stock.OrderBy(t => t.Name).ToList());
+                    Stock = new BindingList<Board>(Stock.OrderBy(t => t.Name).ToList());
                     break;
                 case "Name DESC":
-                    Stock = new BindingList<StockItem>(Stock.OrderByDescending(t => t.Name).ToList());
+                    Stock = new BindingList<Board>(Stock.OrderByDescending(t => t.Name).ToList());
                     break;
                 case "Length ASC":
-                    Stock = new BindingList<StockItem>(Stock.OrderBy(t => t.Length).ToList());
+                    Stock = new BindingList<Board>(Stock.OrderBy(t => t.Length).ToList());
                     break;
                 case "Length DESC":
-                    Stock = new BindingList<StockItem>(Stock.OrderByDescending(t => t.Length).ToList());
+                    Stock = new BindingList<Board>(Stock.OrderByDescending(t => t.Length).ToList());
                     break;
                 case "Width ASC":
-                    Stock = new BindingList<StockItem>(Stock.OrderBy(t => t.Width).ToList());
+                    Stock = new BindingList<Board>(Stock.OrderBy(t => t.Width).ToList());
                     break;
                 case "Width DESC":
-                    Stock = new BindingList<StockItem>(Stock.OrderByDescending(t => t.Width).ToList());
+                    Stock = new BindingList<Board>(Stock.OrderByDescending(t => t.Width).ToList());
                     break;
                 case "Material ASC":
-                    Stock = new BindingList<StockItem>(Stock.OrderBy(t => t.Material).ToList());
+                    Stock = new BindingList<Board>(Stock.OrderBy(t => t.Material).ToList());
                     break;
                 case "Thickness DESC":
-                    Stock = new BindingList<StockItem>(Stock.OrderByDescending(t => t.Material).ToList());
+                    Stock = new BindingList<Board>(Stock.OrderByDescending(t => t.Material).ToList());
                     break;
 
                 default:
@@ -508,10 +517,15 @@ namespace CuttingPlanMaker
             // Load the file into data structures
             Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText($"{FilePath}.Settings.json"));
             Materials = new BindingList<Material>(JsonConvert.DeserializeObject<List<Material>>(File.ReadAllText($"{FilePath}.Materials.json")));
-            Stock = new BindingList<StockItem>(JsonConvert.DeserializeObject<List<StockItem>>(File.ReadAllText($"{FilePath}.Stock.json")));
+            Stock = new BindingList<Board>(JsonConvert.DeserializeObject<List<Board>>(File.ReadAllText($"{FilePath}.Stock.json")));
             //CSVFile.Read<StockItem>($"{FilePath}.Stock.CSV");
             //Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
             Parts = new BindingList<Part>(JsonConvert.DeserializeObject<List<Part>>(File.ReadAllText($"{FilePath}.Parts.json")));
+
+            //Parts.ToList().ForEach(p => {
+            //    if (p.SourceName != null)
+            //        p.Source = Stock.FirstOrDefault(s => s.Name == p.SourceName);
+            //    });
 
             Type algType = GetPackerType();
             string algname = algType.GetProperty("AlgorithmName").GetValue(null) as string;
@@ -645,15 +659,16 @@ namespace CuttingPlanMaker
                 {
                     //if part not packed onto a frozen board
                     if (!t.IsFrozen)
-                        t.IsPacked = false;
+                    {
+                        t.Source = null;
+                     //   t.OffsetLength = 0;
+                     //   t.OffsetWidth = 0;
+                    }
                 });
                 Stock.ToList().ForEach(t =>
                 {
-                    if (t.IsFrozen) return;
-
-                    t.IsComplete = false;
-                    t.PackedParts = null;
-                    t.PackedPartsCount = 0;
+                    if (!t.IsFrozen)
+                        t.IsComplete = false;
                 });
 
                 PackerBase packer = (PackerBase)Activator.CreateInstance(GetPackerType());
@@ -662,7 +677,7 @@ namespace CuttingPlanMaker
                 Materials.Select(t => t.Name).Where(q => q != "DISABLED").AsParallel().ForAll((Action<string>)(iMaterialsName =>
                       {
                           Part[] iParts = Parts.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
-                          StockItem[] iStock = Stock.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
+                          Board[] iStock = Stock.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
 
                           packer.Pack(iParts
                               , iStock
@@ -670,8 +685,6 @@ namespace CuttingPlanMaker
                               , (double)this.Settings.PartPaddingLength
                               , (double)this.Settings.PartPaddingWidth);
                       }));
-                
-
             }
             catch (Exception ex)
             {
@@ -750,13 +763,13 @@ namespace CuttingPlanMaker
             if (sender == StockGridView && e.ColumnIndex == 3)
             {
                 //retrieve the selected stock
-                var selectedStockItem = (StockItem)StockGridView.Rows[e.RowIndex].DataBoundItem;
-                if (selectedStockItem.PackedPartsCount > 0)
+                var selectedStockItem = (Board)StockGridView.Rows[e.RowIndex].DataBoundItem;
+                if (Parts.Count(p => p.Source == selectedStockItem) > 0)
                     // ask if all parts should be changed
                     if (MessageBox.Show("Move packed parts to the new material too?", "Move parts", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         //move the parts packed on the board
-                        selectedStockItem.PackedParts.ToList().ForEach(p => p.Part.Material = selectedStockItem.Material);
+                        Parts.Where(p => p.Source == selectedStockItem).ToList().ForEach(p => p.Material = selectedStockItem.Material);
                     }
             }
 
@@ -1050,7 +1063,7 @@ namespace CuttingPlanMaker
                 StockGridView.SuspendLayout();
                 foreach (DataGridViewRow item in StockGridView.SelectedRows)
                 {
-                    Stock.Remove((StockItem)item.DataBoundItem);
+                    Stock.Remove((Board)item.DataBoundItem);
                     IsFileSaved = false;
                 }
                 StockGridView.ResumeLayout();
@@ -1166,7 +1179,7 @@ namespace CuttingPlanMaker
 
             if (t.IsFrozen)
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DeepSkyBlue;
-            else if (!t.IsPacked)
+            else if (t.Source == null)
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Red;
             else
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
@@ -1205,10 +1218,12 @@ namespace CuttingPlanMaker
         {
             // filter stock for chosen material
             string SelectedMaterial = tcMaterials.SelectedTab.Name;
-            StockItem[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
+            Board[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
+            Part[] parts = Parts.Where(p => p.Material == SelectedMaterial).ToArray();
+
             // draw the layout for filterred stock
             if (LayoutBitmap != null) LayoutBitmap.Dispose();
-            LayoutBitmap = Draw(stockItems, Settings.DrawUnusedStock);
+            LayoutBitmap = Draw(stockItems, parts, Settings.DrawUnusedStock);
 
             // draw the image to the screen
             Graphics gfx = e.Graphics;
@@ -1230,15 +1245,15 @@ namespace CuttingPlanMaker
             lblStockCount.Text = Stock.Count(q => q.Material == SelectedMaterial).ToString();
             double StockArea = Stock.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6;
             lblStockArea.Text = StockArea.ToString("0.000");
-            lblUsedStockCount.Text = Stock.Count(t => t.Material == SelectedMaterial && t.PackedPartsCount > 0).ToString();
-            double UsedStockArea = Stock.Where(q => q.Material == SelectedMaterial && q.PackedPartsCount > 0).Sum(t => t.Area) / 1e6f;
+            lblUsedStockCount.Text = Parts.Where(t=>t.Material == SelectedMaterial && t.Source != null).Select(p => p.Source).Distinct().Count().ToString();
+            double UsedStockArea = Parts.Where(t => t.Material == SelectedMaterial && t.Source != null).Select(p => p.Source).Distinct().Sum(s => s.Area) / 1e6f;
             lblUsedStockArea.Text = UsedStockArea.ToString("0.000");
             int partscount = Parts.Count(q => q.Material == SelectedMaterial);
             lblPartsCount.Text = partscount.ToString();
             lblPartsArea.Text = (Parts.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6f).ToString("0.000");
-            int placedpartcount = Parts.Count(t => t.Material == SelectedMaterial && t.IsPacked);
+            int placedpartcount = Parts.Count(t => t.Material == SelectedMaterial && t.Source != null);
             lblUsedPartsCount.Text = placedpartcount.ToString();
-            double UsedPartsArea = (Parts.Where(q => q.Material == SelectedMaterial && q.IsPacked).Sum(t => t.Area) / 1e6f);
+            double UsedPartsArea = (Parts.Where(q => q.Material == SelectedMaterial && q.Source != null).Sum(t => t.Area) / 1e6f);
             lblUsedPartsArea.Text = UsedPartsArea.ToString("0.000");
             if (placedpartcount < partscount)
             {
@@ -1326,6 +1341,11 @@ namespace CuttingPlanMaker
             {
                 // retrieve the selected part
                 Part p = (Part)PartsGridView.SelectedCells[0].OwningRow.DataBoundItem;
+                if (p.Source == null)
+                {
+                    MessageBox.Show("Part not placed on any board.");
+                    return;
+                }
 
                 // find material for part
                 string MaterialName = p.Material;
@@ -1333,35 +1353,21 @@ namespace CuttingPlanMaker
                 // select the correct layout tab control page
                 tcMaterials.SelectedTab = tcMaterials.TabPages[MaterialName];
 
-                // filter the stock per the selected material
-                StockItem[] filterredStock = Stock.Where(q => q.Material == MaterialName && (q.PackedPartsCount > 0 || Settings.DrawUnusedStock)).ToArray();
+                // filter the stock per the selected material and used stock
+                //List<StockItem> boardsToDraw = new List<StockItem>(boards);
+                //if (!drawunusedstock)
+                //    boardsToDraw = parts.Where(t => t.Source != null).Select(p => p.Source).Distinct().OrderBy(o => o.Name).ToList();
+                Board[] filterredStock = Stock.Where(q => q.Material == MaterialName && (Parts.Count(t => t.Source == q) > 0 || Settings.DrawUnusedStock)).OrderBy(o=>o.Name).ToArray();
 
                 // find the y-offset for the board that contains the part
                 double yOffset = yMargin;
-                StockItem si = null;
-                bool found = false;
-                for (int i = 0; i < filterredStock.Length; i++)
+                foreach (var iStock in filterredStock)
                 {
-                    si = filterredStock[i];
-                    if (si.PackedParts != null && si.PackedParts.Any(t => t?.Part == p))
-                    {
-                        found = true;
-                        break;
-                    }
-                    if (si.PackedPartsCount > 0 || Settings.DrawUnusedStock)
-                        yOffset += si.Width + boardSpacing;
+                    if (iStock == p.Source) break;
+                    yOffset += iStock.Width + boardSpacing;
                 }
-
-                if (!found)
-                {
-                    MessageBox.Show("Part not placed on any board.");
-                    return;
-                }
-                int partindex = 0;
-                while (si.PackedParts[partindex].Part != p) partindex++;
-                Placement iPlacement = si.PackedParts[partindex];
-                double dLength = iPlacement.dLength;
-                double dWidth = iPlacement.dWidth;
+                double dLength = p.OffsetLength;
+                double dWidth = p.OffsetWidth;
                 double cx = xMargin + dLength + p.Length / 2;
                 double cy = yOffset + dWidth + p.Width / 2;
                 // because the part may be on a tab that is not displayed, we cannot use the cached image's dimensions.
@@ -1411,7 +1417,7 @@ namespace CuttingPlanMaker
             if (StockGridView.SelectedCells == null || StockGridView.SelectedCells.Count == 0) return;
 
             //retrieve the selected stock
-            var selectedStockItem = (StockItem)StockGridView.SelectedCells[0].OwningRow.DataBoundItem;
+            var selectedStockItem = (Board)StockGridView.SelectedCells[0].OwningRow.DataBoundItem;
 
             //create a new material
             Material oldMaterial = Materials.FirstOrDefault(q => q.Name == selectedStockItem.Material);
@@ -1428,9 +1434,8 @@ namespace CuttingPlanMaker
             selectedStockItem.Material = newmaterialname;
 
             //move all packed parts to the new material
-            if (selectedStockItem.PackedParts != null)
-                selectedStockItem.PackedParts.ToList().ForEach(p => p.Part.Material = newmaterialname);
-
+            Parts.Where(p => p.Source == selectedStockItem).ToList().ForEach(t => t.Material = newmaterialname);
+            
             StockGridView.Invalidate();
 
             PopulateMaterialTabs();
@@ -1463,7 +1468,7 @@ namespace CuttingPlanMaker
             var t = Stock[e.RowIndex];
             if (t.IsFrozen)
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DeepSkyBlue;
-            else if (t.PackedPartsCount == 0)
+            else if (Parts.Count(p => p.Source == t) == 0)
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DarkGray;
             else
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
@@ -1475,19 +1480,19 @@ namespace CuttingPlanMaker
             if (tcInputs.SelectedTab == tpStock)
             {
                 if (StockGridView.SelectedCells == null || StockGridView.SelectedCells.Count == 0) return;
-                List<StockItem> stockprocessed = new List<StockItem>();
+                List<Board> stockprocessed = new List<Board>();
                 //retrieve the selected stock
                 foreach (DataGridViewCell selectedCell in StockGridView.SelectedCells)
                 {
-                    StockItem selectedStockItem = selectedCell.OwningRow.DataBoundItem as StockItem;
+                    Board selectedStockItem = selectedCell.OwningRow.DataBoundItem as Board;
                     if (selectedStockItem == null) continue;
 
                     if (stockprocessed.Contains(selectedStockItem)) continue;
                     stockprocessed.Add(selectedStockItem);
 
                     selectedStockItem.IsFrozen = !selectedStockItem.IsFrozen;
-                    if(selectedStockItem.PackedParts != null)
-                    selectedStockItem.PackedParts.ToList().ForEach(t => t.Part.IsFrozen = selectedStockItem.IsFrozen);
+
+                    Parts.Where(p => p.Source == selectedStockItem).ToList().ForEach(t => t.IsFrozen = selectedStockItem.IsFrozen);
                 }
             }
 

@@ -20,6 +20,6 @@ namespace CuttingPlanMaker
         /// <param name="Stock"></param>
         /// <param name="Parts"></param>
         /// <returns></returns>
-        PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts);
+        PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<Board> Stock, BindingList<Part> Parts);
     }
 }

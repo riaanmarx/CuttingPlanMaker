@@ -37,7 +37,7 @@ namespace CuttingPlanMaker.Packers
 
     /// <summary>
     /// </summary>
-    class MAXRECT_DESCL : PackerBase
+    class MAXRECT_DESCL : PerBoardPackerBase
     {
         new public static string AlgorithmName => "MAXRECT_DESCL";
 
@@ -90,7 +90,7 @@ namespace CuttingPlanMaker.Packers
 #endif
         protected string partsorder = "DESCL";
 
-        protected override void PackBoard(Part[] parts, StockItem iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        protected override void PackBoard(Part[] parts, Board iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             Part[] orderredParts;
             // order parts by length
@@ -112,8 +112,6 @@ namespace CuttingPlanMaker.Packers
                     orderredParts = parts;
                     break;
             }
-             
-            iBoard.PackedParts = new Placement[orderredParts.Length];
 
             RectangleF[] F = new RectangleF[5 * parts.Length];
             F[0] = new RectangleF(0,0,(float)iBoard.Length,(float)iBoard.Width);
@@ -126,19 +124,11 @@ namespace CuttingPlanMaker.Packers
                 
                 if (Fi == RectangleF.Empty) continue;
 
-                iBoard.PackedParts[iBoard.PackedPartsCount++] = new Placement() {
-                    dLength = Fi.Left,
-                    dWidth = Fi.Top,
-                    Part = iPart
-                };
+                iPart.Source = iBoard;
+                iPart.OffsetLength = Fi.Left;
+                iPart.OffsetWidth = Fi.Top;
 
                 RectangleF B = new RectangleF(Fi.Left, Fi.Top, (float)iPart.Length + (float)sawkerf, (float)iPart.Width + (float)sawkerf);
-
-                //F[F_len++] = new RectangleF(B.Right + (float)sawkerf, Fi.Top, Fi.Right - B.Right - (float)sawkerf, Fi.Height);
-                //F[F_len++] = new RectangleF(Fi.Left, B.Bottom + (float)sawkerf, Fi.Width, Fi.Bottom - B.Bottom - (float)sawkerf);
-
-                //int Fi_index = Array.IndexOf(F, Fi);
-                //F[Fi_index] = RectangleF.Empty;
 
                 for (int findex = 0; findex < F_len; findex++)
                 {

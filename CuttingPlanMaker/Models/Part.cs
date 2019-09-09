@@ -15,25 +15,21 @@ namespace CuttingPlanMaker
         /// <summary>
         /// A name for the part
         /// </summary>
-        [CsvColumn(Name = "Name", FieldIndex = 1)]
         public string Name { get; set; }
 
         /// <summary>
         /// The material from which this part is to be made
         /// </summary>
-        [CsvColumn(Name = "Material", FieldIndex = 2)]
         public string Material { get; set; }
 
         /// <summary>
         /// Length of the part (dimension parallel with grain)
         /// </summary>
-        [CsvColumn(Name = "Length", FieldIndex = 3)]
         public double Length { get; set; }
 
         /// <summary>
         /// Width of the part (dimension accross the grain)
         /// </summary>
-        [CsvColumn(Name = "Width", FieldIndex = 4)]
         public double Width { get; set; }
 
         /// <summary>
@@ -44,8 +40,12 @@ namespace CuttingPlanMaker
         /// <summary>
         /// Flag to indicate if this part has been placed on a board already
         /// </summary>
-        public bool IsPacked { get; set; }
         public bool IsFrozen { get; set; }
+
+        public Board Source { get; set; }
+        public double OffsetLength { get; set; }
+        public double OffsetWidth { get; set; }
+
         /// <summary>
         /// string repressentation of the part
         /// </summary>
@@ -64,6 +64,21 @@ namespace CuttingPlanMaker
         {
             Width += 2 * deltaWidth;
             Length += 2 * deltaLength;
+        }
+
+        public Part Clone()
+        {
+            return new Part
+            {
+                Name = this.Name,
+                Material = this.Material,
+                Length = this.Length,
+                Width = this.Width,
+                IsFrozen = this.IsFrozen,
+                Source = this.Source,
+                OffsetLength = this.OffsetLength,
+                OffsetWidth = this.OffsetWidth
+            };
         }
     }
 }

@@ -15,19 +15,16 @@ namespace CuttingPlanMaker
         /// <summary>
         /// Name for the material
         /// </summary>
-        [CsvColumn(Name = "Name", FieldIndex = 1)]
         public string Name { get; set; }
 
         /// <summary>
         /// Thickness of boards of this material
         /// </summary>
-        [CsvColumn(Name = "Thickness", FieldIndex = 4)]
         public double Thickness { get; set; }
 
         /// <summary>
         /// Volume cost of the material
         /// </summary>
-        [CsvColumn(Name = "Cost", FieldIndex = 5)]
         public double Cost { get; set; }
     }
 }

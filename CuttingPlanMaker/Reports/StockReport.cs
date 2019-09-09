@@ -22,7 +22,7 @@ namespace CuttingPlanMaker
         /// <param name="Stock"></param>
         /// <param name="Parts"></param>
         /// <returns></returns>
-        public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts)
+        public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<Board> Stock, BindingList<Part> Parts)
         {
             #region // populate header text ...
             document.Info.Title = "Stock List Report";

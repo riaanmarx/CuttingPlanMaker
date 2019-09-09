@@ -22,7 +22,7 @@ namespace CuttingPlanMaker
         /// <param name="Stock"></param>
         /// <param name="Parts"></param>
         /// <returns></returns>
-        public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<StockItem> Stock, BindingList<Part> Parts)
+        public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<Board> Stock, BindingList<Part> Parts)
         {
             #region // Configuration settings ...
             int colCount = 4;                       // the number of labels per row
@@ -60,15 +60,11 @@ namespace CuttingPlanMaker
 
             //loop through all the stock items
             int cntr = 0;
-            for (int i = 0; i < Stock.Count; i++)
+            foreach (var iStock in Stock)
             {
-                var iStock = Stock[i];  // reference the item
-
                 // loop throug all the parts placed on the stock item (if any)
-                for (int j = 0; j < iStock.PackedPartsCount; j++)
+                foreach(var iPart in Parts.Where(p => p.Source == iStock))
                 {
-                    var iPart = iStock.PackedParts[j];  // reference the packed part item
-
                     // determine the column and row for the part record in the table
                     int cindex = cntr % (colCount);
                     int rindex = cntr / (colCount);
@@ -88,11 +84,11 @@ namespace CuttingPlanMaker
                     Cell c = labelTable[0, 0];  // top row := part's name
                     c.Format.Font.Bold = true;
                     c.Format.Font.Size = 15;
-                    c.AddParagraph(iPart.Part.Name);
+                    c.AddParagraph(iPart.Name);
 
                     c = labelTable[1, 0];       // Second row := dimensions
                     c.Format.Font.Size = 12;
-                    c.AddParagraph($"[{iPart.Part.Length:0.0} x {iPart.Part.Width:0.0}]");
+                    c.AddParagraph($"[{iPart.Length:0.0} x {iPart.Width:0.0}]");
 
                     c = labelTable[2, 0];       // Third row := padding dimensions
                     c.Format.Font.Size = 8;
@@ -103,7 +99,7 @@ namespace CuttingPlanMaker
 
                     c = labelTable[4, 0];       // Fifth row := placement offset
                     c.Format.Font.Size = 8;
-                    c.AddParagraph($"@ ({iPart.dLength:0.0}, {iPart.dWidth:0.0})");
+                    c.AddParagraph($"@ ({iPart.OffsetLength:0.0}, {iPart.OffsetWidth:0.0})");
 
                     cntr++;
                 }

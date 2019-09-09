@@ -2,7 +2,7 @@
   "BladeKerf": 3.2,
   "PartPaddingLength": 0,
   "PartPaddingWidth": 0,
-  "AutoRecalc": true,
+  "AutoRepack": true,
   "ResultOrientation": "Diagonal Points",
   "DrawUnusedStock": false,
   "ProjectName": "project name",
@@ -11,7 +11,7 @@
   "ClientTelNr": "0828088900",
   "ClientAddr": "129 Kestrel Str, The Reeds",
   "TargetDate": "Saturday, 05 January 2019",
-  "IncludePaddingOnReports": false,
+  "IncludePaddingInReports": false,
   "IncludePaddingInDisplay": false,
   "Algorithm": ""
 }

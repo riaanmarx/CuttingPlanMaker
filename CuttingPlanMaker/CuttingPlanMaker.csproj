@@ -101,6 +101,7 @@
       <DependentUpon>frmSettingsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Packers\experimental.cs" />
+    <Compile Include="Packers\PerBoardPackerBase.cs" />
     <Compile Include="Packers\Packer_Macrect_LSBF.cs" />
     <Compile Include="Packers\PackerBase.cs" />
     <Compile Include="Reports\IReport.cs" />
@@ -108,15 +109,14 @@
     <Compile Include="Models\Material.cs" />
     <None Include="DefaultDataFiles\Default.Stock.json" />
     <None Include="Packers\Packer.cs" />
-    <Compile Include="Packers\Packer_points.cs" />
+    <None Include="Packers\Packer_points.cs" />
     <Compile Include="Models\Part.cs" />
     <Compile Include="Reports\PartListReport.cs" />
-    <Compile Include="Models\Placement.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reports\ReportBase.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Models\StockItem.cs" />
+    <Compile Include="Models\Board.cs" />
     <Compile Include="Reports\CuttingLabelsReport.cs" />
     <Compile Include="Reports\StockReport.cs" />
     <EmbeddedResource Include="frmMain.resx">

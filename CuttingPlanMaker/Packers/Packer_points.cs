@@ -28,7 +28,7 @@ namespace CuttingPlanMaker.Packers
     /// When all the points are disabled, the board is complete
     /// PROBLEM: It is a greedy algorithm. it will not attempt to use two smaller parts with higher total area, instead of one part with bigger area than one of them.
     /// </remarks>
-    class Packer_points : PackerBase
+    class Packer_points : PerBoardPackerBase
     {
         /// <summary>
         /// Name

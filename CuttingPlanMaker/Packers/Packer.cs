@@ -12,7 +12,7 @@ namespace CuttingPlanMaker.Packers
     /// first(failed) attempt at a packer...takes too long when iterating through all possible combinations
     /// replaced with another simpler, quicker algorithm
     /// </summary>
-    class Packer : PackerBase
+    class Packer : PerBoardPackerBase
     {
         new public static string AlgorithmName => "MAXRECT0-BL";
 
