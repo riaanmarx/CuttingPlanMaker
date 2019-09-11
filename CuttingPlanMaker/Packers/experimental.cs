@@ -103,9 +103,8 @@ namespace CuttingPlanMaker.Packers
                 // remove the part placed from the list of parts to place
                 potentialSources.Remove(partToPlace);
 
-                // remove the board from the list of avail boards
-                sortedBoards.Remove(BoardToUse);
-                // adjust the peer board
+                
+                // adjust the size of selected board and it's peer to the quadrant(s) used by the part
                 if (BoardToUse.Peer != null)
                 {
                     if (BoardToUse.Name == "T")
@@ -126,7 +125,9 @@ namespace CuttingPlanMaker.Packers
                     BoardToUse.Peer.Peer = null;
                 }
 
-                // add back the remainder of the board used
+                // remove the board from the list of avail boards
+                sortedBoards.Remove(BoardToUse);
+                // add back the remainder of the board used as 2 overlapping rectangles
                 BoardEx L1 = new BoardEx
                 {
                     Orig = BoardToUse.Orig,

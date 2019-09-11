@@ -60,15 +60,10 @@ namespace CuttingPlanMaker.Packers
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
 
-        protected override void PackBoard(Part[] parts, StockItem iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        internal override void PackBoard(Part[] parts, Board iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             // order the parts ascending by area
             Part[] orderredParts = parts.OrderBy(o => o.Area).ToArray();
-
-            // init the packed parts array and make sure other vals are 0
-            iBoard.PackedParts = new Placement[orderredParts.Length];
-            iBoard.PackedPartsCount = 0;
-            //iBoard.PackedPartsTotalArea = 0;
 
             // create the two original points for the board
             PointD[] points = new PointD[orderredParts.Length * 3 + 2];
@@ -108,20 +103,15 @@ namespace CuttingPlanMaker.Packers
                 {
                     Part iPart = orderredParts[iPartIndex];
                     // ignore parts already packed
-                    if (iPart.IsPacked || iBoard.PackedParts.Any(t => t?.Part == iPart)) continue;
+                    if (iPart.Source!=null) continue;
 
                     // if the part will fit
                     if (iPart.Length + partLengthPadding <= maxLength && iPart.Width + partWidthPadding <= maxWidth)
                     {
                         #region // place the part onto the board at the point ...
-                        iBoard.PackedParts[iBoard.PackedPartsCount] = new Placement()
-                        {
-                            Part = iPart,
-                            dLength = iPoint.dLength,
-                            dWidth = iPoint.dWidth
-                        };
-                        //iBoard.PackedPartsTotalArea += iPart.Area;
-                        iBoard.PackedPartsCount++;
+                        iPart.Source = iBoard;
+                        iPart.OffsetLength = iPoint.dLength;
+                        iPart.OffsetWidth = iPoint.dWidth;
                         #endregion
 
                         #region // create new points for the top-right and bottom left corners of the part ...

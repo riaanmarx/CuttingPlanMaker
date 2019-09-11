@@ -688,6 +688,7 @@ namespace CuttingPlanMaker
             }
             catch (Exception ex)
             {
+                Trace.WriteLine($"EXCEPTION WHILE PACKING:{ex}");
             }
 
             // clear the packing required flag

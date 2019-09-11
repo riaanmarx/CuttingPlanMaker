@@ -1,5 +1,4 @@
-﻿using LINQtoCSV;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -80,13 +79,11 @@ namespace CuttingPlanMaker
         /// <summary>
         /// Indicator to add the padding to the displayed layout
         /// </summary>
-        [CsvColumn(Name = "IncludePaddingInDisplay", FieldIndex = 14)]
         public bool IncludePaddingInDisplay { get; set; }
 
         /// <summary>
         /// Selection of the algorithm to use when packing the parts
         /// </summary>
-        [CsvColumn(Name = "Algorithm", FieldIndex = 15)]
         public string Algorithm { get; set; }
     }
 }

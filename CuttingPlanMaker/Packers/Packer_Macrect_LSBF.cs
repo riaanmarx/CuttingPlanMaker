@@ -90,7 +90,7 @@ namespace CuttingPlanMaker.Packers
 #endif
         protected string partsorder = "DESCL";
 
-        protected override void PackBoard(Part[] parts, Board iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        internal override void PackBoard(Part[] parts, Board iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             Part[] orderredParts;
             // order parts by length

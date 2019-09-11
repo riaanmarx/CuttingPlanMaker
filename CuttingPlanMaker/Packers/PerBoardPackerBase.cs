@@ -12,7 +12,7 @@ namespace CuttingPlanMaker.Packers
     /// </summary>
     class PerBoardPackerBase : PackerBase
     {
-        public static string AlgorithmName => "BASE";
+        public new static string AlgorithmName => "BASE";
 
         class context
         {
@@ -164,7 +164,7 @@ namespace CuttingPlanMaker.Packers
 #endif
         }
 
-        protected virtual void PackBoard(Part[] parts, Board board, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        internal virtual void PackBoard(Part[] parts, Board board, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
         {
             throw new Exception("Classes inheritting from PerBoardPackerBase must override PackBoard()");
         }
