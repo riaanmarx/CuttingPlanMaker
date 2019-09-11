@@ -80,7 +80,6 @@ namespace CuttingPlanMaker
                     labelTable.AddRow();
                     labelTable.AddRow();
 
-
                     Cell c = labelTable[0, 0];  // top row := part's name
                     c.Format.Font.Bold = true;
                     c.Format.Font.Size = 15;
@@ -90,9 +89,9 @@ namespace CuttingPlanMaker
                     c.Format.Font.Size = 12;
                     c.AddParagraph($"[{iPart.Length:0.0} x {iPart.Width:0.0}]");
 
-                    c = labelTable[2, 0];       // Third row := padding dimensions
-                    c.Format.Font.Size = 8;
-                    c.AddParagraph($" + [{(2 * Settings.PartPaddingLength):0.0} x {(2 * Settings.PartPaddingWidth):0.0}]");
+                    //c = labelTable[2, 0];       // Third row := padding dimensions
+                    //c.Format.Font.Size = 8;
+                    //c.AddParagraph($" + [{(2 * Settings.PartPaddingLength):0.0} x {(2 * Settings.PartPaddingWidth):0.0}]");
 
                     c = labelTable[3, 0];       // Fourth row := board name
                     c.AddParagraph().AddFormattedText("on ").AddFormattedText($"{iStock.Name}", TextFormat.Bold);

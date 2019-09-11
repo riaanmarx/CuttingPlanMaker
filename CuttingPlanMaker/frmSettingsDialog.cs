@@ -41,11 +41,9 @@ namespace CuttingPlanMaker
             var type = typeof(PackerBase);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => type.IsAssignableFrom(p));
-
+                .Where(p => type.IsAssignableFrom(p) && p.FullName != "CuttingPlanMaker.Packers.PackerBase" && p.FullName != "CuttingPlanMaker.Packers.PerBoardPackerBase");
 
             types.ToList().ForEach(t => ddlPacker.Items.Add(t.GetProperty("AlgorithmName").GetValue(null) as string));
-            ddlPacker.Items.Remove("BASE");
             if (_settings.Algorithm == "") ddlPacker.SelectedIndex = 0;
             else ddlPacker.Text = _settings.Algorithm;
 
@@ -55,8 +53,8 @@ namespace CuttingPlanMaker
         {
             // populate the new values back to the instance
             _settings.BladeKerf = double.Parse(tbSawBladeKerf.Text);
-            _settings.PartPaddingLength = double.Parse(tbPartPaddingLength.Text);
-            _settings.PartPaddingWidth = double.Parse(tbPartPaddingWidth.Text);
+            //_settings.PartPaddingLength = double.Parse(tbPartPaddingLength.Text);
+            //_settings.PartPaddingWidth = double.Parse(tbPartPaddingWidth.Text);
             _settings.AutoRepack = cbAutoRecalc.Checked;
             _settings.DrawUnusedStock = cbDrawUnused.Checked;
             _settings.ResultOrientation = ddlPacker.Text;

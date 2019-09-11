@@ -125,8 +125,8 @@ namespace CuttingPlanMaker
 
             headerTable[4, 0].AddParagraph("Address:");
             headerTable[4, 1].AddParagraph(Settings.ClientAddr ?? "");
-            headerTable[4, 2].AddParagraph("Part-padding:");
-            headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports ? "included" : "not included")})");
+            //headerTable[4, 2].AddParagraph("Part-padding:");
+            //headerTable[4, 3].AddParagraph($"{Settings.PartPaddingLength} x {Settings.PartPaddingWidth} ({(Settings.IncludePaddingInReports ? "included" : "not included")})");
             headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
             #endregion
 
@@ -176,8 +176,8 @@ namespace CuttingPlanMaker
                 bool altRow = false;
                 foreach (var iPart in packedParts)
                 {
-                    if (Settings.IncludePaddingInReports)
-                        iPart.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
+                    //if (Settings.IncludePaddingInReports)
+                    //    iPart.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
                     iRow = table.AddRow();
                     iRow.Format.Font.Size = 8;
                     if (altRow = !altRow) iRow.Shading.Color = Colors.WhiteSmoke;
