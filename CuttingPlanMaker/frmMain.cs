@@ -681,9 +681,7 @@ namespace CuttingPlanMaker
 
                           packer.Pack(iParts
                               , iStock
-                              , (double)this.Settings.BladeKerf
-                              , (double)this.Settings.PartPaddingLength
-                              , (double)this.Settings.PartPaddingWidth);
+                              , this.Settings.BladeKerf);
                       }));
             }
             catch (Exception ex)

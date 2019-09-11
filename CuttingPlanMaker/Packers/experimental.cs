@@ -63,7 +63,7 @@ namespace CuttingPlanMaker.Packers
             }
         }
 
-        public override void Pack(Part[] parts, Board[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        public override void Pack(Part[] parts, Board[] boards, double sawkerf = 3.2)
         {
             // Sort the boards asc on area
             var sortedBoards = boards.OrderBy(b => b.Area).Select(t=>new BoardEx(t) ).ToList();

@@ -25,8 +25,9 @@ namespace CuttingPlanMaker.Packers
         /// <param name="sawkerf"></param>
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
-        public virtual void Pack(Part[] parts, Board[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        public virtual void Pack(Part[] parts, Board[] boards, double sawkerf = 3.2)
         {
+            throw new Exception("Please override Pack() method when inheritting from PackerBase");
         }
 
     }

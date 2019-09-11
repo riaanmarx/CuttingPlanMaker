@@ -13,5 +13,6 @@
   "TargetDate": "Saturday, 05 January 2019",
   "IncludePaddingInReports": false,
   "IncludePaddingInDisplay": false,
-  "Algorithm": "Per Board Best-Of-Breed"
+  //"Algorithm": "Per Board Best-Of-Breed"
+  "Algorithm": "Experimental"
 }

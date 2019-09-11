@@ -14,7 +14,7 @@ namespace CuttingPlanMaker.Packers
 
         public new static string AlgorithmName => "Per Board Best-Of-Breed";
 
-        internal override void PackBoard(Part[] parts, Board board, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        internal override void PackBoard(Part[] parts, Board board, double sawkerf = 3.2)
         {
             // given a board and collection of parts,
             // pack the parts into the board using all known algorithms
@@ -34,7 +34,7 @@ namespace CuttingPlanMaker.Packers
 
                 // use existing algorthm to pack the board
                 PerBoardPackerBase iPackerInstance = (PerBoardPackerBase)Activator.CreateInstance(iPacker);
-                iPackerInstance.PackBoard(iParts_alg, board, sawkerf, partLengthPadding, partWidthPadding);
+                iPackerInstance.PackBoard(iParts_alg, board, sawkerf);
 
                 // if better than prev, remember it...
                 double newArea = iParts_alg.Where(f=>f.Source != null).Sum(p => p.Area);

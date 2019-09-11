@@ -28,7 +28,7 @@ namespace CuttingPlanMaker.Packers
         /// <param name="sawkerf"></param>
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
-        public override sealed void Pack(Part[] parts, Board[] boards, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        public override sealed void Pack(Part[] parts, Board[] boards, double sawkerf = 3.2)
         {
             // do...repeat until no new parts are placed in this iteration
             Stopwatch sw = new Stopwatch();
@@ -62,7 +62,7 @@ namespace CuttingPlanMaker.Packers
                         try
                         {
                             context oo = o as context;
-                            PackBoard(oo.parts, oo.board, sawkerf, partLengthPadding, partWidthPadding);
+                            PackBoard(oo.parts, oo.board, sawkerf);
                         }
                         catch (Exception ex)
                         {
@@ -164,7 +164,7 @@ namespace CuttingPlanMaker.Packers
 #endif
         }
 
-        internal virtual void PackBoard(Part[] parts, Board board, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        internal virtual void PackBoard(Part[] parts, Board board, double sawkerf = 3.2)
         {
             throw new Exception("Classes inheritting from PerBoardPackerBase must override PackBoard()");
         }
