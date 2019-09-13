@@ -81,8 +81,7 @@ namespace CuttingPlanMaker.Packers
                 double bestCoverage = 0;
                 foreach (var iThread in threads)
                 {
-                    var iCoverage = iThread.Value.parts.Where(f=>f.Source == iThread.Value.board).Sum(p=>p.Area) / iThread.Value.board.Area;
-
+                    var iCoverage = iThread.Value.parts.Where(f=>f.Source == iThread.Value.board).Sum(p=>p.Area);
                     if (iCoverage > bestCoverage)
                     {
                         bestCoverage = iCoverage;

@@ -262,7 +262,8 @@ namespace CuttingPlanMaker
 
                 // draw the board
                 g.FillRectangle(Brushes.DarkRed, (float)xMargin, (float)yOffset, (float)iBoard.Length, (float)iBoard.Width);
-                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}] ({packedParts.Sum(p => p.Area) / iBoard.Area * 100:0.0}%)";
+                var TotalPartsArea = packedParts.Sum(p => p.Area);
+                string boardheader = $"{iBoard.Name} [{iBoard.Length}x{iBoard.Width}] ({TotalPartsArea / iBoard.Area * 100:0.0}%)";
                 SizeF textSizeBoard = g.MeasureString(boardheader, boardFont);
                 g.DrawString(boardheader, boardFont, Brushes.Black, (float)(xMargin), (float)(yOffset - textSizeBoard.Height));
 
@@ -272,8 +273,8 @@ namespace CuttingPlanMaker
                 {
                     double dLength = iPart.OffsetLength;
                     double dWidth = iPart.OffsetWidth;
-                    double Length = iPart.Length + (Settings.IncludePaddingInDisplay ? Settings.PartPaddingLength : 0f);
-                    double Width = iPart.Width + (Settings.IncludePaddingInDisplay ? Settings.PartPaddingWidth : 0f);
+                    double Length = iPart.Length ;
+                    double Width = iPart.Width ;
 
                     // draw the part
                     g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
