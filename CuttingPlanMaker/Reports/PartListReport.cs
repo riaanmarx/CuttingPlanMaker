@@ -52,14 +52,14 @@ namespace CuttingPlanMaker
             Table table = mainSection.AddTable();
             table.Format.Font.Size = 9;
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 9; i++)
                 table.AddColumn().Format.Alignment = i < 2 ? ParagraphAlignment.Left : ParagraphAlignment.Right;
-            table.Columns.Width = Unit.FromCentimeter(1.5);
-            table.Columns[0].Width =
-            table.Columns[1].Width = Unit.FromCentimeter(3.5);
-            table.Columns[5].Width =
-                table.Columns[6].Width =
-                table.Columns[7].Width = Unit.FromCentimeter(2.0);
+            table.Columns[8].Format.Alignment = ParagraphAlignment.Left;
+
+            table.Columns[0].Width = Unit.FromCentimeter(4);
+            table.Columns[1].Width = Unit.FromCentimeter(3);
+            table.Columns[2].Width = table.Columns[3].Width = table.Columns[4].Width = table.Columns[5].Width = table.Columns[6].Width = table.Columns[7].Width = Unit.FromCentimeter(1.6);
+            table.Columns[8].Width = Unit.FromCentimeter(1.5);
 
             //loop through all the stock items and add a new header for every new page
 
@@ -68,7 +68,7 @@ namespace CuttingPlanMaker
             iRow.HeadingFormat = true;
             iRow.Format.Font.Bold = true;
             iRow.Shading.Color = Colors.LightGray;
-            iRow[0].AddParagraph("Name"); iRow[1].AddParagraph("Material"); iRow[2].AddParagraph("Length"); iRow[3].AddParagraph("Width"); iRow[4].AddParagraph("Thick"); iRow[6].AddParagraph("Vol"); iRow[5].AddParagraph("Cost/m3"); iRow[7].AddParagraph("Cost");
+            iRow[0].AddParagraph("Name"); iRow[1].AddParagraph("Material"); iRow[2].AddParagraph("Length"); iRow[3].AddParagraph("Width"); iRow[4].AddParagraph("Thick"); iRow[6].AddParagraph("Vol"); iRow[5].AddParagraph("Cost/m3"); iRow[7].AddParagraph("Cost"); iRow[8].AddParagraph("Stock");
             double totVol = 0;
             double totCost = 0;
 
@@ -93,6 +93,7 @@ namespace CuttingPlanMaker
                 double cost = vol * iMaterial.Cost;
                 totCost += cost;
                 iRow[7].AddParagraph(cost.ToString("0.00"));
+                iRow[8].AddParagraph(iPart.Source?.Name??"");
                 if (Settings.IncludePaddingInReports) iPart.Inflate(-Settings.PartPaddingWidth, -Settings.PartPaddingLength);
 
             }
