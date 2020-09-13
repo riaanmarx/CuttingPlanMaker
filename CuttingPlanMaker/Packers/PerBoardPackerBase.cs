@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace CuttingPlanMaker.Packers
 {
     /// <summary>
-    /// Interface required by all packer implementations
+    /// Interface required by all packer implementations that pack one board at a time
+    /// uses multithreading to pack all boards simultaniously, each with ALL parts - then picks the best packed board and repeats with remaining boards and parts
     /// </summary>
     class PerBoardPackerBase : PackerBase
     {
@@ -37,8 +38,10 @@ namespace CuttingPlanMaker.Packers
             {
                 #region // filter parts and boards for items that are not already packed ...
                 Part[] unpackedParts = parts.Where(p => p.Source == null).ToArray();
-                Board[] incompleteBoards = boards.Where(p => !p.IsComplete).ToArray(); 
+                Board[] incompleteBoards = boards.Where(p => !p.IsComplete).ToArray();
                 #endregion
+
+                if (incompleteBoards.Length == 0) return;
 
                 #region // Fire off a thread per incomplete board to pack that board using the unplaced parts ...
                 // remember that if we follow this strategy of packing all boards simultaniously in a multi-threaded fashion
@@ -78,20 +81,21 @@ namespace CuttingPlanMaker.Packers
 
                 #region // Find the best packed board from this iteration ...
                 KeyValuePair<Task, context> bestThread = threads.First();
-                double bestCoverage = 0;
+                double bestAreaLeft = double.MaxValue;
                 foreach (var iThread in threads)
                 {
-                    var iCoverage = iThread.Value.parts.Where(f=>f.Source == iThread.Value.board).Sum(p=>p.Area);
-                    if (iCoverage > bestCoverage)
+                    var iAreapacked = iThread.Value.parts.Where(f => f.Source == iThread.Value.board).Sum(p => p.Area);
+                    var iAreaLeft = iThread.Value.board.Area - iAreapacked;
+                    if (iAreapacked > 0 && iAreaLeft < bestAreaLeft)
                     {
-                        bestCoverage = iCoverage;
+                        bestAreaLeft = iAreaLeft;
                         bestThread = iThread;
                     }
                 }
                 #endregion
 
                 // If no board could be packed, exit
-                if (bestCoverage == 0)
+                if (bestAreaLeft == double.MaxValue)
                 {
                     Trace.WriteLine("No further parts packed - exiting.");
                     break;
@@ -102,14 +106,14 @@ namespace CuttingPlanMaker.Packers
                 bestThread.Value.board.IsComplete = true;
 
                 // transfer the part sources & offsets 
-                bestThread.Value.parts.Where(f => f.Source != null).ToList().ForEach(p => {
+                bestThread.Value.parts.Where(f => f.Source == bestThread.Value.board).ToList().ForEach(p => {
                     var origpart = parts.First(op => op.Name == p.Name);
                     origpart.Source = p.Source;
                     origpart.OffsetLength = p.OffsetLength;
                     origpart.OffsetWidth = p.OffsetWidth;
                     });
 
-                Trace.WriteLine($"Board {bestThread.Value.board.Name} packed best to {bestCoverage:0.00%}");
+                Trace.WriteLine($"Board {bestThread.Value.board.Name} packed best leaving {bestAreaLeft} mm2");
                 #endregion
 
             } while (true);

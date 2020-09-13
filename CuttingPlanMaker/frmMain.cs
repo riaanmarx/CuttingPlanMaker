@@ -42,6 +42,7 @@ namespace CuttingPlanMaker
             }
         }
         bool _isFileSaved = true;
+        bool ManualMode = false;
 
         /// <summary>
         /// The name of the current file
@@ -218,8 +219,8 @@ namespace CuttingPlanMaker
             // create list of boards to draw
             List<Board> boardsToDraw = new List<Board>(boards);
             if (!drawunusedstock)
-                boardsToDraw = parts.Where(t => t.Source != null).Select(p => p.Source).Distinct().OrderBy(o=>o.Name).ToList();
-            
+                boardsToDraw = parts.Where(t => t.Source != null).Select(p => p.Source).Distinct().OrderBy(o => o.Name).ToList();
+
 
             // calculate width & height required for the bitmap
             foreach (var iBoard in boardsToDraw)
@@ -273,8 +274,8 @@ namespace CuttingPlanMaker
                 {
                     double dLength = iPart.OffsetLength;
                     double dWidth = iPart.OffsetWidth;
-                    double Length = iPart.Length ;
-                    double Width = iPart.Width ;
+                    double Length = iPart.Length;
+                    double Width = iPart.Width;
 
                     // draw the part
                     g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
@@ -523,6 +524,11 @@ namespace CuttingPlanMaker
             //Parts = CSVFile.Read<Part>($"{FilePath}.Parts.CSV");
             Parts = new BindingList<Part>(JsonConvert.DeserializeObject<List<Part>>(File.ReadAllText($"{FilePath}.Parts.json")));
 
+            //consolidate the sources of pre-placed parts of the same source
+            Parts.Where(p => p.Source != null).ToList().
+                ForEach(i => i.Source = Stock.FirstOrDefault(s => s.Name == i.Source.Name));
+
+
             //Parts.ToList().ForEach(p => {
             //    if (p.SourceName != null)
             //        p.Source = Stock.FirstOrDefault(s => s.Name == p.SourceName);
@@ -653,6 +659,7 @@ namespace CuttingPlanMaker
         /// </summary>
         private void PackSolution()
         {
+            if (ManualMode) return;
             try
             {
                 //clear all packing info
@@ -662,8 +669,8 @@ namespace CuttingPlanMaker
                     if (!t.IsFrozen)
                     {
                         t.Source = null;
-                     //   t.OffsetLength = 0;
-                     //   t.OffsetWidth = 0;
+                        //   t.OffsetLength = 0;
+                        //   t.OffsetWidth = 0;
                     }
                 });
                 Stock.ToList().ForEach(t =>
@@ -725,6 +732,78 @@ namespace CuttingPlanMaker
             pbLayout.Invalidate();
         }
         #endregion
+
+        #region // Space conversion functions ...
+        private RectangleF OffsetToPbSpace(float X, float Y, float width, float height, SizeF pbSize, PointF imgCentre, float userZoom, float fillScale)
+        {
+            return new RectangleF(
+                pbSize.Width * 0.5f + fillScale * userZoom * (X - imgCentre.X),
+                pbSize.Height * 0.5f + fillScale * userZoom * (Y - imgCentre.Y),
+                width * fillScale * userZoom,
+                height * fillScale * userZoom
+                );
+        }
+
+        private RectangleF PbToOffsetSpace(float X, float Y, float width, float height, SizeF pbSize, PointF imgCentre, float userZoom, float fillScale)
+        {
+            return new RectangleF(
+               -(X - pbSize.Width * 0.5f) / (fillScale * userZoom) + imgCentre.X,
+               -(Y - pbSize.Height * 0.5f) / (fillScale * userZoom) + imgCentre.Y,
+               width / (fillScale * userZoom),
+               height / (fillScale * userZoom)
+               );
+        }
+
+        private PointF PbToImageSpace_origin(float X, float Y, float userZoom, float fillScale)
+        {
+            return new PointF(
+               X / (fillScale * userZoom),
+               Y / (fillScale * userZoom)
+               );
+        }
+
+        private PointF PbToImage(MouseEventArgs e)
+        {
+            // convert the click coordinates from screen-space to bitmap space
+            PointF clickOffset = PbToOffsetSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor).Location;
+            clickOffset.X = 0.5f * (float)LayoutBitmap.Width - clickOffset.X;
+            clickOffset.Y = 0.5f * (float)LayoutBitmap.Height - clickOffset.Y;
+            return clickOffset;
+        }
+
+        private Part PartAtMouse(MouseEventArgs e)
+        {
+            // find image-space point
+            PointF clickOffset = PbToImage(e);
+
+            // identify the boards that are drawn
+            string SelectedMaterial = tcMaterials.SelectedTab.Name;
+            Board clickedBoard = null;
+            List<Board> DrawnBoards = null;
+            if (Settings.DrawUnusedStock)
+                DrawnBoards = Stock.Where(s => s.Material == SelectedMaterial).ToList();
+            else
+                DrawnBoards = Parts.Where(p => p.Material == SelectedMaterial && p.Source != null).Select(i => i.Source).Distinct().OrderBy(o => o.Name).ToList();
+
+            double yOffset = yMargin;
+            foreach (var iboard in DrawnBoards)
+            {
+                if (clickOffset.Y > yOffset && clickOffset.Y < yOffset + iboard.Width && clickOffset.X > xMargin && clickOffset.X < xMargin + iboard.Length)
+                {
+                    clickedBoard = iboard;
+                    break;
+                }
+                yOffset = yOffset + iboard.Width + boardSpacing;
+            }
+            if (clickedBoard == null) return null;
+            PointF relativeClickedPoint = PointF.Add(clickOffset, new SizeF(-(float)xMargin, -(float)yOffset));
+            Part clickedPart = Parts.FirstOrDefault(f => f.Source == clickedBoard
+                && f.Contains(relativeClickedPoint));
+            return clickedPart;
+        }
+        #endregion
+
+
 
         #region // Event handlers ...
 
@@ -812,8 +891,6 @@ namespace CuttingPlanMaker
             // load the default file as the default
             LoadDefault();
         }
-
-
 
         private void mniAlgorithm_Click(object sender, EventArgs e)
         {
@@ -1184,27 +1261,7 @@ namespace CuttingPlanMaker
             else
                 PartsGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
         }
-
-        private RectangleF ImageToPbSpace(float X, float Y, float width, float height, SizeF pbSize, PointF imgCentre, float userZoom, float fillScale)
-        {
-            return new RectangleF(
-                pbSize.Width * 0.5f + fillScale * userZoom * (X - imgCentre.X),
-                pbSize.Height * 0.5f + fillScale * userZoom * (Y - imgCentre.Y),
-                width * fillScale * userZoom,
-                height * fillScale * userZoom
-                );
-        }
-
-        private RectangleF PbToImageSpace(float X, float Y, float width, float height, SizeF pbSize, PointF imgCentre, float userZoom, float fillScale)
-        {
-            return new RectangleF(
-               -(X - pbSize.Width * 0.5f) / (fillScale * userZoom) + imgCentre.X,
-               -(Y - pbSize.Height * 0.5f) / (fillScale * userZoom) + imgCentre.Y,
-               width / (fillScale * userZoom),
-               height / (fillScale * userZoom)
-               );
-        }
-
+        
         private void PbLayout_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -1236,7 +1293,7 @@ namespace CuttingPlanMaker
                 Y = LayoutBitmap.Height * 0.5f - userOffset.Y
             };
 
-            RectangleF plotRect = ImageToPbSpace(0, 0, LayoutBitmap.Width, LayoutBitmap.Height, pbLayout.Size, imgCentre, userZoomFactor, unityScaleFactor);
+            RectangleF plotRect = OffsetToPbSpace(0, 0, LayoutBitmap.Width, LayoutBitmap.Height, pbLayout.Size, imgCentre, userZoomFactor, unityScaleFactor);
             gfx.DrawImage(LayoutBitmap, plotRect);
             gfx.Flush();
 
@@ -1245,7 +1302,7 @@ namespace CuttingPlanMaker
             lblStockCount.Text = Stock.Count(q => q.Material == SelectedMaterial).ToString();
             double StockArea = Stock.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6;
             lblStockArea.Text = StockArea.ToString("0.000");
-            lblUsedStockCount.Text = Parts.Where(t=>t.Material == SelectedMaterial && t.Source != null).Select(p => p.Source).Distinct().Count().ToString();
+            lblUsedStockCount.Text = Parts.Where(t => t.Material == SelectedMaterial && t.Source != null).Select(p => p.Source).Distinct().Count().ToString();
             double UsedStockArea = Parts.Where(t => t.Material == SelectedMaterial && t.Source != null).Select(p => p.Source).Distinct().Sum(s => s.Area) / 1e6f;
             lblUsedStockArea.Text = UsedStockArea.ToString("0.000");
             int partscount = Parts.Count(q => q.Material == SelectedMaterial);
@@ -1272,9 +1329,9 @@ namespace CuttingPlanMaker
         private void pbLayout_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (DateTime.Now.Subtract(FormResizedAt).TotalMilliseconds < 500) return;
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Middle)
             {
-                userOffset = PbToImageSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor).Location;
+                userOffset = PbToOffsetSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor).Location;
                 if (userOffset.X < -LayoutBitmap.Width / 2) userOffset.X = -LayoutBitmap.Width / 2;
                 if (userOffset.X > LayoutBitmap.Width / 2) userOffset.X = LayoutBitmap.Width / 2;
                 if (userOffset.Y < -LayoutBitmap.Height / 2) userOffset.Y = -LayoutBitmap.Height / 2;
@@ -1295,10 +1352,86 @@ namespace CuttingPlanMaker
             OrigUserOffset = new PointF(userOffset.X, userOffset.Y);
         }
 
+        private void PbLayout_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+            // if the user dragged...do not action as a click
+            if (Math.Abs(e.X - OrigMouseDownPoint.X) > 5 || Math.Abs(e.Y - OrigMouseDownPoint.Y) > 5) return;
+
+            // convert the click coordinates from screen-space to bitmap space
+            PointF clickOffset = PbToOffsetSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor).Location;
+            clickOffset.X = 0.5f * (float)LayoutBitmap.Width - clickOffset.X;
+            clickOffset.Y = 0.5f * (float)LayoutBitmap.Height - clickOffset.Y;
+
+            string SelectedMaterial = tcMaterials.SelectedTab.Name;
+
+            // identify the board below the clicked point
+            Board clickedBoard = null;
+            List<Board> DrawnBoards = null;
+            if (Settings.DrawUnusedStock)
+                DrawnBoards = Stock.Where(s => s.Material == SelectedMaterial).ToList();
+            else
+                DrawnBoards = Parts.Where(p => p.Material == SelectedMaterial && p.Source != null).Select(i => i.Source).Distinct().OrderBy(o => o.Name).ToList();
+
+            double yOffset = yMargin;
+            foreach (var iboard in DrawnBoards)
+            {
+                if (clickOffset.Y > yOffset && clickOffset.Y < yOffset + iboard.Width && clickOffset.X > xMargin && clickOffset.X < xMargin + iboard.Length)
+                {
+                    clickedBoard = iboard;
+                    break;
+                }
+                yOffset = yOffset + iboard.Width + boardSpacing;
+            }
+            if (clickedBoard == null) return;
+
+            // identify part under the clicked point
+            PointF relativeClickedPoint = PointF.Add(clickOffset, new SizeF(-(float)xMargin, -(float)yOffset));
+            Part clickedPart = Parts.FirstOrDefault(f => f.Source == clickedBoard
+                && f.Contains(relativeClickedPoint));
+            if (clickedPart != null)
+            {
+                // select part on the parts list and focus the parts tab
+                btnPartsTab_Click(this, null);
+                for (int i = 0; i < PartsGridView.RowCount; i++)
+                {
+                    if (PartsGridView[0, i].Value.ToString() == clickedPart.Name)
+                    {
+                        PartsGridView.CurrentCell = PartsGridView[0, i];
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                // select the stock board
+                btnStockTab_Click(this, null);
+                for (int i = 0; i < StockGridView.RowCount; i++)
+                {
+                    if (StockGridView[0, i].Value.ToString() == clickedBoard.Name)
+                    {
+                        StockGridView.CurrentCell = StockGridView[0, i];
+                        break;
+                    }
+                }
+            }
+
+
+        }
+
+       
+
         private void pbLayout_MouseMove(object sender, MouseEventArgs e)
         {
             if (DateTime.Now.Subtract(FormResizedAt).TotalMilliseconds < 500) return;
+
+            //dragging a part?
             if (e.Button == MouseButtons.Left)
+            {
+                //
+            }
+            // scroll rendered image
+            if (e.Button == MouseButtons.Middle)
             {
                 //convert the mouse movement relative to its original mouse down position to image space movement
                 //add the image space movemnt to the original user offset
@@ -1312,6 +1445,8 @@ namespace CuttingPlanMaker
                 //redraw the image
                 pbLayout.Invalidate();
             }
+
+
         }
 
         private void mniReportLayoutLabels_Click(object sender, EventArgs e)
@@ -1357,7 +1492,7 @@ namespace CuttingPlanMaker
                 //List<StockItem> boardsToDraw = new List<StockItem>(boards);
                 //if (!drawunusedstock)
                 //    boardsToDraw = parts.Where(t => t.Source != null).Select(p => p.Source).Distinct().OrderBy(o => o.Name).ToList();
-                Board[] filterredStock = Stock.Where(q => q.Material == MaterialName && (Parts.Count(t => t.Source == q) > 0 || Settings.DrawUnusedStock)).OrderBy(o=>o.Name).ToArray();
+                Board[] filterredStock = Stock.Where(q => q.Material == MaterialName && (Parts.Count(t => t.Source == q) > 0 || Settings.DrawUnusedStock)).OrderBy(o => o.Name).ToArray();
 
                 // find the y-offset for the board that contains the part
                 double yOffset = yMargin;
@@ -1435,7 +1570,7 @@ namespace CuttingPlanMaker
 
             //move all packed parts to the new material
             Parts.Where(p => p.Source == selectedStockItem).ToList().ForEach(t => t.Material = newmaterialname);
-            
+
             StockGridView.Invalidate();
 
             PopulateMaterialTabs();
@@ -1504,6 +1639,40 @@ namespace CuttingPlanMaker
         private void FrmMain_Resize(object sender, EventArgs e)
         {
             FormResizedAt = DateTime.Now;
+        }
+
+        private void manualModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ManualMode = !ManualMode;
+            manualModeToolStripMenuItem.Checked = ManualMode;
+            if (!ManualMode)
+                PackSolution();
+        }
+
+        private void pbLayout_MouseUp(object sender, MouseEventArgs e)
+        {
+            // if it was not a drag, exit
+            if (Math.Abs(e.X - OrigMouseDownPoint.X) < 5 || Math.Abs(e.Y - OrigMouseDownPoint.Y) < 5) return;
+            // if it was not the left button, exit
+            if (e.Button != MouseButtons.Left) return;
+
+            // dragging left - move part manually...
+            //calculate new drop target (board)
+            PointF clockLoc_Pb = PbToOffsetSpace(e.X, e.Y, 0, 0, pbLayout.Size, userOffset, userZoomFactor, unityScaleFactor).Location;
+            clockLoc_Pb.X = 0.5f * (float)LayoutBitmap.Width - clockLoc_Pb.X;
+            clockLoc_Pb.Y = 0.5f * (float)LayoutBitmap.Height - clockLoc_Pb.Y;
+
+
+            //calculate new drop position on board
+
+            //if shift is not depressed
+            if (Control.ModifierKeys != Keys.Shift)
+            {
+                //generate packing grid for placed parts
+
+                //calculate intersection closest to drop position where part will fit
+
+            }
         }
     }
 }

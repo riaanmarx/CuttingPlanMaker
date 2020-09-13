@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,5 +60,26 @@ namespace CuttingPlanMaker
             return $"{Name} [{Length,7:0.0} x {Width,5:0.0}]";
         }
 
+
+        public Board Clone()
+        {
+            return new Board
+            {
+                IsComplete = this.IsComplete,
+                IsFrozen = this.IsFrozen,
+                Length = this.Length,
+                Material = this.Material,
+                Name = this.Name,
+                OffsetLength = this.OffsetLength,
+                OffsetWidth = this.OffsetWidth,
+                Width = this.Width
+            };
+        }
+
+        public bool Contains(PointF PointF)
+        {
+            RectangleF boardRect = new RectangleF((float)OffsetLength, (float)OffsetWidth, (float)(Length), (float)(Width));
+            return boardRect.Contains(PointF);
+        }
     }
 }

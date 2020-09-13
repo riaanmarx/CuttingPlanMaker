@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,6 +79,18 @@ namespace CuttingPlanMaker
                 OffsetLength = this.OffsetLength,
                 OffsetWidth = this.OffsetWidth
             };
+        }
+
+        public bool IntersectsWith(RectangleF rectangleF, double sawkerf)
+        {
+            RectangleF partRect = new RectangleF((float)OffsetLength, (float)OffsetWidth, (float)(Length + sawkerf), (float)(Width + sawkerf));
+            return partRect.IntersectsWith(rectangleF);
+        }
+
+        public bool Contains(PointF PointF)
+        {
+            RectangleF partRect = new RectangleF((float)OffsetLength, (float)OffsetWidth, (float)(Length), (float)(Width));
+            return partRect.Contains(PointF);
         }
     }
 }

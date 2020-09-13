@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace CuttingPlanMaker.Packers
 {
+    /// <summary>
+    /// An algorithm that uses all the per-board algorithms, and 
+    /// for each board in turn, calculate the best packing (least waste), using all algorithms.
+    /// </summary>
     class PerBoardBestOfBreed : PerBoardPackerBase
     {
-        //An algorithm that uses all the per-board algorithms, and 
-        //  for each board, calculate the best packing, using all algorithms
 
         public new static string AlgorithmName => "Per Board Best-Of-Breed";
 
@@ -19,6 +21,7 @@ namespace CuttingPlanMaker.Packers
             // given a board and collection of parts,
             // pack the parts into the board using all known algorithms
             // pick the best of the packings and return it
+            if (parts.Length == 0) return;
 
             var type = typeof(PerBoardPackerBase);
             var packerTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -37,7 +40,7 @@ namespace CuttingPlanMaker.Packers
                 iPackerInstance.PackBoard(iParts_alg, board, sawkerf);
 
                 // if better than prev, remember it...
-                double newArea = iParts_alg.Where(f=>f.Source != null).Sum(p => p.Area);
+                double newArea = iParts_alg.Where(f=>f.Source == board).Sum(p => p.Area);
                 if(newArea > bestArea)
                 {
                     bestArea = newArea;
@@ -48,10 +51,13 @@ namespace CuttingPlanMaker.Packers
             // return best result to caller
             bestPacking.ToList().ForEach(p =>
             {
-                var t = parts.First<Part>(o => o.Name == p.Name);
-                t.Source = p.Source;
-                t.OffsetLength = p.OffsetLength;
-                t.OffsetWidth = p.OffsetWidth;
+                var t = parts.FirstOrDefault<Part>(o => o.Name == p.Name);
+                if (t != null)
+                {
+                    t.Source = p.Source;
+                    t.OffsetLength = p.OffsetLength;
+                    t.OffsetWidth = p.OffsetWidth;
+                }
             });
 
         }

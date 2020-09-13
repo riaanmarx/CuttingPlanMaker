@@ -59,12 +59,19 @@ namespace CuttingPlanMaker.Packers
         /// <param name="sawkerf"></param>
         /// <param name="partLengthPadding"></param>
         /// <param name="partWidthPadding"></param>
-
-        internal override void PackBoard(Part[] parts, Board iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        internal override void PackBoard(Part[] parts, Board board, double sawkerf = 3.2)
         {
-            // order the parts ascending by area
-            Part[] orderredParts = parts.OrderBy(o => o.Area).ToArray();
+            PackBoard(parts, board, sawkerf, 0, 0);
+        }
 
+        internal void PackBoard(Part[] parts, Board iBoard, double sawkerf = 3.2, double partLengthPadding = 0, double partWidthPadding = 0)
+        {
+            // order the parts desc by area
+            //Part[] orderredParts = parts.OrderByDescending(o => o.Area).ToArray();
+            //descending by diagonal
+            //Part[] orderredParts = parts.OrderByDescending(o => o.Length*o.Length+o.Width*o.Width).ToArray();
+
+            Part[] orderredParts = parts.OrderBy(o => o.Area).ToArray();
             // create the two original points for the board
             PointD[] points = new PointD[orderredParts.Length * 3 + 2];
             points[0] = new PointD(0, 0);
@@ -103,7 +110,7 @@ namespace CuttingPlanMaker.Packers
                 {
                     Part iPart = orderredParts[iPartIndex];
                     // ignore parts already packed
-                    if (iPart.Source!=null) continue;
+                    if (iPart.Source != null) continue;
 
                     // if the part will fit
                     if (iPart.Length + partLengthPadding <= maxLength && iPart.Width + partWidthPadding <= maxWidth)

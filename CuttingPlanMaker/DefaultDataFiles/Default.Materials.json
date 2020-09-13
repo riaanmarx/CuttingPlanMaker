@@ -2,11 +2,12 @@
   {
     "Name": "Kiaat(AB)-25mm",
     "Thickness": 25,
-    "Cost": 18600
-  },
-  {
-    "Name": "IGNORED",
-    "Thickness": 0,
-    "Cost": 0
+    "Cost": 19000
   }
+  //,
+  //{
+  //  "Name": "IGNORED",
+  //  "Thickness": 0,
+  //  "Cost": 0
+  //}
 ]

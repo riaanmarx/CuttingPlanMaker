@@ -112,8 +112,8 @@ namespace CuttingPlanMaker.Packers
                     orderredParts = parts;
                     break;
             }
-
-            RectangleF[] F = new RectangleF[5 * parts.Length];
+            if (parts.Length == 0) return;
+            RectangleF[] F = new RectangleF[7 * parts.Length];
             F[0] = new RectangleF(0,0,(float)iBoard.Length,(float)iBoard.Width);
             int F_len = 1;
 

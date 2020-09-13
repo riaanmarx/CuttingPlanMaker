@@ -29,16 +29,16 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileNew = new System.Windows.Forms.ToolStripMenuItem();
@@ -109,6 +109,11 @@
             this.StockMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.tpParts = new System.Windows.Forms.TabPage();
             this.PartsGridView = new System.Windows.Forms.DataGridView();
+            this.PartNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartWidthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Source = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tcMaterials = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.pbLayout = new System.Windows.Forms.PictureBox();
@@ -116,11 +121,7 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
-            this.PartNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PartLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PartWidthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PartMaterialColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.Source = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.manualModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -266,22 +267,23 @@
             // 
             this.mniTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniToolsOptions,
-            this.mniToolsPack});
+            this.mniToolsPack,
+            this.manualModeToolStripMenuItem});
             this.mniTools.Name = "mniTools";
-            this.mniTools.Size = new System.Drawing.Size(47, 20);
+            this.mniTools.Size = new System.Drawing.Size(46, 20);
             this.mniTools.Text = "&Tools";
             // 
             // mniToolsOptions
             // 
             this.mniToolsOptions.Name = "mniToolsOptions";
-            this.mniToolsOptions.Size = new System.Drawing.Size(128, 22);
+            this.mniToolsOptions.Size = new System.Drawing.Size(180, 22);
             this.mniToolsOptions.Text = "&Options";
             this.mniToolsOptions.Click += new System.EventHandler(this.mniToolsOptions_Click);
             // 
             // mniToolsPack
             // 
             this.mniToolsPack.Name = "mniToolsPack";
-            this.mniToolsPack.Size = new System.Drawing.Size(128, 22);
+            this.mniToolsPack.Size = new System.Drawing.Size(180, 22);
             this.mniToolsPack.Text = "Pack parts";
             this.mniToolsPack.Click += new System.EventHandler(this.mniToolsPack_Click);
             // 
@@ -697,8 +699,8 @@
             // 
             this.MaterialsGridView.AllowUserToOrderColumns = true;
             this.MaterialsGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.MaterialsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.MaterialsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle11;
             this.MaterialsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -728,8 +730,8 @@
             // 
             this.MaterialNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.MaterialNameColumn.DataPropertyName = "Name";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.MaterialNameColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.MaterialNameColumn.DefaultCellStyle = dataGridViewCellStyle12;
             this.MaterialNameColumn.HeaderText = "Name";
             this.MaterialNameColumn.Name = "MaterialNameColumn";
             // 
@@ -737,9 +739,9 @@
             // 
             this.MaterialThicknessColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.MaterialThicknessColumn.DataPropertyName = "Thickness";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle3.Format = "N1";
-            this.MaterialThicknessColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle13.Format = "N1";
+            this.MaterialThicknessColumn.DefaultCellStyle = dataGridViewCellStyle13;
             this.MaterialThicknessColumn.FillWeight = 40F;
             this.MaterialThicknessColumn.HeaderText = "Thickness";
             this.MaterialThicknessColumn.Name = "MaterialThicknessColumn";
@@ -748,9 +750,9 @@
             // 
             this.MaterialCostColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.MaterialCostColumn.DataPropertyName = "Cost";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle4.Format = "C2";
-            this.MaterialCostColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle14.Format = "C2";
+            this.MaterialCostColumn.DefaultCellStyle = dataGridViewCellStyle14;
             this.MaterialCostColumn.FillWeight = 50F;
             this.MaterialCostColumn.HeaderText = "R/m3";
             this.MaterialCostColumn.Name = "MaterialCostColumn";
@@ -769,8 +771,8 @@
             // StockGridView
             // 
             this.StockGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.StockGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.StockGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.StockGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -806,10 +808,10 @@
             // StockLengthColumn
             // 
             this.StockLengthColumn.DataPropertyName = "Length";
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle6.Format = "N1";
-            dataGridViewCellStyle6.NullValue = null;
-            this.StockLengthColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle15.Format = "N1";
+            dataGridViewCellStyle15.NullValue = null;
+            this.StockLengthColumn.DefaultCellStyle = dataGridViewCellStyle15;
             this.StockLengthColumn.FillWeight = 40F;
             this.StockLengthColumn.HeaderText = "Length";
             this.StockLengthColumn.Name = "StockLengthColumn";
@@ -817,10 +819,10 @@
             // StockWidthColumn
             // 
             this.StockWidthColumn.DataPropertyName = "Width";
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle7.Format = "N1";
-            dataGridViewCellStyle7.NullValue = null;
-            this.StockWidthColumn.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle16.Format = "N1";
+            dataGridViewCellStyle16.NullValue = null;
+            this.StockWidthColumn.DefaultCellStyle = dataGridViewCellStyle16;
             this.StockWidthColumn.FillWeight = 40F;
             this.StockWidthColumn.HeaderText = "Width";
             this.StockWidthColumn.Name = "StockWidthColumn";
@@ -847,8 +849,8 @@
             // PartsGridView
             // 
             this.PartsGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.PartsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.PartsGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
             this.PartsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -875,6 +877,54 @@
             this.PartsGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.PartsDataGridView_ColumnHeaderMouseClick);
             this.PartsGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.PartsGridView_DataError);
             this.PartsGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.PartsDataGridView_RowsRemoved);
+            // 
+            // PartNameColumn
+            // 
+            this.PartNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartNameColumn.DataPropertyName = "Name";
+            this.PartNameColumn.HeaderText = "Name";
+            this.PartNameColumn.Name = "PartNameColumn";
+            // 
+            // PartLengthColumn
+            // 
+            this.PartLengthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartLengthColumn.DataPropertyName = "Length";
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle17.Format = "N1";
+            dataGridViewCellStyle17.NullValue = null;
+            this.PartLengthColumn.DefaultCellStyle = dataGridViewCellStyle17;
+            this.PartLengthColumn.FillWeight = 40F;
+            this.PartLengthColumn.HeaderText = "Length";
+            this.PartLengthColumn.Name = "PartLengthColumn";
+            // 
+            // PartWidthColumn
+            // 
+            this.PartWidthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartWidthColumn.DataPropertyName = "Width";
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle18.Format = "N1";
+            dataGridViewCellStyle18.NullValue = null;
+            this.PartWidthColumn.DefaultCellStyle = dataGridViewCellStyle18;
+            this.PartWidthColumn.FillWeight = 40F;
+            this.PartWidthColumn.HeaderText = "Width";
+            this.PartWidthColumn.Name = "PartWidthColumn";
+            // 
+            // PartMaterialColumn
+            // 
+            this.PartMaterialColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PartMaterialColumn.DataPropertyName = "Material";
+            this.PartMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.PartMaterialColumn.HeaderText = "Material";
+            this.PartMaterialColumn.Name = "PartMaterialColumn";
+            this.PartMaterialColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.PartMaterialColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // Source
+            // 
+            this.Source.DataPropertyName = "Source";
+            this.Source.HeaderText = "Source";
+            this.Source.Name = "Source";
+            this.Source.ReadOnly = true;
             // 
             // tcMaterials
             // 
@@ -909,9 +959,11 @@
             this.pbLayout.TabIndex = 0;
             this.pbLayout.TabStop = false;
             this.pbLayout.Paint += new System.Windows.Forms.PaintEventHandler(this.pbLayout_Paint);
+            this.pbLayout.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PbLayout_MouseClick);
             this.pbLayout.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseDoubleClick);
             this.pbLayout.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseDown);
             this.pbLayout.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseMove);
+            this.pbLayout.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseUp);
             // 
             // btnPartsTab
             // 
@@ -977,53 +1029,12 @@
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
             // 
-            // PartNameColumn
+            // manualModeToolStripMenuItem
             // 
-            this.PartNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PartNameColumn.DataPropertyName = "Name";
-            this.PartNameColumn.HeaderText = "Name";
-            this.PartNameColumn.Name = "PartNameColumn";
-            // 
-            // PartLengthColumn
-            // 
-            this.PartLengthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PartLengthColumn.DataPropertyName = "Length";
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle9.Format = "N1";
-            dataGridViewCellStyle9.NullValue = null;
-            this.PartLengthColumn.DefaultCellStyle = dataGridViewCellStyle9;
-            this.PartLengthColumn.FillWeight = 40F;
-            this.PartLengthColumn.HeaderText = "Length";
-            this.PartLengthColumn.Name = "PartLengthColumn";
-            // 
-            // PartWidthColumn
-            // 
-            this.PartWidthColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PartWidthColumn.DataPropertyName = "Width";
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle10.Format = "N1";
-            dataGridViewCellStyle10.NullValue = null;
-            this.PartWidthColumn.DefaultCellStyle = dataGridViewCellStyle10;
-            this.PartWidthColumn.FillWeight = 40F;
-            this.PartWidthColumn.HeaderText = "Width";
-            this.PartWidthColumn.Name = "PartWidthColumn";
-            // 
-            // PartMaterialColumn
-            // 
-            this.PartMaterialColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PartMaterialColumn.DataPropertyName = "Material";
-            this.PartMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.PartMaterialColumn.HeaderText = "Material";
-            this.PartMaterialColumn.Name = "PartMaterialColumn";
-            this.PartMaterialColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.PartMaterialColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // Source
-            // 
-            this.Source.DataPropertyName = "Source";
-            this.Source.HeaderText = "Source";
-            this.Source.Name = "Source";
-            this.Source.ReadOnly = true;
+            this.manualModeToolStripMenuItem.Name = "manualModeToolStripMenuItem";
+            this.manualModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.manualModeToolStripMenuItem.Text = "Manual mode";
+            this.manualModeToolStripMenuItem.Click += new System.EventHandler(this.manualModeToolStripMenuItem_Click);
             // 
             // FrmMain
             // 
@@ -1066,6 +1077,8 @@
         }
 
         
+
+
 
         #endregion
 
@@ -1151,6 +1164,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn PartWidthColumn;
         private System.Windows.Forms.DataGridViewComboBoxColumn PartMaterialColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn Source;
+        private System.Windows.Forms.ToolStripMenuItem manualModeToolStripMenuItem;
     }
 }
 
