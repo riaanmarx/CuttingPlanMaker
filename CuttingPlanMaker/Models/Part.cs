@@ -81,16 +81,33 @@ namespace CuttingPlanMaker
             };
         }
 
+        //todo: convert to doubles...
         public bool IntersectsWith(RectangleF rectangleF, double sawkerf)
         {
             RectangleF partRect = new RectangleF((float)OffsetLength, (float)OffsetWidth, (float)(Length + sawkerf), (float)(Width + sawkerf));
             return partRect.IntersectsWith(rectangleF);
         }
+        public bool IntersectsWith(double offset_l, double offset_w, double length, double width)
+        {
+            RectangleF partRect = new RectangleF((float)OffsetLength, (float)OffsetWidth, (float)Length, (float)Width);
+            RectangleF testRect = new RectangleF((float)offset_l, (float)offset_w, (float)length, (float)width);
 
+            return partRect.IntersectsWith(testRect);
+        }
+        //todo: convert to doubles...
         public bool Contains(PointF PointF)
         {
             RectangleF partRect = new RectangleF((float)OffsetLength, (float)OffsetWidth, (float)(Length), (float)(Width));
             return partRect.Contains(PointF);
         }
+
+        //public bool Contains(double Offset_l, double Offset_w)
+        //{
+        //    if (Offset_l < OffsetLength) return false;
+        //    if (Offset_l >= OffsetLength + Length) return false;
+        //    if (Offset_w < OffsetWidth) return false;
+        //    if (Offset_w >= OffsetWidth + Width) return false;
+        //    return true;
+        //}
     }
 }
