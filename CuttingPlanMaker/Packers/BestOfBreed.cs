@@ -82,12 +82,13 @@ namespace CuttingPlanMaker.Packers
 
                 // return best result to caller
                 bestPackedBoard.IsComplete = true;
+                
                 bestPacking.Where(p => p.Source?.Name == bestPackedBoard.Name).ToList().ForEach(p =>
                   {
                       var t = parts.FirstOrDefault<Part>(o => o.Name == p.Name);
                       if (t != null)
                       {
-                          t.Source = p.Source;
+                          t.Source = bestPackedBoard;
                           t.OffsetLength = p.OffsetLength;
                           t.OffsetWidth = p.OffsetWidth;
                       }

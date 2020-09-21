@@ -22,8 +22,6 @@ namespace CuttingPlanMaker
     /// </summary>
     public partial class FrmMain : Form
     {
-        //TODO: Add board column on parts grid to see what board the part was placed on
-        //TODO: create interface for packers and allow user to pick pick a packer algorithm
         //TODO: create import/export functionality
         //TODO: on points algorithm, see if we can allign parts to improve sawing 
         //TODO: undo function....
@@ -260,7 +258,7 @@ namespace CuttingPlanMaker
             yOffset = yMargin;
             foreach (var iBoard in boardsToDraw)
             {
-                var packedParts = parts.Where(p => p.Source == iBoard);
+                var packedParts = parts.Where(p => p.Source?.Name == iBoard.Name);
 
 
                 // draw the board
@@ -308,10 +306,16 @@ namespace CuttingPlanMaker
 
                     }
                 }
-
+                if (DropPreviewTarget == iBoard)
+                {
+                    // draw preview drop rect if not empty
+                    if (DropPreviewRect != RectangleF.Empty)
+                    {
+                        g.FillRectangle(Brushes.LightGreen, (float)(DropPreviewRect.X + xMargin),(float)(DropPreviewRect.Y + yOffset),DropPreviewRect.Width,DropPreviewRect.Height);
+                    }
+                }
                 yOffset += iBoard.Width + boardSpacing;
             }
-
 
             if (isPackingRequired)
             {
@@ -319,7 +323,6 @@ namespace CuttingPlanMaker
                 g.FillRectangle(hbrush, g.ClipBounds);
                 //g.DrawString("Repacking is required", boardFont,Brushes.White,0,0);
             }
-
 
             g.Flush();
             //bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
@@ -659,9 +662,9 @@ namespace CuttingPlanMaker
         /// <summary>
         /// Place the parts on the available stock and refresh the display
         /// </summary>
-        private void PackSolution()
+        private void PackSolution(bool ignoreManual = false)
         {
-            if (ManualMode) return;
+            if (!ignoreManual && ManualMode) return;
             try
             {
                 //clear all packing info
@@ -1302,7 +1305,7 @@ namespace CuttingPlanMaker
 
         private void mniToolsPack_Click(object sender, EventArgs e)
         {
-            PackSolution();
+            PackSolution(true);
         }
 
         private void tcMaterials_SelectedIndexChanged(object sender, EventArgs e)
@@ -1479,6 +1482,9 @@ namespace CuttingPlanMaker
             }
         }
 
+        RectangleF DropPreviewRect = RectangleF.Empty;
+        Board DropPreviewTarget = null;
+
         private void pbLayout_MouseMove(object sender, MouseEventArgs e)
         {
             //ignore if just resized form....??
@@ -1487,7 +1493,84 @@ namespace CuttingPlanMaker
             //drag a part if left button is down and we are in manual mode
             if (e.Button == MouseButtons.Left && ManualMode)
             {
-                //draw dragged part over control????
+                if (Control.ModifierKeys == Keys.Control)
+                {
+                    if (DropPreviewTarget != null)
+                    {
+                        DropPreviewRect = RectangleF.Empty;
+                        DropPreviewTarget = null;
+                        pbLayout.Invalidate();
+                    }
+                    return;
+                }
+                if (selectedPart == null) return;
+                //we have a "dragged"/"selected" part....
+                //we now want to pre-calculate the drop point...
+                PointF mouseUpPoint = ControlPointToAbsBitmap(e.X, e.Y, pbLayout.Size, userOffset, userZoomFactor);
+                DropPreviewTarget = FindBoardAtPoint(mouseUpPoint, out double targetboardYOffset);
+                if (DropPreviewTarget == null)
+                {
+                    if (DropPreviewRect != RectangleF.Empty)
+                    {
+                        DropPreviewRect = RectangleF.Empty;
+                        pbLayout.Invalidate();
+                    }
+                    return;
+                }
+
+                // a list of all the parts to check for interference
+                List<Part> packedParts = Parts.Where(p => p.Source == DropPreviewTarget).ToList();
+
+                //generate packing grid for placed parts
+                SortedSet<double> tX = new SortedSet<double> { 0 };
+                SortedSet<double> tY = new SortedSet<double> { 0 };
+                foreach (var iPart in packedParts)
+                {
+                    tX.Add((iPart.OffsetLength + iPart.Length + Settings.BladeKerf));
+                    tY.Add((iPart.OffsetWidth + iPart.Width + Settings.BladeKerf));
+                }
+                //find intersection closest to drop position where part will fit
+                double cX = double.MaxValue;
+                double cY = double.MaxValue;
+                double c = double.MaxValue;
+
+                foreach (double iX in tX)
+                {
+                    if (iX + selectedPart.Length > DropPreviewTarget.Length) break;
+                    foreach (double iY in tY)
+                    {
+                        if (iY + selectedPart.Width > DropPreviewTarget.Width) break;
+
+                        // check if there is an intersect with another placed part
+                        Part iOvelappedPart = packedParts.FirstOrDefault(
+                            t => t != selectedPart &&
+                            t.IntersectsWith(iX, iY, selectedPart.Length + Settings.BladeKerf, selectedPart.Width + Settings.BladeKerf));
+                        if (iOvelappedPart == null)
+                        {
+                            // calculate dx^2+dy^2 (cubed distance)
+                            double newc = Math.Pow(iX - (mouseUpPoint.X - xMargin), 2) + Math.Pow(iY - (mouseUpPoint.Y - targetboardYOffset), 2);
+                            if (newc < c)
+                            {
+                                c = newc;
+                                cX = iX;
+                                cY = iY;
+                            }
+                        }
+
+                    }
+                }
+
+                if (c < double.MaxValue)
+                {
+                    var t =new RectangleF((float)cX, (float)cY, (float)selectedPart.Length, (float)selectedPart.Width);
+                    if (DropPreviewRect == RectangleF.Empty || DropPreviewRect.X != t.X || DropPreviewRect.Y != t.Y)
+                    {
+                        DropPreviewRect = t;
+                        pbLayout.Invalidate();
+                    }
+
+                }
+                else DropPreviewRect = RectangleF.Empty;
             }
 
             // scroll rendered image if middle button is down
@@ -1510,6 +1593,7 @@ namespace CuttingPlanMaker
         private void pbLayout_MouseUp(object sender, MouseEventArgs e)
         {
             pbLayout.Cursor = DefaultCursor;
+            DropPreviewRect = RectangleF.Empty;
 
             if (DateTime.Now.Subtract(FormResizedAt).TotalMilliseconds < 500) return;
 
