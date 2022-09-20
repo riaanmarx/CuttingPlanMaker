@@ -1414,8 +1414,10 @@ namespace CuttingPlanMaker
                 if (userOffset.X > LayoutBitmap.Width / 2) userOffset.X = LayoutBitmap.Width / 2;
                 if (userOffset.Y < -LayoutBitmap.Height / 2) userOffset.Y = -LayoutBitmap.Height / 2;
                 if (userOffset.Y > LayoutBitmap.Height / 2) userOffset.Y = LayoutBitmap.Height / 2;
-
-                userZoomFactor = Math.Max(userZoomFactor ,(float)pbLayout.Width / (float)selectedPart.Length / unityScaleFactor / (float)Math.Pow(1.2f,3));
+                if (selectedPart != null)
+                    userZoomFactor = Math.Max(userZoomFactor, (float)pbLayout.Width / (float)selectedPart.Length / unityScaleFactor / (float)Math.Pow(1.2f, 3));
+                else
+                    userZoomFactor = userZoomFactor;
 
                 pbLayout.Invalidate();
             }
