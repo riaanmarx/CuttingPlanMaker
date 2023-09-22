@@ -74,7 +74,14 @@ namespace CuttingPlanMaker.Packers
             do
             {
                 // if there are no more parts we can place, exit.
-                if (potentialSources.Count() == 0) break;
+                if (potentialSources.Count() == 0)
+                {
+                    // set each board's usage
+                    foreach (var iBoard in boards)
+                        iBoard.AreaUsed = parts.Where(f => f.Source?.Name == iBoard.Name).Sum(p => p.Area);
+
+                    break;
+                }
 
                 // find all boards that each part will fit on
                 List<Part> unpackedParts = potentialSources.Keys.ToList();

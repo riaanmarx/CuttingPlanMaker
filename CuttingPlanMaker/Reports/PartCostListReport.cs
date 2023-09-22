@@ -12,7 +12,7 @@ namespace CuttingPlanMaker
     /// <summary>
     /// Part list report generating class
     /// </summary>
-    class PartListReport : ReportBase
+    class PartCostListReport : ReportBase
     {
         /// <summary>
         /// Generate the part list report
@@ -52,13 +52,14 @@ namespace CuttingPlanMaker
             Table table = mainSection.AddTable();
             table.Format.Font.Size = 9;
 
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 9; i++)
                 table.AddColumn().Format.Alignment = i < 2 ? ParagraphAlignment.Left : ParagraphAlignment.Right;
-            table.Columns[5].Format.Alignment = ParagraphAlignment.Left;
+            table.Columns[8].Format.Alignment = ParagraphAlignment.Left;
 
             table.Columns[0].Width = Unit.FromCentimeter(1.5);
-            table.Columns[1].Width = Unit.FromCentimeter(8);
-            table.Columns[2].Width = table.Columns[3].Width = table.Columns[4].Width = table.Columns[5].Width = Unit.FromCentimeter(1.6);
+            table.Columns[1].Width = Unit.FromCentimeter(5);
+            table.Columns[2].Width = table.Columns[3].Width = table.Columns[4].Width = table.Columns[5].Width = table.Columns[6].Width = table.Columns[7].Width = Unit.FromCentimeter(1.6);
+            table.Columns[8].Width = Unit.FromCentimeter(1.5);
 
             //loop through all the stock items and add a new header for every new page
 
@@ -67,8 +68,9 @@ namespace CuttingPlanMaker
             iRow.HeadingFormat = true;
             iRow.Format.Font.Bold = true;
             iRow.Shading.Color = Colors.LightGray;
-            iRow[0].AddParagraph("Name"); iRow[1].AddParagraph("Description"); iRow[2].AddParagraph("Length"); iRow[3].AddParagraph("Width"); iRow[4].AddParagraph("Thick"); iRow[5].AddParagraph("Stock");
+            iRow[0].AddParagraph("Name"); iRow[1].AddParagraph("Description"); iRow[2].AddParagraph("Length"); iRow[3].AddParagraph("Width"); iRow[4].AddParagraph("Thick"); iRow[6].AddParagraph("Vol"); iRow[5].AddParagraph("Cost/m3"); iRow[7].AddParagraph("Cost"); iRow[8].AddParagraph("Stock");
             double totVol = 0;
+            double totCost = 0;
 
             for (int i = 0; i < Parts.Count; i++)
             {
@@ -76,22 +78,32 @@ namespace CuttingPlanMaker
                 if (Settings.IncludePaddingInReports) iPart.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
                 var iMaterial = Materials.First(t => t.Name == Parts[i].Material);
 
-                totVol += iPart.Area * iMaterial.Thickness;
-
                 iRow = table.AddRow();
                 if (i % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
-                iRow[0].AddParagraph(iPart.Name??"");
-                iRow[1].AddParagraph(iPart.LongName??"");
+                iRow[0].AddParagraph(iPart.Name);
+                iRow[1].AddParagraph(iPart.LongName);
                 iRow[2].AddParagraph(iPart.Length.ToString("0.0"));
                 iRow[3].AddParagraph(iPart.Width.ToString("0.0"));
                 iRow[4].AddParagraph(iMaterial.Thickness.ToString("0.0"));
-                
-                iRow[5].AddParagraph(iPart.Source?.Name??"");
+                double vol = iPart.Length * iPart.Width * iMaterial.Thickness / 1e9f;
+                totVol += vol;
+                iRow[6].AddParagraph(vol.ToString("0.000"));
+                iRow[5].AddParagraph(iMaterial.Cost.ToString("0.00"));
+
+                double cost = vol * iMaterial.Cost;
+                totCost += cost;
+                iRow[7].AddParagraph(cost.ToString("0.00"));
+                iRow[8].AddParagraph(iPart.Source?.Name??"");
                 if (Settings.IncludePaddingInReports) iPart.Inflate(-Settings.PartPaddingWidth, -Settings.PartPaddingLength);
 
             }
 
-            
+            iRow = table.AddRow();
+            iRow[6].Borders.Top.Width = 2;
+            iRow[6].AddParagraph().AddFormattedText(totVol.ToString("0.000"), TextFormat.Bold);
+            iRow[7].Borders.Top.Width = 2;
+            iRow[7].AddParagraph().AddFormattedText(totCost.ToString("0.00"), TextFormat.Bold);
+
             mainSection.AddParagraph("Boards required (calculated at 20% waste and 25mm thickness)");
             table = mainSection.AddTable();
             table.Rows.LeftIndent = 10;
@@ -106,8 +118,7 @@ namespace CuttingPlanMaker
             table.Columns[0].Width = Unit.FromCentimeter(3.5);
             table.Columns[0].Format.Alignment = ParagraphAlignment.Right;
 
-            //draw the estimated board requirements
-            totVol = totVol / 1e9; 
+
             double[] lengths_m = new double[] { 1800, 2000, 2100, 2200, 2500, 3000, 3500 };
             double[] widths_mm = new double[] { 80, 100, 120, 150, 180, 200, 220, 230, 250 };
 

@@ -167,6 +167,7 @@ namespace CuttingPlanMaker.Packers
 #endif
             }
 
+           
         }
 
         private bool ContainedIn(RectangleF outerR, RectangleF inner)

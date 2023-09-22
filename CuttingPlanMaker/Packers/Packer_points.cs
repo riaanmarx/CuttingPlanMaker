@@ -191,6 +191,8 @@ namespace CuttingPlanMaker.Packers
                     // we placed a part - traverse all the points again
                     iPointIndex = -1;
             }
+            // set board's usage
+            iBoard.AreaUsed = parts.Where(f => f.Source?.Name == iBoard.Name).Sum(p => p.Area);
         }
 
 #if drawdbgimages

@@ -97,6 +97,7 @@
     <Compile Include="frmSettingsDialog.Designer.cs">
       <DependentUpon>frmSettingsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Packers\AutoPick.cs" />
     <Compile Include="Packers\BestOfBreed.cs" />
     <None Include="Packers\HorRectSpannable.cs" />
     <None Include="Packers\IntelegentBruteForce.cs" />
@@ -105,7 +106,7 @@
     <Compile Include="Packers\PerBoardPackerBase.cs" />
     <Compile Include="Packers\Packer_Macrect_LSBF.cs" />
     <Compile Include="Packers\PackerBase.cs" />
-    <Compile Include="Packers\WeLikeToMoveIt.cs" />
+    <None Include="Packers\WeLikeToMoveIt.cs" />
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="Reports\LayoutReport.cs" />
     <Compile Include="Models\Material.cs" />
@@ -115,6 +116,7 @@
     <None Include="Packers\Packer.cs" />
     <Compile Include="Packers\Packer_points.cs" />
     <Compile Include="Models\Part.cs" />
+    <Compile Include="Reports\PartCostListReport.cs" />
     <Compile Include="Reports\PartListReport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

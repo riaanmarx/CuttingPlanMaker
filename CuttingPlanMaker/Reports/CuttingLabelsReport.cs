@@ -93,12 +93,12 @@ namespace CuttingPlanMaker
                     //c.Format.Font.Size = 8;
                     //c.AddParagraph($" + [{(2 * Settings.PartPaddingLength):0.0} x {(2 * Settings.PartPaddingWidth):0.0}]");
 
-                    c = labelTable[3, 0];       // Fourth row := board name
-                    c.AddParagraph().AddFormattedText("on ").AddFormattedText($"{iStock.Name}", TextFormat.Bold);
+                    //c = labelTable[3, 0];       // Fourth row := board name
+                    //c.AddParagraph().AddFormattedText("on ").AddFormattedText($"{iStock.Name}", TextFormat.Bold);
 
-                    c = labelTable[4, 0];       // Fifth row := placement offset
-                    c.Format.Font.Size = 8;
-                    c.AddParagraph($"@ ({iPart.OffsetLength:0.0}, {iPart.OffsetWidth:0.0})");
+                    //c = labelTable[4, 0];       // Fifth row := placement offset
+                    //c.Format.Font.Size = 8;
+                    //c.AddParagraph($"@ ({iPart.OffsetLength:0.0}, {iPart.OffsetWidth:0.0})");
 
                     cntr++;
                 }

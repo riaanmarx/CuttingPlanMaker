@@ -36,6 +36,7 @@ namespace CuttingPlanMaker
             dtpTargetDate.Value = DateTime.Parse(_settings.TargetDate ?? DateTime.Now.ToLongDateString());
             cbIncludePaddingOnReports.Checked = _settings.IncludePaddingInReports ;
             cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay ;
+            //cbDrawID.Checked = _settings.DrawID;
 
             // populate items for algorithms
             var type = typeof(PackerBase);
@@ -58,8 +59,8 @@ namespace CuttingPlanMaker
             _settings.AutoRepack = cbAutoRecalc.Checked;
             _settings.DrawUnusedStock = cbDrawUnused.Checked;
             _settings.ResultOrientation = ddlPacker.Text;
-            _settings.IncludePaddingInReports = cbIncludePaddingOnReports.Checked ;
-            _settings.IncludePaddingInDisplay = cbIncludePaddingOnDisplay.Checked ;
+            _settings.IncludePaddingInReports = cbIncludePaddingOnReports.Checked;
+            _settings.IncludePaddingInDisplay = cbIncludePaddingOnDisplay.Checked;
 
             _settings.ProjectName = tbProjectName.Text;
             _settings.JobID = tbJobId.Text;
@@ -68,6 +69,7 @@ namespace CuttingPlanMaker
             _settings.ClientAddr = tbClientAddr.Text;
             _settings.TargetDate = dtpTargetDate.Value.ToLongDateString();
             _settings.Algorithm = ddlPacker.Text;
+            //_settings.DrawID = cbDrawID.Checked;
         }
 
     }

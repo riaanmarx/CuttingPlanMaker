@@ -38,7 +38,8 @@ namespace CuttingPlanMaker.Packers
                     && p.FullName != "CuttingPlanMaker.Packers.PackerBase"
                     && p.FullName != "CuttingPlanMaker.Packers.PerBoardPackerBase"
                     && p.FullName != "CuttingPlanMaker.Packers.PerBoardBestOfBreed"
-                    && p.FullName != "CuttingPlanMaker.Packers.BestOfBreed");
+                    && p.FullName != "CuttingPlanMaker.Packers.BestOfBreed"
+                    && p.FullName != "CuttingPlanMaker.Packers.AutoPick");
 
             do
             {

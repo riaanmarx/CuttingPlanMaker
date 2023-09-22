@@ -282,6 +282,7 @@ namespace CuttingPlanMaker
 
                     // print the part text
                     string partLabel = $"{iPart.Name} [{Length} x {iPart.Width}]";
+                   
 
                     int sz = 16;
                     Font partFont;
@@ -343,6 +344,12 @@ namespace CuttingPlanMaker
                 case "Name DESC":
                     Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Name).ToList());
                     break;
+                case "LongName ASC":
+                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.LongName).ToList());
+                    break;
+                case "LongName DEC":
+                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.LongName).ToList());
+                    break;
                 case "Length ASC":
                     Parts = new BindingList<Part>(Parts.OrderBy(t => t.Length).ToList());
                     break;
@@ -362,10 +369,10 @@ namespace CuttingPlanMaker
                     Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Material).ToList());
                     break;
                 case "Source ASC":
-                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.Source.Name).ToList());
+                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.Source?.Name).ToList());
                     break;
                 case "Source DESC":
-                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Source.Name).ToList());
+                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Source?.Name).ToList());
                     break;
 
                 default:
@@ -408,7 +415,12 @@ namespace CuttingPlanMaker
                 case "Thickness DESC":
                     Stock = new BindingList<Board>(Stock.OrderByDescending(t => t.Material).ToList());
                     break;
-
+                case "Waste_perc ASC":
+                    Stock = new BindingList<Board>(Stock.OrderBy(t => t.Waste_perc).ToList());
+                    break;
+                case "Waste_perc DESC":
+                    Stock = new BindingList<Board>(Stock.OrderByDescending(t => t.Waste_perc).ToList());
+                    break;
                 default:
                     break;
             }
@@ -681,7 +693,10 @@ namespace CuttingPlanMaker
                 Stock.ToList().ForEach(t =>
                 {
                     if (!t.IsFrozen)
+                    {
                         t.IsComplete = false;
+                        t.AreaUsed = 0;
+                    }
                 });
 
                 PackerBase packer = (PackerBase)Activator.CreateInstance(GetPackerType());
@@ -1377,12 +1392,18 @@ namespace CuttingPlanMaker
 
 
             //update summary table
+            var selectedstock= Stock.Where(q => q.Material == SelectedMaterial);
             lblStockCount.Text = Stock.Count(q => q.Material == SelectedMaterial).ToString();
-            double StockArea = Stock.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6;
-            lblStockArea.Text = StockArea.ToString("0.000");
+            double StockArea = selectedstock.Sum(t => t.Area) / 1e6;
+            var mat = Materials.FirstOrDefault(f => f.Name == SelectedMaterial);
+            double StockVol = StockArea * (mat?.Thickness ?? 0.00) / 1e3f;
+            lblStockArea.Text = StockVol.ToString("0.000");
+
             lblUsedStockCount.Text = Parts.Where(t => t.Material == SelectedMaterial && t.Source != null).Select(p => p.Source).Distinct().Count().ToString();
             double UsedStockArea = Parts.Where(t => t.Material == SelectedMaterial && t.Source != null).Select(p => p.Source).Distinct().Sum(s => s.Area) / 1e6f;
-            lblUsedStockArea.Text = UsedStockArea.ToString("0.000");
+            double UsedVol = UsedStockArea * (mat?.Thickness ?? 0.00) / 1e3f;
+            lblUsedStockArea.Text = UsedVol.ToString("0.000");
+
             int partscount = Parts.Count(q => q.Material == SelectedMaterial);
             lblPartsCount.Text = partscount.ToString();
             lblPartsArea.Text = (Parts.Where(q => q.Material == SelectedMaterial).Sum(t => t.Area) / 1e6f).ToString("0.000");
@@ -1390,6 +1411,9 @@ namespace CuttingPlanMaker
             lblUsedPartsCount.Text = placedpartcount.ToString();
             double UsedPartsArea = (Parts.Where(q => q.Material == SelectedMaterial && q.Source != null).Sum(t => t.Area) / 1e6f);
             lblUsedPartsArea.Text = UsedPartsArea.ToString("0.000");
+
+            double StockCost = StockVol * (mat?.Cost ?? 0.00);
+            lblCost.Text = StockCost.ToString("0.00");
             if (placedpartcount < partscount)
             {
                 lblUsedPartsCount.BackColor = Color.DarkRed;
@@ -1900,7 +1924,7 @@ namespace CuttingPlanMaker
             var t = Stock[e.RowIndex];
             if (t.IsFrozen)
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DeepSkyBlue;
-            else if (Parts.Count(p => p.Source == t) == 0)
+            else if (t.AreaUsed==0)
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DarkGray;
             else
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
@@ -1947,5 +1971,24 @@ namespace CuttingPlanMaker
 
         #endregion
 
+        private void partsCostListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new PartCostListReport()
+                .Generate(Settings, Materials, Stock, Parts);
+
+            string filename = "";
+            for (int c = 0; c < 1000; c++)
+                try
+                {
+                    filename = $"PartsReport{(c == 0 ? "" : c.ToString())}.pdf";
+                    t.Save(filename);
+                    break;
+                }
+                catch
+                {
+                }
+            if (File.Exists(filename))
+                Process.Start(filename);
+        }
     }
 }

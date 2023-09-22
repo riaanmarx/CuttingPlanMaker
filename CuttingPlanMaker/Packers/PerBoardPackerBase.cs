@@ -85,6 +85,7 @@ namespace CuttingPlanMaker.Packers
                 foreach (var iThread in threads)
                 {
                     var iAreapacked = iThread.Value.parts.Where(f => f.Source == iThread.Value.board).Sum(p => p.Area);
+                    iThread.Value.board.AreaUsed = iAreapacked;
                     var iAreaLeft = iThread.Value.board.Area - iAreapacked;
                     if (iAreapacked > 0 && iAreaLeft < bestAreaLeft)
                     {

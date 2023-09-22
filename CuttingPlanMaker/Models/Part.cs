@@ -13,9 +13,16 @@ namespace CuttingPlanMaker
     public class Part
     {
         /// <summary>
-        /// A name for the part
+        /// A name for the part...maybe rename to "Id" later???
         /// </summary>
         public string Name { get; set; }
+        //public string Name { get { return _Name; } set { _Name = value; LongName = value; } }
+        //private string _Name = null;
+
+        /// <summary>
+        /// A longer name/description for the part
+        /// </summary>
+        public string LongName { get; set; }
 
         /// <summary>
         /// The material from which this part is to be made
@@ -71,6 +78,7 @@ namespace CuttingPlanMaker
             return new Part
             {
                 Name = this.Name,
+                LongName = this.LongName,
                 Material = this.Material,
                 Length = this.Length,
                 Width = this.Width,

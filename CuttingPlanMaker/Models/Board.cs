@@ -37,6 +37,10 @@ namespace CuttingPlanMaker
         /// </summary>
         public double Area => Length * Width;
 
+        public double AreaUsed=0;
+
+        public double Waste_perc => Math.Round(100*(Area - AreaUsed) / Area,1);
+
         /// <summary>
         /// Flag indicating if this board has been packed already
         /// </summary>
@@ -72,7 +76,8 @@ namespace CuttingPlanMaker
                 Name = this.Name,
                 OffsetLength = this.OffsetLength,
                 OffsetWidth = this.OffsetWidth,
-                Width = this.Width
+                Width = this.Width,
+                AreaUsed = 0
             };
         }
 

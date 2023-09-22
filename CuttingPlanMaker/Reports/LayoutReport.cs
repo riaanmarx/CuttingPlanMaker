@@ -60,8 +60,10 @@ namespace CuttingPlanMaker
             g.FillRectangle(System.Drawing.Brushes.DarkRed, (float)(xMargin), (float)yMargin, (float)board.Length, (float)board.Width);
 
             // loop through all the parts and draw the ones on the current board
+            int partnum = 0;
             foreach (var iPart in parts)
             {
+                partnum++;
                 // draw the part
                 g.FillRectangle(System.Drawing.Brushes.Green,
                     (float)(xMargin + iPart.OffsetLength),
@@ -70,10 +72,12 @@ namespace CuttingPlanMaker
                     (float)iPart.Width);
 
                 // print the part text
-                string text1 = $"{iPart.Name} [{iPart.Length} x {iPart.Width}]";
+                string text1 = 
+                    //$"{partnum} [{iPart.Length} x {iPart.Width}]";
+                    $"{iPart.Name} [{iPart.Length} x {iPart.Width}]";
                 System.Drawing.Font partFont = new System.Drawing.Font(new System.Drawing.FontFamily("Consolas"), 15);
                 System.Drawing.SizeF textSize = g.MeasureString(text1, partFont);
-                if (textSize.Width > iPart.Length) text1 = iPart.Name;
+                if (textSize.Width > iPart.Length) text1 = $"{iPart.Name}";
                 textSize = g.MeasureString(text1, partFont);
                 g.DrawString(text1, partFont, System.Drawing.Brushes.White,
                     (int)(xMargin + iPart.OffsetLength + iPart.Length / 2.0 - textSize.Width / 2.0),
@@ -130,7 +134,7 @@ namespace CuttingPlanMaker
             headerTable.Columns[2].Width = Unit.FromCentimeter(2.6);
             #endregion
 
-            #region // write content into document ...
+            #region // write detail content into document ...
             var heading = mainSection.AddParagraph("Solution Detail");
             heading.Format.Font.Bold = true;
             heading.Format.Font.Size = 10;
@@ -159,6 +163,8 @@ namespace CuttingPlanMaker
                 var iMaterial = Materials.First(t => t.Name == iStock.Material);
                 var packedParts = Parts.Where(p => p.Source == iStock);
                 int packedPartsCount = packedParts.Count();
+                if (packedPartsCount == 0) continue;
+
                 double TotalpackedArea = packedParts.Sum(p => p.Area);
 
                 iRow = table.AddRow();
@@ -174,8 +180,10 @@ namespace CuttingPlanMaker
                 iRow[5].AddParagraph($"({(TotalpackedArea / iStock.Area).ToString("0.0%")})");
 
                 bool altRow = false;
+                int partnum = 0;
                 foreach (var iPart in packedParts)
                 {
+                    partnum++;
                     //if (Settings.IncludePaddingInReports)
                     //    iPart.Inflate(Settings.PartPaddingWidth, Settings.PartPaddingLength);
                     iRow = table.AddRow();
@@ -184,7 +192,7 @@ namespace CuttingPlanMaker
 
                     iRow[0].MergeRight = 1;
                     iRow[0].Format.Alignment = ParagraphAlignment.Right;
-                    iRow[0].AddParagraph(iPart.Name);
+                    iRow[0].AddParagraph($"{iPart.Name}:{iPart.LongName}");
                     iRow[2].AddParagraph(iPart.Length.ToString("0.0"));
                     iRow[3].AddParagraph(iPart.Width.ToString("0.0"));
                     iRow[4].AddParagraph("@");
@@ -251,7 +259,9 @@ namespace CuttingPlanMaker
                 iRow = table.AddRow();
 
             }
+            #endregion
 
+            #region // Add summary section to document
             table = mainSection.AddTable();
             table.Rows.LeftIndent = 10;
             table.AddColumn("3cm").Format.Alignment = ParagraphAlignment.Left;
@@ -318,6 +328,63 @@ namespace CuttingPlanMaker
             table[5, 3].AddParagraph("%");
             table[6, 3].AddParagraph("%");
 
+
+            #endregion
+
+            #region // Add Material/board summary to the document
+            //table = mainSection.AddTable();
+            //table.Rows.LeftIndent = 10;
+            //table.AddColumn("3cm").Format.Alignment = ParagraphAlignment.Left;
+            //table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
+            //table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
+            //table.AddColumn("1.5cm").Format.Alignment = ParagraphAlignment.Right;
+            //table.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Right;
+            //table.AddColumn("3cm").Format.Alignment = ParagraphAlignment.Right;
+            //table.AddColumn("3cm").Format.Alignment = ParagraphAlignment.Right;
+            //table.AddRow()[0].MergeRight = 6;
+            
+            //heading = table[0, 0].AddParagraph("Material Summary");
+            //heading.Format.Font.Bold = true;
+            //heading.Format.Font.Size = 10;
+            //heading.Format.Font.Underline = Underline.Single;
+
+            //var hrow = table.AddRow();
+            //hrow[0].AddParagraph("Board");
+            //hrow[1].AddParagraph("Length");
+            //hrow[2].AddParagraph("Width"); 
+            //hrow[3].AddParagraph("Thickness");
+            //hrow[4].AddParagraph("Volume");
+            //hrow[5].AddParagraph("R/m3");
+            //hrow[6].AddParagraph("Total");
+
+            //int rc = 0;
+            //double totalprice = 0;
+
+            //foreach (var iboard in Stock)
+            //{
+            //    var imat = Materials.FirstOrDefault(t => t.Name == iboard.Material);
+            //    var irow = table.AddRow();
+            //    if (rc++ % 2 == 0) irow.Shading.Color = Colors.WhiteSmoke;
+            //    irow[0].AddParagraph(iboard.Name);
+            //    irow[1].AddParagraph(iboard.Length.ToString("0.0"));
+            //    irow[2].AddParagraph(iboard.Width.ToString("0.0"));
+            //    irow[3].AddParagraph(imat.Thickness.ToString("0.0"));
+
+            //    var vol = (iboard.Length * iboard.Width * imat.Thickness) / 1e9;
+            //    var price = vol * imat.Cost;
+            //    totalprice += price;
+
+            //    irow[4].AddParagraph(vol.ToString("0.000"));
+            //    irow[5].AddParagraph(imat.Cost.ToString("R 0.00"));
+            //    irow[6].AddParagraph(price.ToString("R 0.00"));
+            //}
+            //var trow = table.AddRow();
+            //trow.Shading.Color = Colors.Silver;
+            //trow.Format.Font.Bold = true;
+            //trow.Format.Font.Size = 10;
+            //trow[6].AddParagraph(totalprice.ToString("R 0.00"));
+
+            //table.Rows[0].KeepWith = Stock.Count+2;
 
             #endregion
 
