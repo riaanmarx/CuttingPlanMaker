@@ -55,34 +55,53 @@ namespace CuttingPlanMaker
             Unit rowHeight = (mainSection.PageSetup.PageHeight - TopMargin - BottomMargin ) / rowCount - table.Borders.Width * 2;
             for (int i = 0; i < colCount; i++)
                 table.AddColumn(colWidth);
-            for (int i = 0; i * colCount < Parts.Count; i++)
-                table.AddRow().Height = rowHeight;
+            //for (int i = 0; i * colCount < Parts.Count; i++)
+            //    table.AddRow().Height = rowHeight;
 
             //loop through all the stock items
-            int cntr = 0;
             foreach (var iStock in Stock)
             {
+                if (Parts.FirstOrDefault(p => p.Source == iStock) == null) continue;
+                var stocktitlerow=table.AddRow();
+                var titlecell = stocktitlerow.Cells[0];
+                titlecell.MergeRight = colCount - 1;
+                titlecell.Format.Font.Bold = true;
+                titlecell.Format.Font.Size = 20;
+                titlecell.AddParagraph("Board: " + iStock.Name);
+                titlecell.Row.TopPadding = 10;
                 // loop throug all the parts placed on the stock item (if any)
-                foreach(var iPart in Parts.Where(p => p.Source == iStock))
+                int cntr = 0;
+                Row iRow = null;
+                foreach (var iPart in Parts.Where(p => p.Source == iStock))
                 {
+                    if (cntr % colCount == 0)
+                        iRow = table.AddRow();
                     // determine the column and row for the part record in the table
-                    int cindex = cntr % (colCount);
-                    int rindex = cntr / (colCount);
-                    
+                    var clabel = iRow[cntr % colCount]; 
+                    clabel.Borders.Bottom.Color = Colors.Black;
+                    clabel.Borders.Bottom.Width = 1;
+                    clabel.Borders.Top.Color = Colors.Black;
+                    clabel.Borders.Top.Width = 1;
+                    clabel.Borders.Left.Color = Colors.Black;
+                    clabel.Borders.Left.Width = 1;
+                    clabel.Borders.Right.Color = Colors.Black;
+                    clabel.Borders.Right.Width = 1;
+
                     // create a nested table to organise the part info on the label
                     Table labelTable = new Table();
+                    clabel.Elements.Add(labelTable);
                     // add the nested table to the table managing the labels
-                    table[rindex, cindex].Elements.Add(labelTable);
                     labelTable.AddColumn(colWidth);
                     labelTable.AddRow();
                     labelTable.AddRow();
                     labelTable.AddRow();
-                    labelTable.AddRow();
-                    labelTable.AddRow();
+                    //labelTable.AddRow();
+                    //labelTable.AddRow();
 
                     Cell c = labelTable[0, 0];  // top row := part's name
                     c.Format.Font.Bold = true;
                     c.Format.Font.Size = 15;
+                    
                     c.AddParagraph(iPart.Name);
 
                     c = labelTable[1, 0];       // Second row := dimensions
@@ -102,6 +121,8 @@ namespace CuttingPlanMaker
 
                     cntr++;
                 }
+
+                titlecell.Row.KeepWith = cntr % colCount;
             }
 
             #endregion
