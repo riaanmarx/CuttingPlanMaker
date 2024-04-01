@@ -3,6 +3,7 @@ using MigraDoc.DocumentObjectModel.Tables;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,94 @@ namespace CuttingPlanMaker
     /// </summary>
     class CuttingLabelReport : ReportBase
     {
+        /// <summary>
+        /// internal class to host a base64 image
+        /// </summary>
+        private class Base64Image
+        {
+            /// <summary>
+            /// The base64 string containing the image
+            /// </summary>
+            public string image;
+
+            /// <summary>
+            /// The height of the image contained in the base64 string
+            /// </summary>
+            public int Height;
+
+            /// <summary>
+            /// The width of the image contained in the base64 string
+            /// </summary>
+            public int Width;
+        }
+
+        /// <summary>
+        /// Draw a board to an image and return the image as a base64 string
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns></returns>
+        private Base64Image DrawBoard_base64(Board board, IEnumerable<Part> parts)
+        {
+            // constants used in drawing the image
+            const double xMargin = 0;
+            const double yMargin = 20;
+            double imageHeight = board.Width + 2 * yMargin;
+            double imageWidth = board.Length + 2 * xMargin;
+
+            // create bitmap
+            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap((int)imageWidth, (int)imageHeight);
+            System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bitmap);
+
+            // fill the background
+            g.FillRectangle(System.Drawing.Brushes.White, 0, 0, (int)imageWidth, (int)imageHeight);
+
+            // draw the board
+            g.FillRectangle(System.Drawing.Brushes.DarkRed, (float)(xMargin), (float)yMargin, (float)board.Length, (float)board.Width);
+
+            // loop through all the parts and draw the ones on the current board
+            int partnum = 0;
+            foreach (var iPart in parts)
+            {
+                partnum++;
+                // draw the part
+                g.FillRectangle(System.Drawing.Brushes.Green,
+                    (float)(xMargin + iPart.OffsetLength),
+                    (float)(yMargin + iPart.OffsetWidth),
+                    (float)iPart.Length,
+                    (float)iPart.Width);
+
+                // print the part text
+                string text1 = $"{iPart.Name}";
+                
+                System.Drawing.Font partFont = new System.Drawing.Font(new System.Drawing.FontFamily("Consolas"), 15);
+                System.Drawing.SizeF textSize = g.MeasureString(text1, partFont);
+                textSize = g.MeasureString(text1, partFont);
+                g.DrawString(text1, partFont, System.Drawing.Brushes.White,
+                    (int)(xMargin + iPart.OffsetLength + iPart.Length / 2.0 - textSize.Width / 2.0),
+                    (int)(yMargin + iPart.OffsetWidth + iPart.Width / 2.0 - textSize.Height / 2.0));
+            }
+
+            // make sure the cache is empty
+            g.Flush();
+
+            // convert image to base64 image
+            System.IO.MemoryStream ms = new MemoryStream();
+            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+            byte[] byteImage = ms.ToArray();
+            var base64img = Convert.ToBase64String(byteImage);
+
+            // return the class for the image
+            return new Base64Image()
+            {
+                image = base64img,
+                Height = bitmap.Height,
+                Width = bitmap.Width
+            };
+        }
+
+
+
+
         /// <summary>
         /// Generate the PDF report
         /// </summary>
@@ -55,29 +144,52 @@ namespace CuttingPlanMaker
             Unit rowHeight = (mainSection.PageSetup.PageHeight - TopMargin - BottomMargin ) / rowCount - table.Borders.Width * 2;
             for (int i = 0; i < colCount; i++)
                 table.AddColumn(colWidth);
-            //for (int i = 0; i * colCount < Parts.Count; i++)
-            //    table.AddRow().Height = rowHeight;
-
             //loop through all the stock items
             foreach (var iStock in Stock)
             {
-                if (Parts.FirstOrDefault(p => p.Source == iStock) == null) continue;
+                // filter the parts for the current stock
+                var iParts = Parts.Where(p => p.Source == iStock);
+                // if the stock has no parts assigned to it, skip the stock
+                if (iParts.Count() == 0) continue;
+
+                // add the board/stock title row
                 var stocktitlerow=table.AddRow();
                 var titlecell = stocktitlerow.Cells[0];
                 titlecell.MergeRight = colCount - 1;
                 titlecell.Format.Font.Bold = true;
                 titlecell.Format.Font.Size = 20;
-                titlecell.AddParagraph("Board: " + iStock.Name);
+                titlecell.AddParagraph($"Board: {iStock.Name} [{iStock.Length} x {iStock.Width}]");
                 titlecell.Row.TopPadding = 10;
+
+                // draw the board loayout image
+                var bitmap = DrawBoard_base64(iStock, iParts);
+                var img = titlecell.AddImage("base64:" + bitmap.image);
+                img.LockAspectRatio = true;
+
+                double maximgwidth = mainSection.PageSetup.PageWidth - LeftMargin - RightMargin - Unit.FromCentimeter(1);
+                double maximgheight = Unit.FromCentimeter(2.5);
+                double xscale = bitmap.Width / maximgwidth;
+                double yscale = bitmap.Height / maximgheight;
+
+                if (xscale > yscale)
+                    img.Width = mainSection.PageSetup.PageWidth - LeftMargin - RightMargin - Unit.FromCentimeter(1);
+                else
+                    img.Height = maximgheight;
+
                 // loop throug all the parts placed on the stock item (if any)
                 int cntr = 0;
                 Row iRow = null;
-                foreach (var iPart in Parts.Where(p => p.Source == iStock))
+                int rowcntr = 0;
+                foreach (var iPart in iParts)
                 {
                     if (cntr % colCount == 0)
+                    {
+                        rowcntr++;
                         iRow = table.AddRow();
-                    // determine the column and row for the part record in the table
-                    var clabel = iRow[cntr % colCount]; 
+                    }
+                    //determine the column and row for the part record in the table
+
+                   var clabel = iRow[cntr % colCount];
                     clabel.Borders.Bottom.Color = Colors.Black;
                     clabel.Borders.Bottom.Width = 1;
                     clabel.Borders.Top.Color = Colors.Black;
@@ -87,7 +199,7 @@ namespace CuttingPlanMaker
                     clabel.Borders.Right.Color = Colors.Black;
                     clabel.Borders.Right.Width = 1;
 
-                    // create a nested table to organise the part info on the label
+                    //create a nested table to organise the part info on the label
                     Table labelTable = new Table();
                     clabel.Elements.Add(labelTable);
                     // add the nested table to the table managing the labels
@@ -95,34 +207,21 @@ namespace CuttingPlanMaker
                     labelTable.AddRow();
                     labelTable.AddRow();
                     labelTable.AddRow();
-                    //labelTable.AddRow();
-                    //labelTable.AddRow();
 
                     Cell c = labelTable[0, 0];  // top row := part's name
                     c.Format.Font.Bold = true;
                     c.Format.Font.Size = 15;
-                    
+
                     c.AddParagraph(iPart.Name);
 
                     c = labelTable[1, 0];       // Second row := dimensions
                     c.Format.Font.Size = 12;
                     c.AddParagraph($"[{iPart.Length:0.0} x {iPart.Width:0.0}]");
 
-                    //c = labelTable[2, 0];       // Third row := padding dimensions
-                    //c.Format.Font.Size = 8;
-                    //c.AddParagraph($" + [{(2 * Settings.PartPaddingLength):0.0} x {(2 * Settings.PartPaddingWidth):0.0}]");
-
-                    //c = labelTable[3, 0];       // Fourth row := board name
-                    //c.AddParagraph().AddFormattedText("on ").AddFormattedText($"{iStock.Name}", TextFormat.Bold);
-
-                    //c = labelTable[4, 0];       // Fifth row := placement offset
-                    //c.Format.Font.Size = 8;
-                    //c.AddParagraph($"@ ({iPart.OffsetLength:0.0}, {iPart.OffsetWidth:0.0})");
-
                     cntr++;
                 }
 
-                titlecell.Row.KeepWith = cntr % colCount;
+                titlecell.Row.KeepWith = rowcntr;
             }
 
             #endregion

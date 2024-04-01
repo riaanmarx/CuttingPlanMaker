@@ -85,5 +85,16 @@ namespace CuttingPlanMaker
         /// Selection of the algorithm to use when packing the parts
         /// </summary>
         public string Algorithm { get; set; }
+
+        /// <summary>
+        /// The amount with which to reduct the board width prior to planning (to account for unparallel edges)
+        /// </summary>
+        public double BoardWidthReduction { get; set; }
+
+        /// <summary>
+        /// The amount with which to reduct the board length prior to planning (to account for bad ends)
+        /// </summary>
+        public double BoardLengthReduction { get; set; }
+
     }
 }

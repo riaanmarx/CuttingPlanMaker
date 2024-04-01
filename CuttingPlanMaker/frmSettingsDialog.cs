@@ -36,6 +36,9 @@ namespace CuttingPlanMaker
             dtpTargetDate.Value = DateTime.Parse(_settings.TargetDate ?? DateTime.Now.ToLongDateString());
             cbIncludePaddingOnReports.Checked = _settings.IncludePaddingInReports ;
             cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay ;
+            tbBoardCutLen.Text = _settings.BoardLengthReduction.ToString();
+            tbBoardCutWid.Text = _settings.BoardWidthReduction.ToString();
+
             //cbDrawID.Checked = _settings.DrawID;
 
             // populate items for algorithms
@@ -54,8 +57,10 @@ namespace CuttingPlanMaker
         {
             // populate the new values back to the instance
             _settings.BladeKerf = double.Parse(tbSawBladeKerf.Text);
-            //_settings.PartPaddingLength = double.Parse(tbPartPaddingLength.Text);
-            //_settings.PartPaddingWidth = double.Parse(tbPartPaddingWidth.Text);
+            _settings.PartPaddingLength = double.Parse(tbPartPaddingLength.Text);
+            _settings.PartPaddingWidth = double.Parse(tbPartPaddingWidth.Text);
+            _settings.BoardLengthReduction = double.Parse(tbBoardCutLen.Text);
+            _settings.BoardWidthReduction = double.Parse(tbBoardCutWid.Text);
             _settings.AutoRepack = cbAutoRecalc.Checked;
             _settings.DrawUnusedStock = cbDrawUnused.Checked;
             _settings.ResultOrientation = ddlPacker.Text;
@@ -69,8 +74,23 @@ namespace CuttingPlanMaker
             _settings.ClientAddr = tbClientAddr.Text;
             _settings.TargetDate = dtpTargetDate.Value.ToLongDateString();
             _settings.Algorithm = ddlPacker.Text;
+
             //_settings.DrawID = cbDrawID.Checked;
         }
 
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void frmSettingsDialog_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

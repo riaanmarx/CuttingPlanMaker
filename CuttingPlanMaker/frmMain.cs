@@ -701,15 +701,39 @@ namespace CuttingPlanMaker
 
                 PackerBase packer = (PackerBase)Activator.CreateInstance(GetPackerType());
 
-                // filter the parts and stock for te current material and pack them
+                // filter the parts and stock for each material and pack them
                 Materials.Select(t => t.Name).Where(q => q != "DISABLED").AsParallel().ForAll((Action<string>)(iMaterialsName =>
                       {
-                          Part[] iParts = Parts.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
-                          Board[] iStock = Stock.Where(t => t.Material == iMaterialsName && !t.IsFrozen).ToArray();
+                          Part[] iParts = Parts.Where(t => t.Material == iMaterialsName && !t.IsFrozen).Select(p=>
+                          {
+                              p.Length += Settings.PartPaddingLength;
+                              p.Width += Settings.PartPaddingWidth;
+                              return p;
+                          }).ToArray();
+
+                          Board[] iStock = Stock.Where(t => t.Material == iMaterialsName && !t.IsFrozen).Select(b=>
+                          {
+                              b.Length -= Settings.BoardLengthReduction;
+                              b.Width -= Settings.BoardWidthReduction;
+                              return b;
+                          }).ToArray();
 
                           packer.Pack(iParts
                               , iStock
                               , this.Settings.BladeKerf);
+
+                          foreach (var iPart in iParts)
+                          {
+                              iPart.Length -= Settings.PartPaddingLength;
+                              iPart.Width -= Settings.PartPaddingWidth;
+                          }
+
+                          foreach (var iboard in iStock)
+                          {
+                              iboard.Length += Settings.BoardLengthReduction;
+                              iboard.Width += Settings.BoardWidthReduction;
+                          }
+
                       }));
             }
             catch (Exception ex)
@@ -1440,9 +1464,7 @@ namespace CuttingPlanMaker
                 if (userOffset.Y > LayoutBitmap.Height / 2) userOffset.Y = LayoutBitmap.Height / 2;
                 if (selectedPart != null)
                     userZoomFactor = Math.Max(userZoomFactor, (float)pbLayout.Width / (float)selectedPart.Length / unityScaleFactor / (float)Math.Pow(1.2f, 3));
-                else
-                    userZoomFactor = userZoomFactor;
-
+                
                 pbLayout.Invalidate();
             }
             if (e.Button == MouseButtons.Right)

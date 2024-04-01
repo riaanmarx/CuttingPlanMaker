@@ -17,7 +17,7 @@ namespace CuttingPlanMaker.Packers
             partsorder = "DESPERIM";
         }
     }
-    class MAXRECT_DESCA: MAXRECT_DESCL
+    class MAXRECT_DESCA : MAXRECT_DESCL
     {
         new public static string AlgorithmName => "MAXRECT_DESCA";
         public MAXRECT_DESCA()
@@ -41,8 +41,8 @@ namespace CuttingPlanMaker.Packers
     {
         new public static string AlgorithmName => "MAXRECT_DESCL";
 
-#if drawdbgimages
-        private Bitmap Drawboard_debug(StockItem board, RectangleF[] freerects, int len)
+#if true//drawdbgimages
+        private Bitmap Drawboard_debug(Board board, RectangleF[] freerects, Part[] parts)
         {
             double xMargin = 50;
             double yMargin = 50;
@@ -53,36 +53,39 @@ namespace CuttingPlanMaker.Packers
             // create bitmap
             Bitmap bitmap = new Bitmap((int)imageWidth, (int)imageHeight);
             Graphics g = Graphics.FromImage(bitmap);
+
             // draw the board
             g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
 
+            // draw the parts placed
+            for (int i = 0; i < parts.Length; i++)
+            {
+                var iPart = parts[i];
+                if (iPart.Source == null) continue;
+
+                // draw the part
+                g.FillRectangle(Brushes.Green, (float)(xMargin + iPart.OffsetLength), (float)(yMargin + iPart.OffsetWidth), (float)iPart.Length, (float)iPart.Width);
+
+                // print the part text
+                //string partLabel = $"{iPart}";
+                //Font partFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
+                //g.DrawString(partLabel, partFont, Brushes.Black, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth));
+            }
+
             //draw the board segments
-            for (int i = 0; i < len; i++)
+            for (int i = 0; i < freerects.Length; i++)
             {
                 Rectangle t = Rectangle.Round(freerects[i]);
                 t.Offset((int)xMargin, (int)yMargin);
                 //g.DrawRectangle(Pens.Red, t);
                 g.FillRectangle(new SolidBrush(Color.FromArgb(200,Color.Red)), t);
-
             }
 
-            // draw the parts placed
-            for (int i = 0; i < board.PackedPartsCount; i++)
-            {
-                Placement iPlacement = board.PackedParts[i];
-
-                // draw the part
-                g.FillRectangle(Brushes.Green, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth), (float)iPlacement.Part.Length, (float)iPlacement.Part.Width);
-
-                // print the part text
-                string partLabel = $"{iPlacement.Part.Name}";
-                Font partFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
-                g.DrawString(partLabel, partFont, Brushes.Black, (float)(xMargin + iPlacement.dLength), (float)(yMargin + iPlacement.dWidth));
-            }
+            
             // draw the board
             //g.DrawRectangle(Pens.Black, (float)xMargin, (float)yMargin, (float)board.Length, (float)board.Width);
-            Font aFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
-            g.DrawString((board.PackingCoverage).ToString("0.00%"), aFont, Brushes.Black, (float)(xMargin), (float)(bitmap.Height - yMargin));
+            //Font aFont = new Font(new FontFamily("Microsoft Sans Serif"), 10);
+            //g.DrawString((board.PackingCoverage).ToString("0.00%"), aFont, Brushes.Black, (float)(xMargin), (float)(bitmap.Height - yMargin));
 
             g.Flush();
             return bitmap;
@@ -114,15 +117,17 @@ namespace CuttingPlanMaker.Packers
             }
             if (parts.Length == 0) return;
             RectangleF[] F = new RectangleF[7 * parts.Length];
-            F[0] = new RectangleF(0,0,(float)iBoard.Length,(float)iBoard.Width);
+            F[0] = new RectangleF(0, 0, (float)(iBoard.Length+sawkerf), (float)(iBoard.Width+sawkerf));
             int F_len = 1;
+
+            var packingId = Guid.NewGuid();
 
             for (int i = 0; i < orderredParts.Length; i++)
             {
                 var iPart = orderredParts[i];
-                RectangleF Fi = F.OrderBy(o=>o.Width*o.Height).FirstOrDefault(q => q.Width >= iPart.Length && q.Height >= iPart.Width);
-                
-                if (Fi == RectangleF.Empty) continue;
+                RectangleF Fi = F.OrderBy(o => o.Width * o.Height).FirstOrDefault(q => q.Width >= iPart.Length+sawkerf && q.Height >= iPart.Width+sawkerf);
+
+                if (Fi == RectangleF.Empty) continue; // if the current rect has been removed, continue to the next rect
 
                 iPart.Source = iBoard;
                 iPart.OffsetLength = Fi.Left;
@@ -136,38 +141,66 @@ namespace CuttingPlanMaker.Packers
                     if (Fi.IntersectsWith(B))
                     {
                         //compute Fi \ B, subdivided into rectangles G1..G4
-                        if (B.Right < Fi.Right)
-                            F[F_len++] = new RectangleF(B.Right,Fi.Top,Fi.Right-B.Right ,Fi.Height);
-                        if (B.Left > Fi.Left)
-                            F[F_len++] = new RectangleF(Fi.Left, Fi.Top, B.Left - Fi.Left , Fi.Height);
-                        if (B.Top > Fi.Top)
-                            F[F_len++] = new RectangleF(Fi.Left, Fi.Top, Fi.Width, B.Top - Fi.Top );
-                        if (B.Bottom < Fi.Bottom)
-                            F[F_len++] = new RectangleF(Fi.Left, B.Bottom , Fi.Width, Fi.Bottom - B.Bottom );
+                        if (B.Right < Fi.Right) // if the part's right edge is to the left of the free rect's right edge
+                            F[F_len++] = new RectangleF(B.Right, Fi.Top, Fi.Right - B.Right, Fi.Height); //add a free rect the full height of the free rect, right of the part
 
-                        F[findex] = RectangleF.Empty;
+                        if (B.Left > Fi.Left) // if the part's left edge is to the right of the free rect's left edge
+                            F[F_len++] = new RectangleF(Fi.Left, Fi.Top, B.Left - Fi.Left, Fi.Height); // add a free rect the full height of the free rect, left of the part
+
+                        if (B.Top > Fi.Top) // if the part's top is lower than the free rect's top
+                            F[F_len++] = new RectangleF(Fi.Left, Fi.Top, Fi.Width, B.Top - Fi.Top); // add a free rect the full width of the free rect, above the part
+
+                        if (B.Bottom < Fi.Bottom) // if the part's bottom is higher than the free rect's bottom
+                            F[F_len++] = new RectangleF(Fi.Left, B.Bottom, Fi.Width, Fi.Bottom - B.Bottom); // add a free rect the full width of the free rect, below the part
+
+                        F[findex] = RectangleF.Empty; // remove the original free rect
                     }
                 }
 
-                // order by Left,Top ascending
+                //remove free rects fully included in other free rects
+                for (int j = 0; j < F.Length; j++)
+                {
+                    if (F[j] == Rectangle.Empty) continue;
+                    for (int k = 0; k < F.Length; k++)
+                    {
+                        if (F[k] == Rectangle.Empty || k==j) continue;
+                        if (F[j].Contains(F[k]))
+                            F[k] = Rectangle.Empty;
+                    }
+                }
+
+                //if this is the board we are interested in
+                //  draw the board, free rectangles and the parts placed
+                //var bmp = Drawboard_debug(iBoard, F, parts);
+                //bmp.Save($"out_{i}.bmp");
+
+                //Drawboard_debug(iBoard, F, F_len).Save($"{iBoard.Name}_{i}.bmp");
+
+
+
+                /*
+                // order by Left,Top ascending to ease the removal of included rects
                 RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Left * iBoard.Width + o.Top).ToArray();
+
+                //remove free rects included in other free rects
                 for (int j = 0; j < Forderred.Length - 1; j++)
                 {
                     int k = j + 1;
                     while (k < Forderred.Length && ContainedIn(Forderred[j], Forderred[k]))
                     {
                         int index = Array.IndexOf(F, Forderred[k]);
-                        if(index>=0) F[index] = RectangleF.Empty;
+                        if (index >= 0) F[index] = RectangleF.Empty;
                         k++;
                     }
                 }
+                */
 
 #if drawdbgimages
                 Drawboard_debug(iBoard, F, F_len).Save($"{iBoard.Name}_{i}.bmp");  
 #endif
             }
 
-           
+
         }
 
         private bool ContainedIn(RectangleF outerR, RectangleF inner)
