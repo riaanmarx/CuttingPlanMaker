@@ -38,6 +38,7 @@ namespace CuttingPlanMaker
             cbIncludePaddingOnDisplay.Checked = _settings.IncludePaddingInDisplay ;
             tbBoardCutLen.Text = _settings.BoardLengthReduction.ToString();
             tbBoardCutWid.Text = _settings.BoardWidthReduction.ToString();
+            cbFilterReports.Checked = _settings.FilterReportsForMaterial;
 
             //cbDrawID.Checked = _settings.DrawID;
 
@@ -75,6 +76,8 @@ namespace CuttingPlanMaker
             _settings.TargetDate = dtpTargetDate.Value.ToLongDateString();
             _settings.Algorithm = ddlPacker.Text;
 
+            _settings.FilterReportsForMaterial = cbFilterReports.Checked;
+
             //_settings.DrawID = cbDrawID.Checked;
         }
 
@@ -89,6 +92,11 @@ namespace CuttingPlanMaker
         }
 
         private void frmSettingsDialog_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cbFilterReports_CheckedChanged(object sender, EventArgs e)
         {
 
         }

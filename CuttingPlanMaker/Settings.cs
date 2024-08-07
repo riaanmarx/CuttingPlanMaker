@@ -96,5 +96,7 @@ namespace CuttingPlanMaker
         /// </summary>
         public double BoardLengthReduction { get; set; }
 
+        public bool FilterReportsForMaterial { get; set; }
+
     }
 }

@@ -282,7 +282,7 @@ namespace CuttingPlanMaker
                     double Width = iPart.Width;
 
                     // draw the part
-                    if (iPart.Name == (selectedpart?.Name??"somenonamevaluehere"))
+                    if (iPart.Name == (selectedpart?.Name ?? "somenonamevaluehere"))
                         g.FillRectangle(Brushes.LimeGreen, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
                     else
                         g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
@@ -1283,7 +1283,7 @@ namespace CuttingPlanMaker
             string SelectedMaterial = tcMaterials.SelectedTab.Name;
 
             var t = new PartListReport()
-                .Generate(Settings, Materials, Stock, new BindingList<Part>(Parts.Where(p=>p.Material == SelectedMaterial).ToList()));
+                .Generate(Settings, Materials, Stock, new BindingList<Part>(Parts.Where(p => p.Material == SelectedMaterial || !Settings.FilterReportsForMaterial).ToList()));
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1305,7 +1305,7 @@ namespace CuttingPlanMaker
             string SelectedMaterial = tcMaterials.SelectedTab.Name;
 
             var t = new StockReport()
-                .Generate(Settings, Materials, new BindingList<Board>(Stock.Where(s=>s.Material==SelectedMaterial).ToList()), Parts);
+                .Generate(Settings, Materials, new BindingList<Board>(Stock.Where(s => s.Material == SelectedMaterial || !Settings.FilterReportsForMaterial).ToList()), Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1338,7 +1338,7 @@ namespace CuttingPlanMaker
             }
 
             var t = new LayoutReport()
-                .Generate(Settings, Materials, new BindingList<Board>(Stock.Where(s => s.Material == SelectedMaterial).ToList()), Parts);
+                .Generate(Settings, Materials, new BindingList<Board>(Stock.Where(s => s.Material == SelectedMaterial || !Settings.FilterReportsForMaterial).ToList()), Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1404,7 +1404,7 @@ namespace CuttingPlanMaker
         private void pbLayout_Paint(object sender, PaintEventArgs e)
         {
             // filter stock for chosen material
-            string SelectedMaterial = tcMaterials.SelectedTab?.Name??"none";
+            string SelectedMaterial = tcMaterials.SelectedTab?.Name ?? "none";
             Board[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
             Part[] parts = Parts.Where(p => p.Material == SelectedMaterial).ToArray();
 
@@ -2008,14 +2008,14 @@ namespace CuttingPlanMaker
                 PackSolution();
         }
 
-        #endregion
+
 
         private void partsCostListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string SelectedMaterial = tcMaterials.SelectedTab.Name;
 
             var t = new PartCostListReport()
-                .Generate(Settings, Materials, Stock, new BindingList<Part>(Parts.Where(p=>p.Material == SelectedMaterial).ToList()));
+                .Generate(Settings, Materials, Stock, new BindingList<Part>(Parts.Where(p => p.Material == SelectedMaterial || !Settings.FilterReportsForMaterial).ToList()));
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -2052,10 +2052,10 @@ namespace CuttingPlanMaker
         }
 
         private void zoomWidthOfDiagramToolStripMenuItem_Click(object sender, EventArgs e)
-        {    
+        {
             userOffset = new PointF(0, 0);
             userZoomFactor = (float)pbLayout.Width / (float)LayoutBitmap.Width / unityScaleFactor;// / (float)Math.Pow(1.2f, 3);
-                //1;// pbLayout.Width / LayoutBitmap.Width;
+                                                                                                  //1;// pbLayout.Width / LayoutBitmap.Width;
             pbLayout.Invalidate();
         }
 
@@ -2078,7 +2078,7 @@ namespace CuttingPlanMaker
                     {
                         string[] headers = sline.ToLower().Split(',');
                         idxName = Array.IndexOf(headers, "name");
-                        if(idxName<0)
+                        if (idxName < 0)
                         {
                             MessageBox.Show("name column not detected");
                             return;
@@ -2120,14 +2120,14 @@ namespace CuttingPlanMaker
                             Material = vals[idxMaterial],
                         };
                         Parts.Add(t);
-                        if (Materials.FirstOrDefault(f=>f.Name == vals[idxMaterial]) == null)
+                        if (Materials.FirstOrDefault(f => f.Name == vals[idxMaterial]) == null)
                         {
                             Materials.Add(
                                 new Material()
                                 {
                                     Name = vals[idxMaterial],
-                                    Cost=0,
-                                    Thickness=0
+                                    Cost = 0,
+                                    Thickness = 0
                                 });
                         }
                     }
@@ -2210,5 +2210,6 @@ namespace CuttingPlanMaker
             //PartsGridView.Invalidate();
             pbLayout.Invalidate();
         }
+        #endregion
     }
 }

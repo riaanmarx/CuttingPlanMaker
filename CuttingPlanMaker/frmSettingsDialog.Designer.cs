@@ -60,6 +60,7 @@
             this.label13 = new System.Windows.Forms.Label();
             this.cbIncludePaddingOnDisplay = new System.Windows.Forms.CheckBox();
             this.cbIncludePaddingOnReports = new System.Windows.Forms.CheckBox();
+            this.cbFilterReports = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -377,11 +378,22 @@
             this.cbIncludePaddingOnReports.UseVisualStyleBackColor = true;
             this.cbIncludePaddingOnReports.Visible = false;
             // 
+            // cbFilterReports
+            // 
+            this.cbFilterReports.Location = new System.Drawing.Point(19, 359);
+            this.cbFilterReports.Name = "cbFilterReports";
+            this.cbFilterReports.Size = new System.Drawing.Size(195, 31);
+            this.cbFilterReports.TabIndex = 17;
+            this.cbFilterReports.Text = "Report only on selected Material";
+            this.cbFilterReports.UseVisualStyleBackColor = true;
+            this.cbFilterReports.CheckedChanged += new System.EventHandler(this.cbFilterReports_CheckedChanged);
+            // 
             // frmSettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(824, 402);
+            this.Controls.Add(this.cbFilterReports);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
@@ -433,5 +445,6 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox tbBoardCutLen;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.CheckBox cbFilterReports;
     }
 }
