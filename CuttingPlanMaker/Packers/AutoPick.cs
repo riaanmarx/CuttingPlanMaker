@@ -79,7 +79,7 @@ namespace CuttingPlanMaker.Packers
                 foreach (var iPart in parts)
                 {
                     var t = bestParts.First<Part>(f => f.Name == iPart.Name);
-                        iPart.Source = boards.First(f => f.Name == t.Source.Name);
+                        iPart.Source = boards.FirstOrDefault(f => f.Name == (t.Source?.Name??"x"));
                         iPart.OffsetLength = t.OffsetLength;
                         iPart.OffsetWidth = t.OffsetWidth;
                 }

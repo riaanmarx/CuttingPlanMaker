@@ -81,7 +81,7 @@ namespace CuttingPlanMaker
                 iRow = table.AddRow();
                 if (i % 2 == 1) iRow.Shading.Color = Colors.WhiteSmoke;
                 iRow[0].AddParagraph(iPart.Name);
-                iRow[1].AddParagraph(iPart.LongName);
+                iRow[1].AddParagraph(iPart.LongName ?? iPart.Name);
                 iRow[2].AddParagraph(iPart.Length.ToString("0.0"));
                 iRow[3].AddParagraph(iPart.Width.ToString("0.0"));
                 iRow[4].AddParagraph(iMaterial.Thickness.ToString("0.0"));

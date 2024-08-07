@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace CuttingPlanMaker
 {
-   
+
     /// <summary>
     /// Main form of the application
     /// </summary>
@@ -214,6 +214,10 @@ namespace CuttingPlanMaker
             double yOffset = yMargin;
             double imageHeight = 2 * yMargin;
             double imageWidth = 0;
+            var selecterpartrow = PartsGridView.SelectedRows;
+
+            Part selectedpart = selecterpartrow.Count == 0 ? null : (Part)selecterpartrow[0].DataBoundItem;
+
             Font boardFont = new Font(new FontFamily("Microsoft Sans Serif"), 15.0f);
 
             // create list of boards to draw
@@ -278,11 +282,14 @@ namespace CuttingPlanMaker
                     double Width = iPart.Width;
 
                     // draw the part
-                    g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
+                    if (iPart.Name == (selectedpart?.Name??"somenonamevaluehere"))
+                        g.FillRectangle(Brushes.LimeGreen, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
+                    else
+                        g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
 
                     // print the part text
                     string partLabel = $"{iPart.Name} [{Length} x {iPart.Width}]";
-                   
+
 
                     int sz = 16;
                     Font partFont;
@@ -312,7 +319,7 @@ namespace CuttingPlanMaker
                     // draw preview drop rect if not empty
                     if (DropPreviewRect != RectangleF.Empty)
                     {
-                        g.FillRectangle(Brushes.LightGreen, (float)(DropPreviewRect.X + xMargin),(float)(DropPreviewRect.Y + yOffset),DropPreviewRect.Width,DropPreviewRect.Height);
+                        g.FillRectangle(Brushes.LightGreen, (float)(DropPreviewRect.X + xMargin), (float)(DropPreviewRect.Y + yOffset), DropPreviewRect.Width, DropPreviewRect.Height);
                     }
                 }
                 yOffset += iBoard.Width + boardSpacing;
@@ -704,14 +711,14 @@ namespace CuttingPlanMaker
                 // filter the parts and stock for each material and pack them
                 Materials.Select(t => t.Name).Where(q => q != "DISABLED").AsParallel().ForAll((Action<string>)(iMaterialsName =>
                       {
-                          Part[] iParts = Parts.Where(t => t.Material == iMaterialsName && !t.IsFrozen).Select(p=>
+                          Part[] iParts = Parts.Where(t => t.Material == iMaterialsName && !t.IsFrozen).Select(p =>
                           {
                               p.Length += Settings.PartPaddingLength;
                               p.Width += Settings.PartPaddingWidth;
                               return p;
                           }).ToArray();
 
-                          Board[] iStock = Stock.Where(t => t.Material == iMaterialsName && !t.IsFrozen).Select(b=>
+                          Board[] iStock = Stock.Where(t => t.Material == iMaterialsName && !t.IsFrozen).Select(b =>
                           {
                               b.Length -= Settings.BoardLengthReduction;
                               b.Width -= Settings.BoardWidthReduction;
@@ -1273,8 +1280,10 @@ namespace CuttingPlanMaker
 
         private void mniReportPartsList_Click(object sender, EventArgs e)
         {
+            string SelectedMaterial = tcMaterials.SelectedTab.Name;
+
             var t = new PartListReport()
-                .Generate(Settings, Materials, Stock, Parts);
+                .Generate(Settings, Materials, Stock, new BindingList<Part>(Parts.Where(p=>p.Material == SelectedMaterial).ToList()));
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1293,8 +1302,10 @@ namespace CuttingPlanMaker
 
         private void mniReportStockList_Click(object sender, EventArgs e)
         {
+            string SelectedMaterial = tcMaterials.SelectedTab.Name;
+
             var t = new StockReport()
-                .Generate(Settings, Materials, Stock, Parts);
+                .Generate(Settings, Materials, new BindingList<Board>(Stock.Where(s=>s.Material==SelectedMaterial).ToList()), Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1313,6 +1324,8 @@ namespace CuttingPlanMaker
 
         private void mniReportLayout_Click(object sender, EventArgs e)
         {
+            string SelectedMaterial = tcMaterials.SelectedTab.Name;
+
             if (Settings.AutoRepack)
                 PackSolution();
             else
@@ -1325,7 +1338,7 @@ namespace CuttingPlanMaker
             }
 
             var t = new LayoutReport()
-                .Generate(Settings, Materials, Stock, Parts);
+                .Generate(Settings, Materials, new BindingList<Board>(Stock.Where(s => s.Material == SelectedMaterial).ToList()), Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1380,8 +1393,8 @@ namespace CuttingPlanMaker
 
             //calculate new center so as to keep the mouse point stationary
             PointF newCentre = new PointF(
-                Mbitmap.X + ((float)e.X - (float)pbLayout.Width/2.0f) / (userZoomFactor * unityScaleFactor),
-                Mbitmap.Y + ((float)e.Y - (float)pbLayout.Height/2.0f) / (userZoomFactor * unityScaleFactor)
+                Mbitmap.X + ((float)e.X - (float)pbLayout.Width / 2.0f) / (userZoomFactor * unityScaleFactor),
+                Mbitmap.Y + ((float)e.Y - (float)pbLayout.Height / 2.0f) / (userZoomFactor * unityScaleFactor)
                 );
             userOffset = newCentre;
 
@@ -1391,7 +1404,7 @@ namespace CuttingPlanMaker
         private void pbLayout_Paint(object sender, PaintEventArgs e)
         {
             // filter stock for chosen material
-            string SelectedMaterial = tcMaterials.SelectedTab.Name;
+            string SelectedMaterial = tcMaterials.SelectedTab?.Name??"none";
             Board[] stockItems = Stock.Where(t => t.Material == SelectedMaterial).ToArray();
             Part[] parts = Parts.Where(p => p.Material == SelectedMaterial).ToArray();
 
@@ -1416,7 +1429,7 @@ namespace CuttingPlanMaker
 
 
             //update summary table
-            var selectedstock= Stock.Where(q => q.Material == SelectedMaterial);
+            var selectedstock = Stock.Where(q => q.Material == SelectedMaterial);
             lblStockCount.Text = Stock.Count(q => q.Material == SelectedMaterial).ToString();
             double StockArea = selectedstock.Sum(t => t.Area) / 1e6;
             var mat = Materials.FirstOrDefault(f => f.Name == SelectedMaterial);
@@ -1464,7 +1477,7 @@ namespace CuttingPlanMaker
                 if (userOffset.Y > LayoutBitmap.Height / 2) userOffset.Y = LayoutBitmap.Height / 2;
                 if (selectedPart != null)
                     userZoomFactor = Math.Max(userZoomFactor, (float)pbLayout.Width / (float)selectedPart.Length / unityScaleFactor / (float)Math.Pow(1.2f, 3));
-                
+
                 pbLayout.Invalidate();
             }
             if (e.Button == MouseButtons.Right)
@@ -1610,7 +1623,7 @@ namespace CuttingPlanMaker
 
                 if (c < double.MaxValue)
                 {
-                    var t =new RectangleF((float)cX, (float)cY, (float)selectedPart.Length, (float)selectedPart.Width);
+                    var t = new RectangleF((float)cX, (float)cY, (float)selectedPart.Length, (float)selectedPart.Width);
                     if (DropPreviewRect == RectangleF.Empty || DropPreviewRect.X != t.X || DropPreviewRect.Y != t.Y)
                     {
                         DropPreviewRect = t;
@@ -1653,7 +1666,7 @@ namespace CuttingPlanMaker
             if (selectedPart == null) return;
 
 
-            
+
 
             // dragging left - move part manually...
             // calculate new drop target (board)
@@ -1661,7 +1674,7 @@ namespace CuttingPlanMaker
             Board droptargetBoard = FindBoardAtPoint(mouseUpPoint, out double targetboardYOffset);
             RectangleF proposedPartBounds = new RectangleF(mouseUpPoint.X - (float)xMargin, mouseUpPoint.Y - (float)targetboardYOffset, (float)selectedPart.Length, (float)selectedPart.Width);
             if (droptargetBoard == null) return;
-            
+
 
             // for now, lets make the mouse point the desired origin of the part...this eliminates handling the offset at mouse down...
 
@@ -1713,8 +1726,8 @@ namespace CuttingPlanMaker
 
                         // check if there is an intersect with another placed part
                         Part iOvelappedPart = packedParts.FirstOrDefault(
-                            t => t != selectedPart && 
-                            t.IntersectsWith(iX,iY,selectedPart.Length +Settings.BladeKerf ,selectedPart.Width+Settings.BladeKerf));
+                            t => t != selectedPart &&
+                            t.IntersectsWith(iX, iY, selectedPart.Length + Settings.BladeKerf, selectedPart.Width + Settings.BladeKerf));
                         if (iOvelappedPart == null)
                         {
                             // calculate dx^2+dy^2 (cubed distance)
@@ -1730,7 +1743,7 @@ namespace CuttingPlanMaker
                     }
                 }
 
-                if(c<double.MaxValue)
+                if (c < double.MaxValue)
                 {
                     //  move part
                     selectedPart.OffsetLength = cX;
@@ -1783,7 +1796,9 @@ namespace CuttingPlanMaker
                 {
                     if (PartsGridView[0, i].Value.ToString() == clickedPart.Name)
                     {
-                        PartsGridView.CurrentCell = PartsGridView[0, i];
+                        PartsGridView.ClearSelection();
+                        PartsGridView[0, i].OwningRow.Selected = true;
+                        //PartsGridView.CurrentCell = PartsGridView[0, i];
                         break;
                     }
                 }
@@ -1794,8 +1809,10 @@ namespace CuttingPlanMaker
 
         private void mniReportLayoutLabels_Click(object sender, EventArgs e)
         {
+            string SelectedMaterial = tcMaterials.SelectedTab.Name;
+
             var t = new CuttingLabelReport()
-               .Generate(Settings, Materials, Stock, Parts);
+               .Generate(Settings, Materials, new BindingList<Board>(Stock.Where(s => s.Material == SelectedMaterial).ToList()), Parts);
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -1946,7 +1963,7 @@ namespace CuttingPlanMaker
             var t = Stock[e.RowIndex];
             if (t.IsFrozen)
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DeepSkyBlue;
-            else if (t.AreaUsed==0)
+            else if (t.AreaUsed == 0)
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DarkGray;
             else
                 StockGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
@@ -1995,8 +2012,10 @@ namespace CuttingPlanMaker
 
         private void partsCostListToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string SelectedMaterial = tcMaterials.SelectedTab.Name;
+
             var t = new PartCostListReport()
-                .Generate(Settings, Materials, Stock, Parts);
+                .Generate(Settings, Materials, Stock, new BindingList<Part>(Parts.Where(p=>p.Material == SelectedMaterial).ToList()));
 
             string filename = "";
             for (int c = 0; c < 1000; c++)
@@ -2011,6 +2030,185 @@ namespace CuttingPlanMaker
                 }
             if (File.Exists(filename))
                 Process.Start(filename);
+        }
+
+        private void zoomFullDiagramToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            userOffset = new PointF(0, 0);
+            userZoomFactor = 1;
+            pbLayout.Invalidate();
+        }
+
+        private void zoomInToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            userZoomFactor = userZoomFactor * 1.2f;
+            pbLayout.Invalidate();
+        }
+
+        private void zoomOutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            userZoomFactor = userZoomFactor / 1.2f;
+            pbLayout.Invalidate();
+        }
+
+        private void zoomWidthOfDiagramToolStripMenuItem_Click(object sender, EventArgs e)
+        {    
+            userOffset = new PointF(0, 0);
+            userZoomFactor = (float)pbLayout.Width / (float)LayoutBitmap.Width / unityScaleFactor;// / (float)Math.Pow(1.2f, 3);
+                //1;// pbLayout.Width / LayoutBitmap.Width;
+            pbLayout.Invalidate();
+        }
+
+        private void mniFileImportPartsCSV_Click(object sender, EventArgs e)
+        {
+            //browse & pick CSV file
+            if (openCSVFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                //import parts - add material also if not already added
+                string[] csvdata = System.IO.File.ReadAllLines(openCSVFileDialog.FileName);
+                int idxName = -1;
+                int idxLongName = -1;
+                int idxLen = -1;
+                int idxWidth = -1;
+                int idxMaterial = -1;
+                int linenr = 0;
+                foreach (string sline in csvdata)
+                {
+                    if (linenr == 0)
+                    {
+                        string[] headers = sline.ToLower().Split(',');
+                        idxName = Array.IndexOf(headers, "name");
+                        if(idxName<0)
+                        {
+                            MessageBox.Show("name column not detected");
+                            return;
+                        }
+                        idxLongName = Array.IndexOf(headers, "longname");
+                        if (idxLongName < 0)
+                        {
+                            MessageBox.Show("longname column not detected");
+                            return;
+                        }
+                        idxLen = Array.IndexOf(headers, "len");
+                        if (idxLen < 0)
+                        {
+                            MessageBox.Show("len column not detected");
+                            return;
+                        }
+                        idxWidth = Array.IndexOf(headers, "wid");
+                        if (idxWidth < 0)
+                        {
+                            MessageBox.Show("wid column not detected");
+                            return;
+                        }
+                        idxMaterial = Array.IndexOf(headers, "material");
+                        if (idxMaterial < 0)
+                        {
+                            MessageBox.Show("material column not detected");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        string[] vals = sline.Split(',');
+                        var t = new Part()
+                        {
+                            Name = vals[idxName],
+                            LongName = vals[idxLongName],
+                            Length = double.Parse(vals[idxLen]),
+                            Width = double.Parse(vals[idxWidth]),
+                            Material = vals[idxMaterial],
+                        };
+                        Parts.Add(t);
+                        if (Materials.FirstOrDefault(f=>f.Name == vals[idxMaterial]) == null)
+                        {
+                            Materials.Add(
+                                new Material()
+                                {
+                                    Name = vals[idxMaterial],
+                                    Cost=0,
+                                    Thickness=0
+                                });
+                        }
+                    }
+                    linenr += 1;
+                }
+            }
+        }
+
+        private void mniFileImportStockCSV_Click(object sender, EventArgs e)
+        {
+            //browse & pick CSV file
+            if (openCSVFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                //import stock - add material also if not already added
+                string[] csvdata = System.IO.File.ReadAllLines(openCSVFileDialog.FileName);
+                int idxName = -1;
+                int idxLen = -1;
+                int idxWidth = -1;
+                int idxMaterial = -1;
+                int linenr = 0;
+                foreach (string sline in csvdata)
+                {
+                    if (linenr == 0)
+                    {
+                        string[] headers = sline.ToLower().Split(',');
+                        idxName = Array.IndexOf(headers, "name");
+                        if (idxName < 0)
+                        {
+                            MessageBox.Show("name column not detected");
+                            return;
+                        }
+                        idxLen = Array.IndexOf(headers, "len");
+                        if (idxLen < 0)
+                        {
+                            MessageBox.Show("len column not detected");
+                            return;
+                        }
+                        idxWidth = Array.IndexOf(headers, "wid");
+                        if (idxWidth < 0)
+                        {
+                            MessageBox.Show("wid column not detected");
+                            return;
+                        }
+                        idxMaterial = Array.IndexOf(headers, "material");
+                        if (idxMaterial < 0)
+                        {
+                            MessageBox.Show("material column not detected");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        string[] vals = sline.Split(',');
+                        var t = new Board()
+                        {
+                            Name = vals[idxName],
+                            Length = double.Parse(vals[idxLen]),
+                            Width = double.Parse(vals[idxWidth]),
+                            Material = vals[idxMaterial],
+                        };
+                        Stock.Add(t);
+                        if (Materials.FirstOrDefault(f => f.Name == vals[idxMaterial]) == null)
+                        {
+                            Materials.Add(
+                                new Material()
+                                {
+                                    Name = vals[idxMaterial],
+                                    Cost = 0,
+                                    Thickness = 0
+                                });
+                        }
+                    }
+                    linenr += 1;
+                }
+            }
+        }
+
+        private void PartsGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            //PartsGridView.Invalidate();
+            pbLayout.Invalidate();
         }
     }
 }

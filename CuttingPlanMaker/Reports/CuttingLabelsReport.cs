@@ -211,12 +211,15 @@ namespace CuttingPlanMaker
                     Cell c = labelTable[0, 0];  // top row := part's name
                     c.Format.Font.Bold = true;
                     c.Format.Font.Size = 15;
-
                     c.AddParagraph(iPart.Name);
 
                     c = labelTable[1, 0];       // Second row := dimensions
                     c.Format.Font.Size = 12;
                     c.AddParagraph($"[{iPart.Length:0.0} x {iPart.Width:0.0}]");
+
+                    c = labelTable[1, 0];       // Third row := location
+                    c.Format.Font.Size = 8;
+                    c.AddParagraph($"{iPart.Source.Name} {{{iPart.OffsetLength:0.0} ; {iPart.OffsetWidth:0.0}}}");
 
                     cntr++;
                 }

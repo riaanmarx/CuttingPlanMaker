@@ -174,27 +174,6 @@ namespace CuttingPlanMaker.Packers
                 //var bmp = Drawboard_debug(iBoard, F, parts);
                 //bmp.Save($"out_{i}.bmp");
 
-                //Drawboard_debug(iBoard, F, F_len).Save($"{iBoard.Name}_{i}.bmp");
-
-
-
-                /*
-                // order by Left,Top ascending to ease the removal of included rects
-                RectangleF[] Forderred = F.Where(q => q != RectangleF.Empty).OrderBy(o => o.Left * iBoard.Width + o.Top).ToArray();
-
-                //remove free rects included in other free rects
-                for (int j = 0; j < Forderred.Length - 1; j++)
-                {
-                    int k = j + 1;
-                    while (k < Forderred.Length && ContainedIn(Forderred[j], Forderred[k]))
-                    {
-                        int index = Array.IndexOf(F, Forderred[k]);
-                        if (index >= 0) F[index] = RectangleF.Empty;
-                        k++;
-                    }
-                }
-                */
-
 #if drawdbgimages
                 Drawboard_debug(iBoard, F, F_len).Save($"{iBoard.Name}_{i}.bmp");  
 #endif

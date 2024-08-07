@@ -50,6 +50,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFileImport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileImportSketchupCSV = new System.Windows.Forms.ToolStripMenuItem();
+            this.stockCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFileExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,9 +61,15 @@
             this.mniAlgorithm = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportPartsList = new System.Windows.Forms.ToolStripMenuItem();
+            this.partsCostListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportStockList = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportLayout = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportLayoutLabels = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zoomInToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zoomOutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zoomFullDiagramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zoomWidthOfDiagramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -127,7 +134,7 @@
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
-            this.partsCostListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -154,6 +161,7 @@
             this.mniTools,
             this.mniAlgorithm,
             this.mniReport,
+            this.viewToolStripMenuItem,
             this.mniHelp});
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
             this.mnuMain.Name = "mnuMain";
@@ -239,8 +247,8 @@
             // mniFileImport
             // 
             this.mniFileImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniFileImportSketchupCSV});
-            this.mniFileImport.Enabled = false;
+            this.mniFileImportSketchupCSV,
+            this.stockCSVToolStripMenuItem});
             this.mniFileImport.Name = "mniFileImport";
             this.mniFileImport.Size = new System.Drawing.Size(206, 22);
             this.mniFileImport.Text = "&Import";
@@ -248,8 +256,16 @@
             // mniFileImportSketchupCSV
             // 
             this.mniFileImportSketchupCSV.Name = "mniFileImportSketchupCSV";
-            this.mniFileImportSketchupCSV.Size = new System.Drawing.Size(147, 22);
-            this.mniFileImportSketchupCSV.Text = "Sketchup CSV";
+            this.mniFileImportSketchupCSV.Size = new System.Drawing.Size(127, 22);
+            this.mniFileImportSketchupCSV.Text = "Parts CSV";
+            this.mniFileImportSketchupCSV.Click += new System.EventHandler(this.mniFileImportPartsCSV_Click);
+            // 
+            // stockCSVToolStripMenuItem
+            // 
+            this.stockCSVToolStripMenuItem.Name = "stockCSVToolStripMenuItem";
+            this.stockCSVToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.stockCSVToolStripMenuItem.Text = "Stock CSV";
+            this.stockCSVToolStripMenuItem.Click += new System.EventHandler(this.mniFileImportStockCSV_Click);
             // 
             // exportToolStripMenuItem
             // 
@@ -322,30 +338,76 @@
             // mniReportPartsList
             // 
             this.mniReportPartsList.Name = "mniReportPartsList";
-            this.mniReportPartsList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportPartsList.Size = new System.Drawing.Size(145, 22);
             this.mniReportPartsList.Text = "Parts list";
             this.mniReportPartsList.Click += new System.EventHandler(this.mniReportPartsList_Click);
+            // 
+            // partsCostListToolStripMenuItem
+            // 
+            this.partsCostListToolStripMenuItem.Name = "partsCostListToolStripMenuItem";
+            this.partsCostListToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.partsCostListToolStripMenuItem.Text = "Parts Cost list";
+            this.partsCostListToolStripMenuItem.Click += new System.EventHandler(this.partsCostListToolStripMenuItem_Click);
             // 
             // mniReportStockList
             // 
             this.mniReportStockList.Name = "mniReportStockList";
-            this.mniReportStockList.Size = new System.Drawing.Size(180, 22);
+            this.mniReportStockList.Size = new System.Drawing.Size(145, 22);
             this.mniReportStockList.Text = "Stock list";
             this.mniReportStockList.Click += new System.EventHandler(this.mniReportStockList_Click);
             // 
             // mniReportLayout
             // 
             this.mniReportLayout.Name = "mniReportLayout";
-            this.mniReportLayout.Size = new System.Drawing.Size(180, 22);
+            this.mniReportLayout.Size = new System.Drawing.Size(145, 22);
             this.mniReportLayout.Text = "Layout";
             this.mniReportLayout.Click += new System.EventHandler(this.mniReportLayout_Click);
             // 
             // mniReportLayoutLabels
             // 
             this.mniReportLayoutLabels.Name = "mniReportLayoutLabels";
-            this.mniReportLayoutLabels.Size = new System.Drawing.Size(180, 22);
+            this.mniReportLayoutLabels.Size = new System.Drawing.Size(145, 22);
             this.mniReportLayoutLabels.Text = "Layout labels";
             this.mniReportLayoutLabels.Click += new System.EventHandler(this.mniReportLayoutLabels_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.zoomInToolStripMenuItem,
+            this.zoomOutToolStripMenuItem,
+            this.zoomFullDiagramToolStripMenuItem,
+            this.zoomWidthOfDiagramToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // zoomInToolStripMenuItem
+            // 
+            this.zoomInToolStripMenuItem.Name = "zoomInToolStripMenuItem";
+            this.zoomInToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.zoomInToolStripMenuItem.Text = "Zoom in";
+            this.zoomInToolStripMenuItem.Click += new System.EventHandler(this.zoomInToolStripMenuItem_Click);
+            // 
+            // zoomOutToolStripMenuItem
+            // 
+            this.zoomOutToolStripMenuItem.Name = "zoomOutToolStripMenuItem";
+            this.zoomOutToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.zoomOutToolStripMenuItem.Text = "Zoom out";
+            this.zoomOutToolStripMenuItem.Click += new System.EventHandler(this.zoomOutToolStripMenuItem_Click);
+            // 
+            // zoomFullDiagramToolStripMenuItem
+            // 
+            this.zoomFullDiagramToolStripMenuItem.Name = "zoomFullDiagramToolStripMenuItem";
+            this.zoomFullDiagramToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.zoomFullDiagramToolStripMenuItem.Text = "Zoom full diagram";
+            this.zoomFullDiagramToolStripMenuItem.Click += new System.EventHandler(this.zoomFullDiagramToolStripMenuItem_Click);
+            // 
+            // zoomWidthOfDiagramToolStripMenuItem
+            // 
+            this.zoomWidthOfDiagramToolStripMenuItem.Name = "zoomWidthOfDiagramToolStripMenuItem";
+            this.zoomWidthOfDiagramToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.zoomWidthOfDiagramToolStripMenuItem.Text = "Zoom width of diagram";
+            this.zoomWidthOfDiagramToolStripMenuItem.Click += new System.EventHandler(this.zoomWidthOfDiagramToolStripMenuItem_Click);
             // 
             // mniHelp
             // 
@@ -935,6 +997,7 @@
             this.PartsGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.PartsDataGridView_ColumnHeaderMouseClick);
             this.PartsGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.PartsGridView_DataError);
             this.PartsGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.PartsDataGridView_RowsRemoved);
+            this.PartsGridView.SelectionChanged += new System.EventHandler(this.PartsGridView_SelectionChanged);
             // 
             // PartNameColumn
             // 
@@ -1094,12 +1157,12 @@
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
             // 
-            // partsCostListToolStripMenuItem
+            // openCSVFileDialog
             // 
-            this.partsCostListToolStripMenuItem.Name = "partsCostListToolStripMenuItem";
-            this.partsCostListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.partsCostListToolStripMenuItem.Text = "Parts Cost list";
-            this.partsCostListToolStripMenuItem.Click += new System.EventHandler(this.partsCostListToolStripMenuItem_Click);
+            this.openCSVFileDialog.DefaultExt = "csv";
+            this.openCSVFileDialog.FileName = "*.csv";
+            this.openCSVFileDialog.Filter = "CSV files|*.csv";
+            this.openCSVFileDialog.Title = "Select CSV file to import";
             // 
             // FrmMain
             // 
@@ -1236,6 +1299,13 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn StockMaterialColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn Waste;
         private System.Windows.Forms.ToolStripMenuItem partsCostListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem zoomInToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem zoomOutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem zoomFullDiagramToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem zoomWidthOfDiagramToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stockCSVToolStripMenuItem;
+        private System.Windows.Forms.OpenFileDialog openCSVFileDialog;
     }
 }
 
