@@ -284,6 +284,8 @@ namespace CuttingPlanMaker
                     // draw the part
                     if (iPart.Name == (selectedpart?.Name ?? "somenonamevaluehere"))
                         g.FillRectangle(Brushes.LimeGreen, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
+                    else if (iPart.LongName == "defect")
+                        g.FillRectangle(Brushes.Black, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
                     else
                         g.FillRectangle(Brushes.Green, (float)(xMargin + dLength), (float)(yOffset + dWidth), (float)Length, (float)Width);
 
@@ -381,7 +383,12 @@ namespace CuttingPlanMaker
                 case "Source DESC":
                     Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.Source?.Name).ToList());
                     break;
-
+                case "HarvestOrder ASC":
+                    Parts = new BindingList<Part>(Parts.OrderBy(t => t.HarvestOrder).ToList());
+                    break;
+                case "HarvestOrder DESC":
+                    Parts = new BindingList<Part>(Parts.OrderByDescending(t => t.HarvestOrder).ToList());
+                    break;
                 default:
                     break;
             }
@@ -689,6 +696,9 @@ namespace CuttingPlanMaker
                 //clear all packing info
                 Parts.ToList().ForEach(t =>
                 {
+                    //make sure the defects are frozen in place
+                    if (t.LongName == "defect") t.IsFrozen = true;
+
                     //if part not packed onto a frozen board
                     if (!t.IsFrozen)
                     {
@@ -1794,10 +1804,12 @@ namespace CuttingPlanMaker
                 btnPartsTab_Click(this, null);
                 for (int i = 0; i < PartsGridView.RowCount; i++)
                 {
-                    if (PartsGridView[0, i].Value.ToString() == clickedPart.Name)
+                    if (PartsGridView[1, i].Value.ToString() == clickedPart.Name)
                     {
                         PartsGridView.ClearSelection();
-                        PartsGridView[0, i].OwningRow.Selected = true;
+                        PartsGridView[1, i].OwningRow.Selected = true;
+                        if (!PartsGridView[1, i].OwningRow.Displayed)
+                            PartsGridView.FirstDisplayedScrollingRowIndex = i;
                         //PartsGridView.CurrentCell = PartsGridView[0, i];
                         break;
                     }
@@ -2211,5 +2223,11 @@ namespace CuttingPlanMaker
             pbLayout.Invalidate();
         }
         #endregion
+
+        private void manuallyPlacePartToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new frmPlacePart(Parts,Stock,pbLayout).ShowDialog();
+            pbLayout.Invalidate();
+        }
     }
 }

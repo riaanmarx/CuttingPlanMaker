@@ -44,7 +44,7 @@ namespace CuttingPlanMaker
         private Base64Image DrawBoard_base64(Board board, IEnumerable<Part> parts)
         {
             // constants used in drawing the image
-            const double xMargin = 0;
+            const double xMargin = 5;
             const double yMargin = 20;
             double imageHeight = board.Width + 2 * yMargin;
             double imageWidth = board.Length + 2 * xMargin;
@@ -57,7 +57,8 @@ namespace CuttingPlanMaker
             g.FillRectangle(System.Drawing.Brushes.White, 0, 0, (int)imageWidth, (int)imageHeight);
 
             // draw the board
-            g.FillRectangle(System.Drawing.Brushes.DarkRed, (float)(xMargin), (float)yMargin, (float)board.Length, (float)board.Width);
+            //g.FillRectangle(System.Drawing.Brushes.DarkRed, (float)(xMargin), (float)yMargin, (float)board.Length, (float)board.Width);
+            g.DrawRectangle(System.Drawing.Pens.Black, (float)(xMargin), (float)yMargin, (float)board.Length, (float)board.Width);
 
             // loop through all the parts and draw the ones on the current board
             int partnum = 0;
@@ -65,12 +66,23 @@ namespace CuttingPlanMaker
             {
                 partnum++;
                 // draw the part
-                g.FillRectangle(System.Drawing.Brushes.Green,
-                    (float)(xMargin + iPart.OffsetLength),
-                    (float)(yMargin + iPart.OffsetWidth),
-                    (float)iPart.Length,
-                    (float)iPart.Width);
-
+                //if (iPart.LongName == "defect")
+                //    g.FillRectangle(System.Drawing.Brushes.LightGray,
+                //        (float)(xMargin + iPart.OffsetLength),
+                //        (float)(yMargin + iPart.OffsetWidth),
+                //        (float)iPart.Length,
+                //        (float)iPart.Width);
+                //else
+                //    g.FillRectangle(System.Drawing.Brushes.LightGreen,
+                //        (float)(xMargin + iPart.OffsetLength),
+                //        (float)(yMargin + iPart.OffsetWidth),
+                //        (float)iPart.Length,
+                //        (float)iPart.Width);
+                g.DrawRectangle(System.Drawing.Pens.Black,
+                        (float)(xMargin + iPart.OffsetLength),
+                        (float)(yMargin + iPart.OffsetWidth),
+                        (float)iPart.Length,
+                        (float)iPart.Width);
                 // print the part text
                 string text1 = 
                     //$"{partnum} [{iPart.Length} x {iPart.Width}]";
@@ -79,7 +91,7 @@ namespace CuttingPlanMaker
                 System.Drawing.SizeF textSize = g.MeasureString(text1, partFont);
                 if (textSize.Width > iPart.Length) text1 = $"{iPart.Name}";
                 textSize = g.MeasureString(text1, partFont);
-                g.DrawString(text1, partFont, System.Drawing.Brushes.White,
+                g.DrawString(text1, partFont, System.Drawing.Brushes.Black,
                     (int)(xMargin + iPart.OffsetLength + iPart.Length / 2.0 - textSize.Width / 2.0),
                     (int)(yMargin + iPart.OffsetWidth + iPart.Width / 2.0 - textSize.Height / 2.0));
             }

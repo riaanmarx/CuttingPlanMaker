@@ -121,6 +121,7 @@
             this.Waste = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tpParts = new System.Windows.Forms.TabPage();
             this.PartsGridView = new System.Windows.Forms.DataGridView();
+            this.HOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PartNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PartDesc = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PartLengthColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -129,12 +130,13 @@
             this.Source = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tcMaterials = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.pbLayout = new System.Windows.Forms.PictureBox();
+            this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.manuallyPlacePartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnPartsTab = new System.Windows.Forms.Button();
             this.btnStockTab = new System.Windows.Forms.Button();
             this.btnMaterialsTab = new System.Windows.Forms.Button();
+            this.pbLayout = new System.Windows.Forms.PictureBox();
             this.btnCollapseExpandTab = new System.Windows.Forms.Button();
-            this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ctrSplitContainer)).BeginInit();
             this.ctrSplitContainer.Panel1.SuspendLayout();
@@ -291,7 +293,8 @@
             this.mniTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniToolsOptions,
             this.mniToolsPack,
-            this.manualModeToolStripMenuItem});
+            this.manualModeToolStripMenuItem,
+            this.manuallyPlacePartToolStripMenuItem});
             this.mniTools.Name = "mniTools";
             this.mniTools.Size = new System.Drawing.Size(46, 20);
             this.mniTools.Text = "&Tools";
@@ -299,21 +302,21 @@
             // mniToolsOptions
             // 
             this.mniToolsOptions.Name = "mniToolsOptions";
-            this.mniToolsOptions.Size = new System.Drawing.Size(148, 22);
+            this.mniToolsOptions.Size = new System.Drawing.Size(180, 22);
             this.mniToolsOptions.Text = "&Options";
             this.mniToolsOptions.Click += new System.EventHandler(this.mniToolsOptions_Click);
             // 
             // mniToolsPack
             // 
             this.mniToolsPack.Name = "mniToolsPack";
-            this.mniToolsPack.Size = new System.Drawing.Size(148, 22);
+            this.mniToolsPack.Size = new System.Drawing.Size(180, 22);
             this.mniToolsPack.Text = "Pack parts";
             this.mniToolsPack.Click += new System.EventHandler(this.mniToolsPack_Click);
             // 
             // manualModeToolStripMenuItem
             // 
             this.manualModeToolStripMenuItem.Name = "manualModeToolStripMenuItem";
-            this.manualModeToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.manualModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.manualModeToolStripMenuItem.Text = "Manual mode";
             this.manualModeToolStripMenuItem.Click += new System.EventHandler(this.manualModeToolStripMenuItem_Click);
             // 
@@ -979,6 +982,7 @@
             this.PartsGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this.PartsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.PartsGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.HOrder,
             this.PartNameColumn,
             this.PartDesc,
             this.PartLengthColumn,
@@ -999,10 +1003,19 @@
             this.PartsGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.PartsDataGridView_RowsRemoved);
             this.PartsGridView.SelectionChanged += new System.EventHandler(this.PartsGridView_SelectionChanged);
             // 
+            // HOrder
+            // 
+            this.HOrder.DataPropertyName = "HarvestOrder";
+            this.HOrder.FillWeight = 53.80711F;
+            this.HOrder.HeaderText = "#";
+            this.HOrder.MaxInputLength = 3;
+            this.HOrder.Name = "HOrder";
+            // 
             // PartNameColumn
             // 
             this.PartNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.PartNameColumn.DataPropertyName = "Name";
+            this.PartNameColumn.FillWeight = 99.20686F;
             this.PartNameColumn.HeaderText = "Name";
             this.PartNameColumn.Name = "PartNameColumn";
             // 
@@ -1010,6 +1023,7 @@
             // 
             this.PartDesc.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.PartDesc.DataPropertyName = "LongName";
+            this.PartDesc.FillWeight = 99.20686F;
             this.PartDesc.HeaderText = "Desc";
             this.PartDesc.Name = "PartDesc";
             // 
@@ -1021,7 +1035,7 @@
             dataGridViewCellStyle9.Format = "N1";
             dataGridViewCellStyle9.NullValue = null;
             this.PartLengthColumn.DefaultCellStyle = dataGridViewCellStyle9;
-            this.PartLengthColumn.FillWeight = 40F;
+            this.PartLengthColumn.FillWeight = 39.68274F;
             this.PartLengthColumn.HeaderText = "Length";
             this.PartLengthColumn.Name = "PartLengthColumn";
             // 
@@ -1033,7 +1047,7 @@
             dataGridViewCellStyle10.Format = "N1";
             dataGridViewCellStyle10.NullValue = null;
             this.PartWidthColumn.DefaultCellStyle = dataGridViewCellStyle10;
-            this.PartWidthColumn.FillWeight = 40F;
+            this.PartWidthColumn.FillWeight = 39.68274F;
             this.PartWidthColumn.HeaderText = "Width";
             this.PartWidthColumn.Name = "PartWidthColumn";
             // 
@@ -1041,6 +1055,7 @@
             // 
             this.PartMaterialColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.PartMaterialColumn.DataPropertyName = "Material";
+            this.PartMaterialColumn.FillWeight = 99.20686F;
             this.PartMaterialColumn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.PartMaterialColumn.HeaderText = "Material";
             this.PartMaterialColumn.Name = "PartMaterialColumn";
@@ -1050,6 +1065,7 @@
             // Source
             // 
             this.Source.DataPropertyName = "Source";
+            this.Source.FillWeight = 99.20686F;
             this.Source.HeaderText = "Source";
             this.Source.Name = "Source";
             this.Source.ReadOnly = true;
@@ -1075,23 +1091,19 @@
             this.tabPage1.Text = "Material1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // pbLayout
+            // openCSVFileDialog
             // 
-            this.pbLayout.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbLayout.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.pbLayout.Location = new System.Drawing.Point(1, 20);
-            this.pbLayout.Name = "pbLayout";
-            this.pbLayout.Size = new System.Drawing.Size(746, 535);
-            this.pbLayout.TabIndex = 0;
-            this.pbLayout.TabStop = false;
-            this.pbLayout.Paint += new System.Windows.Forms.PaintEventHandler(this.pbLayout_Paint);
-            this.pbLayout.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PbLayout_MouseClick);
-            this.pbLayout.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseDoubleClick);
-            this.pbLayout.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseDown);
-            this.pbLayout.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseMove);
-            this.pbLayout.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseUp);
+            this.openCSVFileDialog.DefaultExt = "csv";
+            this.openCSVFileDialog.FileName = "*.csv";
+            this.openCSVFileDialog.Filter = "CSV files|*.csv";
+            this.openCSVFileDialog.Title = "Select CSV file to import";
+            // 
+            // manuallyPlacePartToolStripMenuItem
+            // 
+            this.manuallyPlacePartToolStripMenuItem.Name = "manuallyPlacePartToolStripMenuItem";
+            this.manuallyPlacePartToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.manuallyPlacePartToolStripMenuItem.Text = "Manually place part";
+            this.manuallyPlacePartToolStripMenuItem.Click += new System.EventHandler(this.manuallyPlacePartToolStripMenuItem_Click);
             // 
             // btnPartsTab
             // 
@@ -1141,6 +1153,24 @@
             this.btnMaterialsTab.UseVisualStyleBackColor = false;
             this.btnMaterialsTab.Click += new System.EventHandler(this.btnMaterialsTab_Click);
             // 
+            // pbLayout
+            // 
+            this.pbLayout.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pbLayout.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.pbLayout.Location = new System.Drawing.Point(1, 20);
+            this.pbLayout.Name = "pbLayout";
+            this.pbLayout.Size = new System.Drawing.Size(746, 535);
+            this.pbLayout.TabIndex = 0;
+            this.pbLayout.TabStop = false;
+            this.pbLayout.Paint += new System.Windows.Forms.PaintEventHandler(this.pbLayout_Paint);
+            this.pbLayout.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PbLayout_MouseClick);
+            this.pbLayout.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseDoubleClick);
+            this.pbLayout.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseDown);
+            this.pbLayout.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseMove);
+            this.pbLayout.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbLayout_MouseUp);
+            // 
             // btnCollapseExpandTab
             // 
             this.btnCollapseExpandTab.AutoSize = true;
@@ -1156,13 +1186,6 @@
             this.btnCollapseExpandTab.TabIndex = 4;
             this.btnCollapseExpandTab.UseVisualStyleBackColor = false;
             this.btnCollapseExpandTab.Click += new System.EventHandler(this.btnCollapseExpandTab_Click);
-            // 
-            // openCSVFileDialog
-            // 
-            this.openCSVFileDialog.DefaultExt = "csv";
-            this.openCSVFileDialog.FileName = "*.csv";
-            this.openCSVFileDialog.Filter = "CSV files|*.csv";
-            this.openCSVFileDialog.Title = "Select CSV file to import";
             // 
             // FrmMain
             // 
@@ -1287,12 +1310,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label lblCost;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PartNameColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PartDesc;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PartLengthColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PartWidthColumn;
-        private System.Windows.Forms.DataGridViewComboBoxColumn PartMaterialColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Source;
         private System.Windows.Forms.DataGridViewTextBoxColumn stocknamecolumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn StockLengthColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn StockWidthColumn;
@@ -1306,6 +1323,14 @@
         private System.Windows.Forms.ToolStripMenuItem zoomWidthOfDiagramToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stockCSVToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openCSVFileDialog;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HOrder;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PartNameColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PartDesc;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PartLengthColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PartWidthColumn;
+        private System.Windows.Forms.DataGridViewComboBoxColumn PartMaterialColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Source;
+        private System.Windows.Forms.ToolStripMenuItem manuallyPlacePartToolStripMenuItem;
     }
 }
 

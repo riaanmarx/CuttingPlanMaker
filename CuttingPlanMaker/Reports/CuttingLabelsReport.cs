@@ -44,7 +44,7 @@ namespace CuttingPlanMaker
         private Base64Image DrawBoard_base64(Board board, IEnumerable<Part> parts)
         {
             // constants used in drawing the image
-            const double xMargin = 0;
+            const double xMargin = 5;
             const double yMargin = 20;
             double imageHeight = board.Width + 2 * yMargin;
             double imageWidth = board.Length + 2 * xMargin;
@@ -57,7 +57,8 @@ namespace CuttingPlanMaker
             g.FillRectangle(System.Drawing.Brushes.White, 0, 0, (int)imageWidth, (int)imageHeight);
 
             // draw the board
-            g.FillRectangle(System.Drawing.Brushes.DarkRed, (float)(xMargin), (float)yMargin, (float)board.Length, (float)board.Width);
+            //g.FillRectangle(System.Drawing.Brushes.DarkRed, (float)(xMargin), (float)yMargin, (float)board.Length, (float)board.Width);
+            g.DrawRectangle(System.Drawing.Pens.Black, (float)(xMargin), (float)yMargin, (float)board.Length, (float)board.Width);
 
             // loop through all the parts and draw the ones on the current board
             int partnum = 0;
@@ -65,19 +66,30 @@ namespace CuttingPlanMaker
             {
                 partnum++;
                 // draw the part
-                g.FillRectangle(System.Drawing.Brushes.Green,
+                //if (iPart.LongName == "defect")
+                //    g.FillRectangle(System.Drawing.Brushes.LightGray,
+                //        (float)(xMargin + iPart.OffsetLength),
+                //        (float)(yMargin + iPart.OffsetWidth),
+                //        (float)iPart.Length,
+                //        (float)iPart.Width);
+                //else
+                //    g.FillRectangle(System.Drawing.Brushes.LightGreen,
+                //        (float)(xMargin + iPart.OffsetLength),
+                //        (float)(yMargin + iPart.OffsetWidth),
+                //        (float)iPart.Length,
+                //        (float)iPart.Width);
+                g.DrawRectangle(System.Drawing.Pens.Black,
                     (float)(xMargin + iPart.OffsetLength),
                     (float)(yMargin + iPart.OffsetWidth),
                     (float)iPart.Length,
                     (float)iPart.Width);
-
                 // print the part text
                 string text1 = $"{iPart.Name}";
                 
                 System.Drawing.Font partFont = new System.Drawing.Font(new System.Drawing.FontFamily("Consolas"), 15);
                 System.Drawing.SizeF textSize = g.MeasureString(text1, partFont);
                 textSize = g.MeasureString(text1, partFont);
-                g.DrawString(text1, partFont, System.Drawing.Brushes.White,
+                g.DrawString(text1, partFont, System.Drawing.Brushes.Black,
                     (int)(xMargin + iPart.OffsetLength + iPart.Length / 2.0 - textSize.Width / 2.0),
                     (int)(yMargin + iPart.OffsetWidth + iPart.Width / 2.0 - textSize.Height / 2.0));
             }
@@ -114,7 +126,7 @@ namespace CuttingPlanMaker
         public PdfSharp.Pdf.PdfDocument Generate(Settings Settings, BindingList<Material> Materials, BindingList<Board> Stock, BindingList<Part> Parts)
         {
             #region // Configuration settings ...
-            int colCount = 4;                       // the number of labels per row
+            int colCount = 5;                       // the number of labels per row
             int rowCount = 10;                      // the number of rows of labels per page
             LeftMargin = Unit.FromMillimeter(10);   // the left margin or lefte most edge of the left most label
             TopMargin = Unit.FromMillimeter(10);    // the top edge of the top most label
@@ -157,7 +169,7 @@ namespace CuttingPlanMaker
                 var titlecell = stocktitlerow.Cells[0];
                 titlecell.MergeRight = colCount - 1;
                 titlecell.Format.Font.Bold = true;
-                titlecell.Format.Font.Size = 20;
+                titlecell.Format.Font.Size = 12;
                 titlecell.AddParagraph($"Board: {iStock.Name} [{iStock.Length} x {iStock.Width}]");
                 titlecell.Row.TopPadding = 10;
 
@@ -206,7 +218,7 @@ namespace CuttingPlanMaker
                     labelTable.AddColumn(colWidth);
                     labelTable.AddRow();
                     labelTable.AddRow();
-                    labelTable.AddRow();
+                    //labelTable.AddRow();
 
                     Cell c = labelTable[0, 0];  // top row := part's name
                     c.Format.Font.Bold = true;

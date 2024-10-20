@@ -13,6 +13,11 @@ namespace CuttingPlanMaker
     public class Part
     {
         /// <summary>
+        /// a field we can use to order parts in some custom manner
+        /// </summary>
+        public string HarvestOrder { get; set; }
+
+        /// <summary>
         /// A name for the part...maybe rename to "Id" later???
         /// </summary>
         public string Name { get; set; }
@@ -78,6 +83,7 @@ namespace CuttingPlanMaker
             return new Part
             {
                 Name = this.Name,
+                HarvestOrder = this.HarvestOrder,
                 LongName = this.LongName,
                 Material = this.Material,
                 Length = this.Length,
